@@ -398,3 +398,19 @@ h3.sub:first-of-type { margin-top: 4px; }
 .an-text [data-say].speaking { background: var(--accent-soft); }
 .an-text .en { font-family: var(--font); font-size: .82em; color: var(--muted); }
 @media print { .an-controls, .an-audio { display: none; } .an-script { display: block; } }
+
+/* "Learn with Gemini" card, added to every exam domain by app.js */
+.gm-card { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; margin: 0 0 20px; padding: 10px 12px;
+           border: 1px dashed color-mix(in srgb, var(--exam) 45%, var(--border)); border-radius: var(--radius-sm);
+           background: color-mix(in srgb, var(--exam) 6%, var(--surface)); }
+.audio-note .gm-card { margin: 12px 0 0; background: var(--surface); }
+.gm-btn { display: inline-flex; align-items: center; gap: 6px; font: 600 14px var(--font); color: #fff;
+          background: linear-gradient(135deg, #4f7cf3, #9b6ef3); border-radius: 999px; padding: 8px 16px; }
+.gm-btn:hover { text-decoration: none; filter: brightness(1.08); }
+.gm-status { font-size: 13px; color: var(--muted); flex: 1 1 220px; }
+.gm-status.ok { color: var(--tip); font-weight: 600; }
+.gm-prompt { flex-basis: 100%; }
+.gm-prompt summary { cursor: pointer; font-size: 13px; color: var(--muted); }
+.gm-prompt textarea { width: 100%; margin-top: 6px; font: 12.5px/1.5 var(--mono); color: var(--text); background: var(--surface-2);
+                      border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 10px; resize: vertical; }
+@media print { .gm-card { display: none; } }
