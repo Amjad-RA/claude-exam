@@ -489,6 +489,34 @@ details.qa.code-toggle pre { margin: 0; }
 .dg rect.zone { fill: var(--tip-soft); }
 .dg rect.seg-a { fill: color-mix(in srgb, var(--exam) 30%, var(--surface)); }
 
+/* ---------- Malayalam audio lesson (.audio-note), made by tools/make_lesson.py ---------- */
+[lang="ml"] { font-family: "Noto Sans Malayalam", "Malayalam Sangam MN", "Nirmala UI", "Kartika", var(--font); }
+.audio-note { border: 1px solid color-mix(in srgb, var(--exam) 35%, var(--border)); border-radius: var(--radius);
+              background: linear-gradient(135deg, color-mix(in srgb, var(--exam) 10%, var(--surface)), var(--surface));
+              padding: 14px; margin: 0 0 16px; box-shadow: var(--shadow); }
+.an-head { display: flex; gap: 12px; align-items: center; }
+.an-icon { width: 42px; height: 42px; border-radius: 50%; background: var(--exam); display: grid; place-items: center; font-size: 20px; flex: none; }
+.an-title { display: block; font-weight: 700; font-size: 1.08rem; }
+.an-sub { display: block; font-size: 13px; color: var(--muted); line-height: 1.4; }
+.an-player audio { display: block; width: 100%; margin-top: 12px; }
+.an-speed { display: flex; gap: 6px; margin-top: 10px; }
+.an-speed button { flex: 1; min-height: 38px; font: 600 13.5px var(--font); border: 1px solid var(--border); background: var(--surface);
+                   color: var(--muted); border-radius: 999px; cursor: pointer; }
+.an-speed button[aria-pressed="true"] { border-color: var(--exam); color: var(--exam); background: color-mix(in srgb, var(--exam) 10%, var(--surface)); }
+.an-script { margin-top: 12px; border-top: 1px dashed var(--border); padding-top: 4px; }
+.an-script summary { cursor: pointer; min-height: 40px; display: flex; align-items: center; font-size: 14px; font-weight: 600; color: var(--exam); }
+.an-text { margin-top: 4px; line-height: 1.9; font-size: 16px; }
+.an-text h4 { font-size: 15px; margin: 16px 0 4px; color: var(--exam); }
+.an-text [data-say] { border-radius: 8px; padding: 4px 8px; margin: 0 -8px 8px; cursor: pointer; transition: background .2s; }
+@media (hover: hover) { .an-text [data-say]:hover { background: var(--surface-2); } }
+.an-text [data-say].speaking { background: var(--accent-soft); box-shadow: inset 3px 0 0 var(--exam); }
+@media (min-width: 600px) {
+  .audio-note { padding: 16px 18px; margin-bottom: 20px; }
+  .an-speed { display: inline-flex; }
+  .an-speed button { flex: none; min-height: 32px; padding: 0 12px; }
+}
+@media print { .an-player { display: none; } .an-script > .an-text { display: block; } }
+
 /* ---------- "Learn with Gemini" card, added to every exam domain by app.js ----------
    Phones: a full-width button with the status line under it. */
 .gm-card { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; margin: 0 0 20px; padding: 12px;

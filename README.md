@@ -65,6 +65,26 @@ python3 tools/build_diagrams.py
 
 Each diagram sits between `<!-- dg:ID -->` and `<!-- /dg:ID -->` markers in its page, and only that block is rewritten. The site itself still needs no build step.
 
+## Malayalam audio lessons
+
+A domain can start with a "മലയാളത്തിൽ കേൾക്കാം" card: a beginner lesson in Malayalam with a player, speed buttons and a read-along transcript. The paragraph being read is highlighted, tapping a paragraph plays from there, and the phone's lock screen shows the lesson title.
+
+`tools/make_lesson.py` makes them with the Gemini API, in two steps so the text can be checked before it is voiced:
+
+```bash
+python3 tools/make_lesson.py write exams/ccao-f.html d1
+```
+
+Gemini writes the lesson from the domain's notes into the page.
+
+```bash
+python3 tools/make_lesson.py speak exams/ccao-f.html d1
+```
+
+A Gemini voice reads it into `assets/audio/ccao-f-d1.mp3` and the paragraph times are written into the page.
+
+It needs `beautifulsoup4`, `ffmpeg` and a Gemini API key in `GEMINI_API_KEY`. The models and voice can be changed with `GEMINI_TEXT_MODEL`, `GEMINI_TTS_MODEL` and `GEMINI_VOICE`; see the top of the script.
+
 ## Learn with Gemini
 
 Every exam domain has a "Learn in Malayalam with Gemini" button. It copies a lesson prompt built from that domain's notes (diagram captions, callouts, flashcards, practice questions) and opens Gemini: the Gemini app on Android, gemini.google.com elsewhere. Paste and send: Gemini first teaches the whole domain as one flowing lesson, written to be listened to with its Listen (read aloud) option, and only then asks five questions, one at a time. The prompt is also shown under "See the prompt" in case copying is blocked.

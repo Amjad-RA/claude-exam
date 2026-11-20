@@ -1,8 +1,8 @@
 /* Claude Exam Visual Notes — small, dependency-free behaviours.
    1. Theme toggle   2. Table of contents (sidebar, or a bar on phones)
    3. Section search 4. "Done" progress tracking (localStorage)
-   5. Phone-friendly tables and diagrams   6. Learn with Gemini
-   7. Practice quizzes                                          */
+   5. Phone-friendly tables and diagrams   6. Malayalam audio lessons
+   7. Learn with Gemini   8. Practice quizzes                   */
 (() => {
   const store = {
     get(k, d) { try { const v = localStorage.getItem(k); return v === null ? d : JSON.parse(v); } catch { return d; } },
@@ -192,7 +192,72 @@
     addEventListener("resize", () => { clearTimeout(t); t = setTimeout(markScrolling, 150); });
   }
 
-  /* 6. "Learn with Gemini": every exam domain gets a button that copies a
+  /* 6. Malayalam audio lessons: <div class="audio-note" data-audio="file.mp3">
+        (made by tools/make_lesson.py). A normal audio player with speed
+        buttons; paragraphs with data-t="seconds" highlight as it plays and
+        can be tapped to jump there. The phone's lock screen shows the title. */
+  document.querySelectorAll(".audio-note").forEach((note) => {
+    const slot = note.querySelector(".an-player");
+    if (!note.dataset.audio || !slot) return;
+    const parts = [...note.querySelectorAll("[data-say]")];
+    const times = parts.map((p) => parseFloat(p.dataset.t));
+    const audio = document.createElement("audio");
+    audio.src = note.dataset.audio;
+    audio.preload = "none";   // nothing is downloaded until you press play
+    audio.controls = true;
+    const speeds = document.createElement("div");
+    speeds.className = "an-speed";
+    speeds.setAttribute("role", "group");
+    speeds.setAttribute("aria-label", "Playback speed");
+    let rate = 1;
+    [0.8, 1, 1.2, 1.5].forEach((r) => {
+      const b = document.createElement("button");
+      b.type = "button";
+      b.textContent = `${r}×`;
+      b.setAttribute("aria-pressed", String(r === rate));
+      b.addEventListener("click", () => {
+        rate = r;
+        audio.playbackRate = r;
+        speeds.querySelectorAll("button").forEach((x) => x.setAttribute("aria-pressed", String(x === b)));
+      });
+      speeds.appendChild(b);
+    });
+    slot.append(audio, speeds);
+
+    let current = -1;
+    audio.addEventListener("timeupdate", () => {
+      let i = -1;
+      times.forEach((t, j) => { if (!isNaN(t) && t <= audio.currentTime + 0.05) i = j; });
+      if (i === current) return;
+      current = i;
+      parts.forEach((p, j) => p.classList.toggle("speaking", j === i));
+    });
+    audio.addEventListener("ratechange", () => { rate = audio.playbackRate; });
+    audio.addEventListener("play", () => {
+      if ("mediaSession" in navigator && window.MediaMetadata) {
+        navigator.mediaSession.metadata = new MediaMetadata({
+          title: note.dataset.title || document.title, artist: "Claude Exam Notes", album: "Malayalam lessons",
+        });
+      }
+    });
+    parts.forEach((p, j) => p.addEventListener("click", () => {
+      if (isNaN(times[j])) return;
+      const go = () => {
+        audio.currentTime = times[j];
+        audio.playbackRate = rate;
+        audio.play();
+      };
+      // With preload="none" the file isn't loaded yet, and seeking before
+      // its metadata arrives is ignored.
+      if (audio.readyState >= 1) go();
+      else {
+        audio.addEventListener("loadedmetadata", go, { once: true });
+        audio.load();
+      }
+    }));
+  });
+
+  /* 7. "Learn with Gemini": every exam domain gets a button that copies a
         Malayalam lesson prompt built from that domain's own notes (diagram
         captions, callouts, flashcards, practice questions), then opens
         Gemini — the app on Android, gemini.google.com elsewhere. */
@@ -290,11 +355,11 @@
           : "Couldn't copy automatically. Open \"See the prompt\", copy it, and paste it into Gemini.";
         status.classList.toggle("ok", ok);
       });
-      sec.querySelector(".domain-head")?.after(card);
+      (sec.querySelector(":scope > .audio-note") || sec.querySelector(".domain-head"))?.after(card);
     });
   }
 
-  /* 7. Quizzes: <div class="quiz" data-answer="B"> -------------------------- */
+  /* 8. Quizzes: <div class="quiz" data-answer="B"> -------------------------- */
   document.querySelectorAll(".quiz[data-answer]").forEach((quiz) => {
     const answer = quiz.dataset.answer.trim().toUpperCase().charCodeAt(0) - 65;
     const opts = [...quiz.querySelectorAll("ol > li")];
