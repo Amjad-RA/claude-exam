@@ -90,6 +90,42 @@ def call(model, body, timeout=600):
     raise SystemExit("Gave up after repeated errors.")
 
 
+def call_stream(model, body, timeout=600):
+    """Like call(), but streams the answer (server-sent events), so a long
+    answer keeps the connection busy instead of idling until it's done.
+    Returns the joined text."""
+    req_body = json.dumps(body).encode()
+    for attempt in range(6):
+        req = urllib.request.Request(
+            f"{API}/models/{model}:streamGenerateContent?alt=sse", data=req_body, method="POST",
+            headers={"Content-Type": "application/json",
+                     "x-goog-api-key": os.environ.get("GEMINI_API_KEY", "added-by-proxy")})
+        text, last = [], time.time()
+        try:
+            with urllib.request.urlopen(req, timeout=timeout) as r:
+                for line in r:
+                    if not line.startswith(b"data:"):
+                        continue
+                    chunk = json.loads(line[5:])
+                    for c in chunk.get("candidates", []):
+                        text += [p.get("text", "") for p in c.get("content", {}).get("parts", []) if not p.get("thought")]
+                    if time.time() - last > 15:
+                        print(f"    …{sum(map(len, text))} characters so far", flush=True)
+                        last = time.time()
+            return "".join(text)
+        except urllib.error.HTTPError as e:
+            detail = e.read().decode(errors="replace")
+            if e.code == 429 and "limit: 0" in detail:
+                raise SystemExit(f"{model} isn't available on this key's plan (its free-tier limit is 0). "
+                                 "Pick another model with GEMINI_TEXT_MODEL or GEMINI_TTS_MODEL.")
+            if e.code in (429, 500, 502, 503, 504) and attempt < 5:
+                print(f"    {e.code}, waiting {20 * (attempt + 1)}s and retrying", flush=True)
+                time.sleep(20 * (attempt + 1))
+                continue
+            raise SystemExit(f"Gemini API error {e.code} for {model}:\n{detail[:1500]}")
+    raise SystemExit("Gave up after repeated errors.")
+
+
 def list_models():
     req = urllib.request.Request(f"{API}/models?pageSize=200",
                                  headers={"x-goog-api-key": os.environ.get("GEMINI_API_KEY", "added-by-proxy")})
@@ -225,11 +261,12 @@ def write(page, sec_id):
         **{k: v for k, v in info.items() if k != "topics"}, weight_part=f" ({info['weight']} of the exam)" if info["weight"] else "",
         topics="\n".join("- " + t for t in info["topics"]))
     print(f"Asking {TEXT_MODEL} to write the lesson…", flush=True)
-    res = call(TEXT_MODEL, {
+    t0 = time.time()
+    text = call_stream(TEXT_MODEL, {
         "contents": [{"role": "user", "parts": [{"text": prompt}]}],
         "generationConfig": {"responseMimeType": "application/json", "responseSchema": LESSON_SCHEMA},
     })
-    text = "".join(p.get("text", "") for p in res["candidates"][0]["content"]["parts"])
+    print(f"  done in {time.time() - t0:.0f}s", flush=True)
     sections = json.loads(text)["sections"]
     nid = f"{info['code'].lower()}-{sec_id}"
     block = block_html(nid, info, sections, f"Domain {info['num']} as a beginner lesson · audio not made yet")
