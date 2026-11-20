@@ -27,14 +27,18 @@
     <div class="hero">
       <span class="exam-code">CCAR-P</span>
       <h1>Claude Certified Architect – Professional</h1>
-      <p class="lead">[One-line summary of what this exam tests and who it is for.]</p>
+      <p class="lead">For mid- to senior-level solution architects, AI/ML engineers and tech leads. It tests solution design, model and context engineering, integration (MCP, RAG, auth, observability), evaluation, governance and safety, stakeholder and lifecycle management, and enabling teams on Claude Code.</p>
       <div class="meta-row">
-        <span class="meta">Level: <b>Architect · Professional</b></span>
-        <span class="meta">Questions: <b>[n]</b></span>
-        <span class="meta">Time: <b>[n] min</b></span>
-        <span class="meta">Passing: <b>[n]%</b></span>
-        <span class="meta">Format: <b>[MCQ / scenario]</b></span>
+        <span class="meta">Questions: <b>63</b></span>
+        <span class="meta">Time: <b>120 min</b></span>
+        <span class="meta">Passing: <b>720 / 1000</b></span>
+        <span class="meta">Format: <b>Multiple choice and multiple response</b></span>
+        <span class="meta">Fee: <b>$175</b></span>
+        <span class="meta">Delivery: <b>Online proctored or test center</b></span>
+        <span class="meta">Valid: <b>12 months</b></span>
+        <span class="meta">Recommended: <b>3+ years in architecture, 6+ months with LLMs in production</b></span>
       </div>
+      <p class="source-note">Built from the CertSafari CCAR-P lessons (38 lessons, cited to Anthropic's documentation), read on 20 Nov 2026. Some CertSafari practice questions use older model names (Haiku 4.5, Opus 4.8). These notes use the lineup from the lessons. Model names and prices change, so check the official docs before your exam.</p>
     </div>
 
     <div class="with-toc">
@@ -46,65 +50,553 @@
       </aside>
 
       <div>
-        <input class="search" type="search" placeholder="Filter sections…" data-search aria-label="Filter sections">
+        <input class="search" type="search" placeholder="Filter sections, e.g. caching, OTEL, BAA, RAG…" data-search aria-label="Filter sections">
+
+        <!-- ============ EXAM MAP ============ -->
+        <section class="domain" id="map">
+          <div class="domain-head">
+            <span class="domain-num">★</span>
+            <h2>Exam map: 7 domains</h2>
+          </div>
+          <div class="table-wrap">
+            <table class="compare">
+              <thead><tr><th>Domain</th><th>Weight</th><th>Lessons</th><th>Core idea</th></tr></thead>
+              <tbody>
+                <tr><th>D1 Solution Design and Architecture</th><td>17%</td><td>6</td><td>Map the process first, then pick the simplest shape that solves it</td></tr>
+                <tr><th>D2 Models, Prompting and Context Engineering</th><td>13%</td><td>5</td><td>Cost per solved task; one shared context budget; a stable prefix</td></tr>
+                <tr><th>D3 Integration</th><td><b>19%</b></td><td>8</td><td>Fewer tools, audience-bound tokens, retrieval matched to the data</td></tr>
+                <tr><th>D4 Evaluation, Testing and Optimization</th><td>16%</td><td>6</td><td>Several metrics, a baseline, segments; free wins before trade-offs</td></tr>
+                <tr><th>D5 Governance, Safety and Risk</th><td>14%</td><td>5</td><td>Guardrails chosen from the threat model; checkpoints in the right order</td></tr>
+                <tr><th>D6 Stakeholder Communication and Lifecycle</th><td>14%</td><td>5</td><td>Testable requirements, evidence, bounded risk; limits are ceilings</td></tr>
+                <tr><th>D7 Developer Productivity and Enablement</th><td>7%</td><td>3</td><td>Settings scopes; explore, plan, implement, commit; diagnose from what loaded</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="callout key"><div><strong class="label">Pattern behind most questions</strong>Start simple, measure on <b>your own</b> evals, and move the <b>cheapest lever that doesn't cost quality</b> first. Then change effort, and only then the model tier. Wherever a guarantee is needed, use structure (hooks, scopes, tool placement, schemas) rather than wording.</div></div>
+        </section>
 
         <!-- ============ DOMAIN 1 ============ -->
         <section class="domain" id="d1">
           <div class="domain-head">
             <span class="domain-num">D1</span>
-            <h2>Domain 1: [Domain title]</h2>
-            <span class="weight">[xx]% <span class="bar"><i style="width:0%"></i></span></span>
+            <h2>Solution Design and Architecture</h2>
+            <span class="weight">17% <span class="bar"><i style="width:68%"></i></span></span>
           </div>
 
-          <div class="placeholder">Notes for Domain 1 go here. Copy components from <a href="../components.html">Components</a>.</div>
+          <h3 class="sub"><span>1.1</span> From business problem to Claude solution</h3>
+          <div class="flow">
+            <div class="step"><b>Map the process</b><span>Today's steps, and where the pain is</span></div>
+            <div class="step"><b>Choose Claude's steps</b><span>LLM or conventional code, step by step</span></div>
+            <div class="step"><b>Simplest shape</b><span>One augmented call, then a workflow, then an agent</span></div>
+            <div class="step"><b>Build path</b><span>Apps, Messages API, Agent SDK or Managed Agents</span></div>
+            <div class="step"><b>Tier per workload</b><span>Success criteria tied to business outcomes</span></div>
+          </div>
+          <div class="callout trap"><div><strong class="label">Exam traps</strong>Support chat isn't one task. Split it into greeting, product information, conversation management and quotes, and evaluate each. "Touches several systems" doesn't mean you need an agent. <b>Agent SDK</b> means the loop runs in <i>your</i> process; <b>Managed Agents</b> means Anthropic hosts the loop, tools and runtime.</div></div>
+
+          <h3 class="sub"><span>1.2</span> End-to-end architecture: input, processing, output, feedback</h3>
+          <div class="grid cols-2">
+            <div class="card accent"><h4>Who runs the tool?</h4><ul><li><b>Client tools</b> (your code runs them): your own tools, <b>plus</b> Anthropic-schema tools like <code>bash</code>, <code>text_editor</code> and <code>computer</code></li><li><b>Server tools</b> (Anthropic runs them): <code>web_search</code>, <code>web_fetch</code>, <code>code_execution</code>, <code>tool_search</code></li><li><code>pause_turn</code> means the server loop hit its cap. Send the conversation back, including the paused response, to continue.</li></ul></div>
+            <div class="card accent"><h4>Feedback that corrects the run</h4><ul><li>Tool results feed the next turn</li><li><b>Hooks</b> give deterministic behaviour, e.g. a PostToolUse hook on Edit and Write that appends to an audit log</li><li><b>Outcome loops</b> use a separate grader in its own context; the agent doesn't grade itself</li><li>Use MCP for standard access to wikis, databases and chat tools</li></ul></div>
+          </div>
+
+          <h3 class="sub"><span>1.3</span> Augmented LLM, workflow or agent</h3>
+          <p>Everything is built from the <b>augmented LLM</b>: a model with retrieval, tools and memory. The key question is <b>who decides the next step</b>: your code (a workflow) or the model (an agent). Agents trade latency and cost for flexibility.</p>
+          <div class="table-wrap"><table class="compare">
+            <thead><tr><th>Pattern</th><th>Use when</th><th>Example</th></tr></thead>
+            <tbody>
+              <tr><th>Prompt chaining</th><td>Fixed steps, with <b>programmatic gates</b> between them</td><td>Write copy, translate it, then check the character limit in code</td></tr>
+              <tr><th>Routing</th><td>Distinct input categories, each with its own prompt or model</td><td>Billing, bug or cancellation tickets</td></tr>
+              <tr><th>Parallel: sectioning</th><td>Different <b>independent</b> subtasks at once</td><td>A vulnerability check and a licensing check</td></tr>
+              <tr><th>Parallel: voting</th><td>The <b>same</b> task repeated to get diverse outputs</td><td>Several runs judging one piece of code</td></tr>
+              <tr><th>Orchestrator-workers</th><td>Subtasks only appear once the input arrives</td><td>Multi-file changes that can't be predicted</td></tr>
+              <tr><th>Evaluator-optimizer</th><td>Criteria an LLM can critique, which improve with iteration</td><td>Literary translation. Use a code gate for hard rules like length.</td></tr>
+            </tbody>
+          </table></div>
+
+          <h3 class="sub"><span>1.4</span> Multi-agent design</h3>
+          <ul>
+            <li><b>Start with one agent.</b> Split only for a concrete reason, mainly <b>context isolation</b>. A subagent's reads stay in its own context; only its final message comes back.</li>
+            <li>Multi-agent systems use <b>3–10× more tokens</b> and are often <b>slower</b> overall. What they buy is thoroughness.</li>
+            <li>Divide work by <b>context, not by role</b>: the agent that writes a feature also writes its tests.</li>
+            <li>A self-contained brief has an objective, an output format, a tool list and boundaries. Leaving <code>tools</code> out gives the subagent <b>every</b> tool.</li>
+            <li>Invoke independent subagents <b>in the same turn</b> so they run concurrently.</li>
+          </ul>
+
+          <h3 class="sub"><span>1.5</span> Decomposition techniques</h3>
+          <ul>
+            <li>Chains are <b>slower</b>, since calls run in sequence; they buy accuracy. Parallel agents buy coverage, not savings.</li>
+            <li>Give each subtask its own model: <b>Haiku</b> for high-volume classification, <b>Opus</b> for complex remediation.</li>
+            <li>For a tight loop of many small tool calls, use <b>programmatic tool calling</b>, where code in the execution container calls the tools. Batches can't do this, because their requests are independent.</li>
+            <li>Use Agent SDK subagents with scoped tools and descriptions for audits that cover several dimensions.</li>
+          </ul>
+
+          <h3 class="sub"><span>1.6</span> Business value pillars</h3>
+          <div class="table-wrap"><table class="compare">
+            <thead><tr><th>Pillar</th><th>Main lever and metric</th></tr></thead>
+            <tbody>
+              <tr><th>Efficiency</th><td><b>Caching</b> is the main item</td></tr>
+              <tr><th>Transformation</th><td>A <b>restructured workflow</b>, or work that wasn't feasible before (e.g. paralegals move to reviewing exceptions)</td></tr>
+              <tr><th>Productivity</th><td>The <b>same</b> workflow, more finished work per run</td></tr>
+              <tr><th>Cost</th><td><b>Cost per completed task</b>. Bank the free savings first.</td></tr>
+              <tr><th>Performance SLAs</th><td>Latency and availability; meet them with the fastest, cheapest tier that's accurate enough</td></tr>
+            </tbody>
+          </table></div>
+          <div class="callout trap"><div><strong class="label">Exam trap</strong><b>Batch</b> halves the cost but never fits an interactive SLA. <b>Fast mode</b> on a top tier fails the cost pillar for routine volume. Doing the same tasks faster is <i>productivity</i>, not transformation.</div></div>
         </section>
 
         <!-- ============ DOMAIN 2 ============ -->
         <section class="domain" id="d2">
           <div class="domain-head">
             <span class="domain-num">D2</span>
-            <h2>Domain 2: [Domain title]</h2>
-            <span class="weight">[xx]% <span class="bar"><i style="width:0%"></i></span></span>
+            <h2>Claude Models, Prompting and Context Engineering</h2>
+            <span class="weight">13% <span class="bar"><i style="width:52%"></i></span></span>
           </div>
 
-          <div class="placeholder">Notes for Domain 2 go here. Copy components from <a href="../components.html">Components</a>.</div>
+          <h3 class="sub"><span>2.1</span> Choosing a model</h3>
+          <div class="table-wrap"><table class="compare">
+            <thead><tr><th>Model</th><th>Positioned for</th><th>Latency</th><th>$/MTok (in / out)</th><th>Default effort</th></tr></thead>
+            <tbody>
+              <tr><th>Fable 5.1</th><td>Demanding reasoning, long-horizon agentic work</td><td>Slower</td><td>$10 / $50</td><td>high</td></tr>
+              <tr><th>Opus 5.5</th><td>Long-running agentic coding and knowledge work</td><td>Moderate</td><td>$4 / $20</td><td>medium</td></tr>
+              <tr><th>Sonnet 5.5</th><td>Best mix of speed and intelligence</td><td>Fast</td><td>$2 / $10</td><td>high</td></tr>
+              <tr><th>Haiku 5.5</th><td>High-volume classification, extraction, routing</td><td class="yes">Fastest</td><td>From $0.10 / $0.50</td><td>medium</td></tr>
+            </tbody>
+          </table></div>
+          <p class="muted">All four: 1M-token context, 128K output, adaptive thinking (always on for Fable and Opus), text and image input. Haiku's price rises for prompts over 100K tokens. The <b>Models API</b> returns max_input_tokens, max_tokens and capability flags for each model.</p>
+          <ul>
+            <li>Compare on <b>cost per solved task</b>, including failures and retries, not price per token.</li>
+            <li>If cost is too high, <b>lower effort first</b> (run an effort sweep on your evals); switch tier after that.</li>
+            <li><b>Fast mode</b> is the same model with the same weights on faster inference, at a premium price.</li>
+            <li><b>Batches</b> work on every active model at 50% off, so choose the model on quality.</li>
+            <li>Tier models inside one system so you spend frontier tokens only where they change the outcome.</li>
+          </ul>
+
+          <h3 class="sub"><span>2.2</span> System prompts and templates</h3>
+          <div class="stack">
+            <div class="layer" style="--i:0">Role <small>its main job; one sentence already helps</small></div>
+            <div class="layer" style="--i:1">Rules with reasons <small>numbered steps where order matters</small></div>
+            <div class="layer" style="--i:2">XML-tagged variable inputs <small>the reusable template</small></div>
+            <div class="layer" style="--i:3">Scenario responses and output format</div>
+          </div>
+          <div class="callout trap"><div><strong class="label">Exam traps</strong>"NEVER use ellipses" in capitals is weaker than stating the reason. <b>Prefill isn't supported</b> on Claude 4.6 and later or Mythos Preview; define the format and show examples instead.</div></div>
+
+          <h3 class="sub"><span>2.3</span> Few-shot and chain of thought</h3>
+          <ul>
+            <li>Go from zero-shot to one-shot to few-shot only when telling stops working. Use <b>3–5 diverse examples</b> in <code>&lt;example&gt;</code> tags. Inconsistent labels or formatting are fixed by <b>examples</b>, not by asking for reasoning.</li>
+            <li>A uniform example set teaches its surface features. <b>Diversify</b> labels, edge cases and structure.</li>
+            <li>Chain of thought comes in three forms: basic ("think step by step"), guided (steps listed), and structured (<code>&lt;thinking&gt;</code> and <code>&lt;answer&gt;</code> tags).</li>
+            <li>Extended thinking blocks are <b>at most a summary</b>, and empty when display is omitted. For an auditable trail, use <b>manual chain of thought</b> in tags.</li>
+            <li>Long documents go at the <b>top</b>, above the query, instructions and examples.</li>
+          </ul>
+
+          <h3 class="sub"><span>2.4</span> Context window budgeting</h3>
+          <p>One shared budget covers the <b>system prompt, tool definitions, message history and tool results, the output, and thinking</b>. <b>Cached tokens still take up space in the window</b>; caching only changes their price.</p>
+          <div class="table-wrap"><table class="compare">
+            <thead><tr><th>Situation</th><th>API behaviour</th></tr></thead>
+            <tbody>
+              <tr><th>The input alone exceeds the window</th><td><b>400</b> error</td></tr>
+              <tr><th>Input plus max_tokens exceeds it (4.5+ models)</th><td><b>Accepted</b>; stops with <code>model_context_window_exceeded</code> if generation reaches the limit</td></tr>
+            </tbody>
+          </table></div>
+          <p class="muted">Measure <b>before</b> a request with the token-counting endpoint and <b>after</b> with the <code>usage</code> fields. For tool-heavy agents, reduce cost with tool search, clearing tool results, and compaction.</p>
+
+          <h3 class="sub"><span>2.5</span> Prompt reuse: caching, modular layout, Skills</h3>
+          <div class="grid cols-2">
+            <div class="card accent"><h4>Caching facts</h4><ul><li>Reuses a <b>byte-identical prefix</b></li><li>Write costs <b>1.25×</b> (5-minute TTL) or <b>2×</b> (1-hour); reads cost about <b>0.1×</b></li><li>The TTL counts from the <b>start</b> of the request that wrote or read the entry, and refreshes free on each use</li><li>Up to <b>4 breakpoints</b>, which are free; automatic caching is also available</li><li>Lookback is <b>20 blocks</b>. Add a breakpoint further back if the gap grows past that.</li><li>Invalidation cascades <b>tools → system → messages</b>. A tool_choice change invalidates only the messages.</li></ul></div>
+            <div class="card accent"><h4>Layout and Skills</h4><ul><li>Order content from most stable to least; <b>variables go last</b></li><li>SKILL.md <code>name</code>: lowercase letters, digits and hyphens; <b>"claude" and "anthropic" are reserved</b></li><li>Progressive disclosure has 3 levels: the name and description always load, the body loads when used, linked files load on demand</li><li>A custom Skill uploaded in claude.ai belongs to <b>that user</b>; Skills uploaded through the API are shared workspace-wide</li></ul></div>
+          </div>
+          <div class="flashcards">
+            <details class="qa"><summary>Do cached prompt tokens count toward the context window?</summary><div class="a"><p>Yes. Caching changes their price, not whether they take up space.</p></div></details>
+            <details class="qa"><summary>Costs are too high. What's the first lever?</summary><div class="a"><p>Lower the effort on the current model and sweep it on your evals. Change the tier after that.</p></div></details>
+            <details class="qa"><summary>A tool_choice change: what happens to the cache?</summary><div class="a"><p>Only the messages cache is invalidated. The tools and system caches still hit.</p></div></details>
+            <details class="qa"><summary>Is a Skill named "claude-pdf-helper" valid?</summary><div class="a"><p>No. "claude" and "anthropic" are reserved in the name field.</p></div></details>
+          </div>
         </section>
 
         <!-- ============ DOMAIN 3 ============ -->
         <section class="domain" id="d3">
           <div class="domain-head">
             <span class="domain-num">D3</span>
-            <h2>Domain 3: [Domain title]</h2>
-            <span class="weight">[xx]% <span class="bar"><i style="width:0%"></i></span></span>
+            <h2>Integration</h2>
+            <span class="weight">19% <span class="bar"><i style="width:76%"></i></span></span>
           </div>
 
-          <div class="placeholder">Notes for Domain 3 go here. Copy components from <a href="../components.html">Components</a>.</div>
+          <h3 class="sub"><span>3.1</span> Capability bloat</h3>
+          <p>Overlapping, unused or vaguely described tools, and MCP servers the agent never calls, cost context and <b>lower selection accuracy</b>.</p>
+          <div class="table-wrap"><table class="compare">
+            <thead><tr><th>Source of the pressure</th><th>Remedy</th></tr></thead>
+            <tbody>
+              <tr><th>Overlapping or vague tools</th><td><b>Merge</b> them into higher-level tools and <b>namespace</b> by service and resource. Tool search doesn't fix overlap.</td></tr>
+              <tr><th>Tools the role doesn't need</th><td><b>Scope</b> them with tools, disallowedTools, mcpServers and permission modes</td></tr>
+              <tr><th>A huge catalog, each tool used rarely</th><td>Tool search (deferred loading)</td></tr>
+              <tr><th>Repeated definitions cost money</th><td>Prompt caching, which lowers the price but leaves them all in context</td></tr>
+              <tr><th>Old tool results piling up</th><td>Context editing</td></tr>
+            </tbody>
+          </table></div>
+          <div class="callout trap"><div><strong class="label">Exam trap</strong><code>allowedTools</code> only <b>pre-approves</b> tools; unlisted ones fall through to the permission mode and canUseTool. To lock the surface, combine it with <code>permissionMode: "dontAsk"</code>, which denies everything else, or use disallowedTools. Subagents don't automatically get a subset of the parent's tools.</div></div>
+
+          <h3 class="sub"><span>3.2</span> MCP authorization</h3>
+          <div class="flow">
+            <div class="step"><b>Unauthenticated request</b><span>Gets a 401 with WWW-Authenticate: resource_metadata=…, scope=…</span></div>
+            <div class="step"><b>Protected Resource Metadata</b><span>At /.well-known/oauth-protected-resource; names the authorization server</span></div>
+            <div class="step"><b>Register the client</b><span>Pre-registered, else a Client ID Metadata Document, else Dynamic Client Registration, else ask the user</span></div>
+            <div class="step"><b>Token for one server</b><span>Bound to the server's canonical URI</span></div>
+          </div>
+          <ul>
+            <li>The <b>transport decides</b> how a server authenticates: HTTP servers use OAuth, local stdio servers use environment credentials.</li>
+            <li>A server must <b>reject tokens issued for other audiences</b> and <b>never pass a token on</b> to downstream APIs; doing so creates a <b>confused deputy</b>.</li>
+            <li><b>401</b> means not authenticated. <b>403</b> means the scope is insufficient: re-authorise with the <b>union</b> of the old scopes and the challenged scope (step-up). Logging in again the same way gives the same grant.</li>
+          </ul>
+
+          <h3 class="sub"><span>3.3</span> Accuracy vs latency</h3>
+          <div class="table-wrap"><table class="compare">
+            <thead><tr><th>Lever</th><th>Clock it moves</th><th>Cost</th></tr></thead>
+            <tbody>
+              <tr><th>A faster tier</th><td>All of them</td><td>Possible loss of capability</td></tr>
+              <tr><th>Lower effort</th><td>Total time (fewer tokens)</td><td>Less thoroughness. It doesn't reliably shorten the visible reply.</td></tr>
+              <tr><th>Fast mode</th><td>Output speed</td><td>A premium price; same intelligence</td></tr>
+              <tr><th>Streaming</th><td><b>Perceived</b> responsiveness only</td><td>Total time is unchanged</td></tr>
+              <tr><th>Thinking display omitted</th><td>Text starts streaming sooner</td><td>Reasoning stays at full depth</td></tr>
+            </tbody>
+          </table></div>
+          <p class="muted">Effort is soft guidance, and <code>max</code> is rarely worth it. Use <b>low</b> for simple subagent work. Justify a configuration with a <b>sweep of effort and model</b>, compared on cost per solved task and including re-runs of failures.</p>
+
+          <h3 class="sub"><span>3.4</span> Observability at scale</h3>
+          <ul>
+            <li>Request logs can't explain a failed <b>run</b>. Use <b>run-level telemetry</b>: a parent span per turn with child spans for model calls, tools and subagents.</li>
+            <li>Roll out the OTel collector config through <b>managed settings</b>. Endpoints and credentials override the developer's, but <b>exporter selectors</b> follow per-key precedence, so pin them in managed settings too.</li>
+            <li>Tag with tenant, team and deployment. <code>session.id</code> and account attributes are on <b>by default</b>; turn off the ones you don't group by, to limit cardinality.</li>
+            <li>Turning on <b>raw API body</b> logging exposes everything the other content gates protect.</li>
+          </ul>
+
+          <h3 class="sub"><span>3.5</span> RAG ingestion</h3>
+          <div class="callout key"><div><strong class="label">Contextual retrieval</strong>Claude writes a short, <b>chunk-specific</b> context that places each chunk within its document. Prepend it to the chunk <b>for both the embedding and the BM25 index</b>, and use prompt caching to keep this cheap. A generic document summary on every chunk doesn't give the same gain.</div></div>
+          <ul>
+            <li>Chunk size, boundaries and overlap all matter. A chunk split off from its document loses context.</li>
+            <li>With <b>Voyage</b> embeddings, set <code>input_type="document"</code> for chunks and <code>"query"</code> for questions. Leaving it out loses quality.</li>
+          </ul>
+
+          <h3 class="sub"><span>3.6</span> Retrieval strategy</h3>
+          <div class="table-wrap"><table class="compare">
+            <thead><tr><th>Data or query shape</th><th>Strategy</th></tr></thead>
+            <tbody>
+              <tr><th>Corpus under about <b>200K tokens</b> (~500 pages)</th><td>Put it all <b>in the prompt, with caching</b>; no RAG needed</td></tr>
+              <tr><th>Exact identifiers and error codes</th><td><b>BM25</b> (lexical)</td></tr>
+              <tr><th>Meaning and paraphrases</th><td><b>Embeddings</b></td></tr>
+              <tr><th>Mixed traffic</th><td><b>Hybrid</b>, with weights tuned to your data</td></tr>
+              <tr><th>An index would go stale</th><td>Just-in-time retrieval by the agent, using tools</td></tr>
+              <tr><th>A long session near the context limit</th><td>Server-side <b>compaction</b></td></tr>
+            </tbody>
+          </table></div>
+
+          <h3 class="sub"><span>3.7</span> MCP, direct tools or agent-to-agent</h3>
+          <div class="grid cols-2">
+            <div class="card accent"><h4>MCP basics</h4><ul><li>3 primitives: <b>tools, resources, prompts</b></li><li>Transports: <b>stdio</b> (local) and <b>Streamable HTTP</b></li><li>In Claude Code, an entry without a <code>type</code> is treated as stdio; a URL entry needs <code>type: http</code>, sse or ws</li><li><b>Messages API MCP connector</b>: remote HTTPS servers only (Streamable HTTP or SSE), and <b>tools only</b>, not resources or prompts</li><li>Delegating to subagents is <b>one level deep</b>; use a wide fan-out</li></ul></div>
+            <div class="card accent"><h4>Which surface?</h4><ul><li><b>Claude Code CLI</b>: interactive terminal work where you approve steps</li><li><b>Agent SDK</b>: the loop and built-in tools (Read, Edit, Bash) <b>in your process</b></li><li><b>Client SDK</b>: you write the tool loop yourself (or use its beta tool runner)</li><li><b>Managed Agents</b>: Anthropic hosts the loop, sandbox and event log</li></ul></div>
+          </div>
+
+          <h3 class="sub"><span>3.8</span> Progressive discovery: tool search</h3>
+          <ul>
+            <li>Selection accuracy drops with about <b>30–50 tools</b> loaded. For example, 55K tokens of definitions from 5 MCP servers can be cut by over <b>85%</b> with tool search.</li>
+            <li>Mark tools with <code>defer_loading</code>, but still send <b>every full definition</b> in the request; <code>tool_reference</code> blocks expand them as needed.</li>
+            <li>With <b>fewer than about 10</b> small tools that are used constantly, load them all up front. Keep frequently used tools non-deferred.</li>
+            <li>Agent SDK <code>ENABLE_TOOL_SEARCH=auto</code> defers only once definitions reach <b>10% of the context window</b>.</li>
+            <li>Built-in tool search is regex or BM25. For semantic matching, build a custom search tool that returns <code>tool_reference</code> blocks.</li>
+          </ul>
+          <div class="quiz" data-answer="C">
+            <div class="q">An agent combines 5 MCP servers, and their tool definitions use about 55K tokens before any work starts. It also keeps confusing two near-identical "search" tools. Which plan fixes both problems?</div>
+            <ol>
+              <li>Cache the tool definitions</li>
+              <li>Turn on tool search only</li>
+              <li>Merge and namespace the overlapping tools, then turn on tool search for the large catalog</li>
+              <li>Switch to a larger model</li>
+            </ol>
+            <div class="why"><b>C.</b> Tool search removes definitions from context but doesn't separate tools that overlap. Merging and namespacing does. Caching only lowers the price.</div>
+          </div>
         </section>
 
         <!-- ============ DOMAIN 4 ============ -->
         <section class="domain" id="d4">
           <div class="domain-head">
             <span class="domain-num">D4</span>
-            <h2>Domain 4: [Domain title]</h2>
-            <span class="weight">[xx]% <span class="bar"><i style="width:0%"></i></span></span>
+            <h2>Evaluation, Testing and Optimization</h2>
+            <span class="weight">16% <span class="bar"><i style="width:64%"></i></span></span>
           </div>
 
-          <div class="placeholder">Notes for Domain 4 go here. Copy components from <a href="../components.html">Components</a>.</div>
+          <h3 class="sub"><span>4.1</span> Metrics</h3>
+          <div class="table-wrap"><table class="compare">
+            <thead><tr><th>What to measure</th><th>Metric</th></tr></thead>
+            <tbody>
+              <tr><th>Fixed labels</th><td><b>Exact match or F1</b> against labeled answers</td></tr>
+              <tr><th>Consistency across paraphrases</th><td><b>Cosine similarity</b>, which doesn't measure correctness</td></tr>
+              <tr><th>Summary vs a reference</th><td><b>ROUGE-L</b> (longest common subsequence, so overlap and order)</td></tr>
+              <tr><th>Latency</th><td>Name the clock (TTFT, total time, end-to-end) and use a <b>percentile</b>, e.g. p95 under 200ms. Not a mean.</td></tr>
+              <tr><th>Cost</th><td>Cost per completed task, with accuracy held fixed</td></tr>
+              <tr><th>Safety and security</th><td>A rate, given a named detector, sample size and ceiling, with a checkable definition of a successful attack</td></tr>
+            </tbody>
+          </table></div>
+
+          <h3 class="sub"><span>4.2</span> Eval datasets and graders</h3>
+          <ul>
+            <li>Make success criteria <b>SMART</b> first, e.g. "an average of at least 4/5 on a completeness rubric over 500 claims".</li>
+            <li>A test case has an input, an output, a golden answer and a score. <b>Mirror real traffic</b>, then deliberately add edge cases (malformed, scanned, non-standard inputs).</li>
+            <li><b>Volume beats hand-grading</b>: many automated cases, repeated trials.</li>
+            <li>Choose the grader to fit: <b>code</b> (exact or string match), <b>LLM</b> (rubric), <b>human</b>. Keep human review to <b>calibrate</b> the LLM grader.</li>
+          </ul>
+
+          <h3 class="sub"><span>4.3</span> A/B testing and rollout</h3>
+          <div class="flow">
+            <div class="step"><b>Baseline and target</b><span>Set before the change</span></div>
+            <div class="step"><b>Offline eval</b><span>A held-out set, the same grader for both: the fast first check</span></div>
+            <div class="step"><b>Read by segment</b><span>An aggregate can hide a regression</span></div>
+            <div class="step"><b>Live A/B</b><span>Days or weeks, enough traffic; only for significant changes</span></div>
+            <div class="step"><b>Pinned versions</b><span>Canary, promote, roll back</span></div>
+          </div>
+          <div class="callout trap"><div><strong class="label">Exam trap</strong>Claude's average confidence isn't accuracy. <code>agents.update</code> has <b>no approval workflow</b>, and callers using a bare ID get the newest version. Pin explicit versions in production.</div></div>
+
+          <h3 class="sub"><span>4.4</span> Diagnosing failures by layer</h3>
+          <div class="table-wrap"><table class="compare">
+            <thead><tr><th>Layer</th><th>Symptom</th><th>Fix</th></tr></thead>
+            <tbody>
+              <tr><th>Grounding</th><td>An invented figure in RAG answers</td><td>Restrict to the documents, require quotes first, allow "I don't know". Confirm with source checks, consistency across samples and citations.</td></tr>
+              <tr><th>Prompt</th><td>JSON keys drift on stable input; output follows the letter, not the intent</td><td>Specify a fixed field list and a sample response; fix the instruction that caused it</td></tr>
+              <tr><th>Tools</th><td>Wrong tool, bad arguments, too many calls</td><td>Fix the description, schema or prompt</td></tr>
+              <tr><th>Model</th><td>Too small: fails with full context. Too big: slow and costly on templated questions.</td><td>Restore effort, then move tier; prove the change with an eval</td></tr>
+            </tbody>
+          </table></div>
+
+          <h3 class="sub"><span>4.5</span> Cost and latency: free wins first</h3>
+          <div class="dodont">
+            <div class="do"><h4>Free wins (no quality cost)</h4><ul><li><b>Caching</b>, which dominates agent-loop cost</li><li>Token hygiene and trimming inputs (measure context editing, which once cost more than it saved)</li><li><b>Batches</b> for work that can wait: 50% off, up to 24 h, no streaming</li></ul></div>
+            <div class="dont"><h4>Trade-offs (cost quality)</h4><ul><li>A smaller model</li><li>Lower effort</li><li>Tight caps</li></ul><p>Bound spend with max_tokens (a <b>cap, not a target</b>), session and task budgets, and running at low effort then re-running failures.</p></div>
+          </div>
+          <p class="muted">1-hour cache: writes cost 2× instead of 1.25×. It pays only when about <b>1 in 20 gaps</b> falls between 5 and 60 minutes. With requests 30–90 seconds apart, the 5-minute default is right.</p>
+
+          <h3 class="sub"><span>4.6</span> OpenTelemetry</h3>
+          <div class="grid">
+            <div class="card accent"><h4>3 signals, all opt-in</h4><p><b>Metrics</b> (counters), <b>log events</b> (one record per event), <b>traces</b> (timed spans). <code>CLAUDE_CODE_ENABLE_TELEMETRY=1</code> only enables collection. Each signal also needs its <b>exporter</b> (<code>OTEL_METRICS_EXPORTER</code>, <code>OTEL_LOGS_EXPORTER</code>, <code>OTEL_TRACES_EXPORTER</code> plus the beta flag), a protocol and an endpoint.</p></div>
+            <div class="card accent"><h4>Cardinality</h4><p><code>OTEL_METRICS_INCLUDE_SESSION_ID=false</code> drops session.id and keeps model. The export interval affects only how often data is flushed, not cardinality.</p></div>
+            <div class="card accent"><h4>Content gates</h4><p>Content is redacted by default. <code>OTEL_LOG_USER_PROMPTS</code> also turns on responses unless <code>OTEL_LOG_ASSISTANT_RESPONSES=0</code>. Raw bodies expose everything.</p></div>
+          </div>
         </section>
 
-        <!-- ============ FINAL CHEAT SHEET ============ -->
+        <!-- ============ DOMAIN 5 ============ -->
+        <section class="domain" id="d5">
+          <div class="domain-head">
+            <span class="domain-num">D5</span>
+            <h2>Governance, Safety and Risk Management</h2>
+            <span class="weight">14% <span class="bar"><i style="width:56%"></i></span></span>
+          </div>
+
+          <h3 class="sub"><span>5.1</span> Guardrails chosen from the threat model</h3>
+          <div class="table-wrap"><table class="compare">
+            <thead><tr><th>Adversary</th><th>Threat</th><th>Layered controls</th></tr></thead>
+            <tbody>
+              <tr><th>The user</th><td>Jailbreaks, direct injection</td><td>A <b>Haiku pre-screen</b> with a structured verdict (<code>is_harmful</code>), input validation, a hardened system prompt, <b>throttling or bans</b> for repeat offenders</td></tr>
+              <tr><th>A third party's content</th><td>Indirect prompt injection</td><td>Untrusted content <b>only in tool_result</b> blocks, <b>JSON-encoded</b> so it can't break out of its delimiters, plus an untrusted-content policy in the system prompt</td></tr>
+              <tr><th>No attacker</th><td>Hallucination</td><td>Allow uncertainty, ground claims in quotes, retract what isn't supported</td></tr>
+            </tbody>
+          </table></div>
+          <ul>
+            <li>If the screening model itself returns <code>stop_reason: "refusal"</code>, treat that as a <b>harmful verdict</b>.</li>
+            <li>A classifier refusal is an <b>HTTP 200</b> with stop_reason "refusal". Branch on <code>stop_details.category</code>; only display the explanation.</li>
+            <li>Haiku 5.5 has <b>no server-side fallback</b>, so build retries on the client.</li>
+            <li>Never put retrieved content in the <b>system prompt</b>: that gives it operator authority.</li>
+          </ul>
+
+          <h3 class="sub"><span>5.2</span> LLM failure modes</h3>
+          <div class="grid">
+            <div class="card accent"><h4>Hallucination</h4><p>Clusters in <b>precise specifics</b> (deadlines, named sources). Tone doesn't track accuracy.</p></div>
+            <div class="card accent"><h4>Knowledge</h4><p>Frozen at the cutoff, with uneven coverage and inherited bias.</p></div>
+            <div class="card accent"><h4>Context</h4><p><b>Context rot</b> sets in well before the hard limit, which is a separate cliff.</p></div>
+            <div class="card accent"><h4>Interaction</h4><p>Sycophancy, drift, over-reliance, partial steerability.</p></div>
+          </div>
+          <p>Prompt-level defences <b>reduce but don't stop</b> attacks, so red-team the system and <b>design for breach</b>: limit the blast radius and audit.</p>
+
+          <h3 class="sub"><span>5.3</span> Human approval checkpoints</h3>
+          <div class="flow">
+            <div class="step"><b>1. Hooks</b><span>Can allow, deny or modify; hold even under bypass</span></div>
+            <div class="step"><b>2. Deny rules</b><span>Nothing later can lift them</span></div>
+            <div class="step"><b>3. Ask rules</b><span>Confirm</span></div>
+            <div class="step"><b>4. Permission mode</b><span>bypass, acceptEdits, plan…</span></div>
+            <div class="step"><b>5. Allow rules</b><span>A bare "Read" approves the whole tool</span></div>
+            <div class="step"><b>6. canUseTool</b><span>The person decides</span></div>
+          </div>
+          <div class="table-wrap"><table class="compare">
+            <thead><tr><th>Mode</th><th>Behaviour</th></tr></thead>
+            <tbody>
+              <tr><th>default (Manual)</th><td>Approves reads automatically; prompts for every edit, write and shell command</td></tr>
+              <tr><th>acceptEdits</th><td>Applies file edits and common filesystem commands <b>without asking</b></td></tr>
+              <tr><th>plan</th><td>Read-only exploration; file edits and shell writes go to canUseTool <b>even if an allow rule matches</b></td></tr>
+              <tr><th>dontAsk</th><td>Anything not pre-approved is <b>denied immediately</b> and never reaches canUseTool (good for CI)</td></tr>
+              <tr><th>bypassPermissions</th><td>Approves only the calls that <b>reach</b> step 4; hooks and deny or ask rules still apply</td></tr>
+            </tbody>
+          </table></div>
+          <div class="callout key"><div><strong class="label">Must remember</strong>To <b>always</b> require a person for wire transfers, even under bypass, use a <b>PreToolUse hook that returns <code>"ask"</code></b>. A tool listed in allowedTools <b>never reaches</b> canUseTool.</div></div>
+
+          <h3 class="sub"><span>5.4</span> HIPAA, BAAs and ZDR</h3>
+          <div class="table-wrap"><table class="compare">
+            <thead><tr><th>Surface</th><th>Who processes the data</th></tr></thead>
+            <tbody>
+              <tr><th>Claude API, Claude Platform on AWS, Microsoft Foundry</th><td><b>Anthropic</b>, so Anthropic's BAA and retention terms apply</td></tr>
+              <tr><th>Amazon Bedrock, Google Cloud Agent Platform</th><td>The <b>cloud provider</b></td></tr>
+            </tbody>
+          </table></div>
+          <ul>
+            <li><b>HIPAA readiness</b> means a BAA plus a dedicated HIPAA-enabled organisation using <b>only BAA-eligible features</b>. The API <b>rejects</b> ineligible features. It's <b>permanent</b> and immediate.</li>
+            <li>Under <b>ZDR</b>, the API <b>doesn't</b> block ineligible features: the request goes through, and that data follows the feature's own retention.</li>
+            <li>HIPAA doesn't require ZDR. The BAA <b>excludes the Console</b>, and Enterprise plans aren't covered until the Primary Owner activates HIPAA.</li>
+            <li>To pilot a Covered Model inside a ZDR organisation, turn on <b>30-day retention in just that workspace</b>.</li>
+          </ul>
+
+          <h3 class="sub"><span>5.5</span> Bias, fairness and honesty</h3>
+          <ul>
+            <li>Bias enters through <b>training data, prompt examples, retrieval corpora and eval choices</b>.</li>
+            <li><b>Measure</b> fairness by comparing outcome metrics across groups and across phrasings.</li>
+            <li>If explanations vary with how a question is worded, <b>standardise the decision factors</b> they cite and re-test. A disclaimer doesn't fix it.</li>
+            <li>Claude aims to be <b>calibrated</b> (honest about uncertainty) and to respect <b>epistemic autonomy</b> (not steering the user to its own view).</li>
+            <li>Language, accessibility and channel are design choices that decide who gets excluded.</li>
+          </ul>
+          <div class="flashcards">
+            <details class="qa"><summary>Wire transfers must always get human approval, even under bypassPermissions. How?</summary><div class="a"><p>A PreToolUse hook on that tool that returns "ask". Hooks run first and hold in every mode.</p></div></details>
+            <details class="qa"><summary>An email body hides an injected instruction. Where should it go, and in what form?</summary><div class="a"><p>Only in a tool_result block, JSON-encoded so it can't escape its delimiters, with an untrusted-content policy in the system prompt.</p></div></details>
+            <details class="qa"><summary>Under ZDR, does the API reject features that aren't eligible?</summary><div class="a"><p>No. Only HIPAA readiness rejects them. Under ZDR the request goes through, and that data follows the feature's own retention.</p></div></details>
+          </div>
+        </section>
+
+        <!-- ============ DOMAIN 6 ============ -->
+        <section class="domain" id="d6">
+          <div class="domain-head">
+            <span class="domain-num">D6</span>
+            <h2>Stakeholder Communication and Lifecycle Management</h2>
+            <span class="weight">14% <span class="bar"><i style="width:56%"></i></span></span>
+          </div>
+
+          <h3 class="sub"><span>6.1</span> Discovery and requirements</h3>
+          <ul>
+            <li>The discovery brief covers <b>users, needs, experience and constraints</b>, plus the capability, speed and budget facts that drive the model choice.</li>
+            <li>A <b>testable requirement</b> is one an outsider can mark pass or fail. Use several criteria (quality, latency, cost, safety), each with a threshold.</li>
+            <li>Surface unknown requirements with a blind-spot pass, a prototype, interviews, references and a review of sample data.</li>
+            <li>Write <b>acceptance tests before code</b>. If all tests pass but the user is unhappy, the problem is upstream in the <b>Description Chain</b>.</li>
+          </ul>
+
+          <h3 class="sub"><span>6.2</span> Communicating trade-offs</h3>
+          <div class="grid cols-2">
+            <div class="card accent"><h4>A good recommendation includes</h4><ul><li><b>One</b> recommended option, with its price in cost, speed, quality or risk</li><li>Evidence from <b>your own eval</b>; vendor numbers are only directional</li><li><b>Bounded</b> residual risk: a limited write surface, a named worst case, audit coverage, spend limits. Never "zero risk".</li><li>The price of each extra layer of complexity, so the simpler design becomes the default</li></ul></div>
+            <div class="card accent"><h4>For engineers</h4><ul><li><b>Compaction</b> summarises earlier turns automatically. <b>Context editing</b> clears old tool results or thinking blocks.</li><li>Claude 4.7 and later <b>reject</b> extended thinking with a budget (400); <b>adaptive</b> thinking is the only mode.</li><li>Use Managed Agents when nobody will run the infrastructure.</li></ul></div>
+          </div>
+
+          <h3 class="sub"><span>6.3</span> Expectations, SLAs and feedback</h3>
+          <ul>
+            <li>Limits are <b>ceilings, not guarantees</b>. Only <b>Priority Tier</b> has an uptime target: <b>99.5%</b>, on committed capacity for a specific model version. Traffic over the commitment falls back to standard.</li>
+            <li>Rate limits and spend caps are maximums, and bursts can trigger 429s. The <b>spend-cap 429</b> has no retry-after header and lasts until 00:00 UTC on the 1st of next month, unless you move up a tier.</li>
+            <li>Outages: check <b>status.claude.com</b>. Capacity-constraint messages are normal load management and <b>not</b> posted there.</li>
+            <li>Anthropic's <b>retirement dates</b> apply to the Claude API, Platform on AWS and Foundry. Bedrock and Google set their own.</li>
+            <li>Build the <b>pilot feedback loop</b> from day one, and tell a real quality drop from normal variation before reacting.</li>
+          </ul>
+
+          <h3 class="sub"><span>6.4</span> Architecture documentation</h3>
+          <ul>
+            <li>Pin down the components, data flows, models, tools and boundaries, and record <b>why each layer exists</b>.</li>
+            <li>Say where the loop runs: the <b>Agent SDK</b> runs in your process with local files, git and in-process tools; <b>Managed Agents</b> runs on Anthropic's infrastructure.</li>
+            <li>Document how tools connect, e.g. an existing Confluence or Jira MCP server launched <b>locally over stdio</b>.</li>
+            <li>To go from prototype to service, add configuration, error handling and deployment changes.</li>
+            <li>For cost and latency, recommend a <b>smaller model</b>. Raising effort adds thoroughness, not speed.</li>
+          </ul>
+
+          <h3 class="sub"><span>6.5</span> Lifecycle</h3>
+          <div class="flow">
+            <div class="step"><b>Discovery</b><span>Success criteria and an eval set</span></div>
+            <div class="step"><b>Design</b><span>Choose Client SDK, Agent SDK or Managed Agents</span></div>
+            <div class="step"><b>Handoff</b><span>Tests and runbooks, not just the design</span></div>
+            <div class="step"><b>Monitoring</b><span>Signals and regression evals</span></div>
+            <div class="step"><b>Iteration</b><span>Ship, fix or stop</span></div>
+            <div class="step"><b>Retirement</b><span>Of your solution and the model under it</span></div>
+          </div>
+          <div class="callout trap"><div><strong class="label">Exam traps</strong>Runbooks and caching don't belong in discovery. Once a capability eval passes almost everything, move it into the <b>regression suite</b>; don't drop it. After a model is <b>retired</b>, requests to it <b>fail</b>, so migrate within the deprecation window.</div></div>
+        </section>
+
+        <!-- ============ DOMAIN 7 ============ -->
+        <section class="domain" id="d7">
+          <div class="domain-head">
+            <span class="domain-num">D7</span>
+            <h2>Developer Productivity and Operational Enablement</h2>
+            <span class="weight">7% <span class="bar"><i style="width:28%"></i></span></span>
+          </div>
+
+          <h3 class="sub"><span>7.1</span> Settings scopes and precedence</h3>
+          <div class="stack">
+            <div class="layer" style="--i:0">Managed settings <small>organisation security policy</small></div>
+            <div class="layer" style="--i:1">--settings JSON <small>one session</small></div>
+            <div class="layer" style="--i:2">.claude/settings.local.json <small>personal, gitignored</small></div>
+            <div class="layer" style="--i:3">.claude/settings.json <small>team, code-reviewed</small></div>
+            <div class="layer" style="--i:4">~/.claude/settings.json <small>user</small></div>
+          </div>
+          <ul>
+            <li>Single-value keys: the <b>higher scope wins</b>. Permission arrays: <b>merged</b> across scopes.</li>
+            <li>Rules are evaluated in the order <b>deny, ask, allow</b>, and specificity doesn't change that. A project <code>deny Bash(aws *)</code> still blocks a local <code>allow Bash(aws s3 ls)</code>.</li>
+            <li>Team conventions go in the committed <code>.claude/settings.json</code>; managed settings are for security policy. Use <b>CLAUDE.md</b> for guidance and <b>settings</b> for enforcement.</li>
+          </ul>
+
+          <h3 class="sub"><span>7.2</span> Explore, plan, implement, commit</h3>
+          <ul>
+            <li>Keep reading and planning separate from editing. Use <b>plan mode</b> for exploring, then implement and commit.</li>
+            <li>Point Claude at <b>exact</b> files, sources and symptoms. <code>@dir</code> gives a file list; <code>@file</code> gives the contents.</li>
+            <li>Keep the session clean: interrupt, rewind, <code>/clear</code>, and send research to subagents.</li>
+            <li>Give Claude a <b>check it can run</b>: a test, a screenshot, a build.</li>
+          </ul>
+
+          <h3 class="sub"><span>7.3</span> Diagnosing configuration</h3>
+          <div class="table-wrap"><table class="compare">
+            <thead><tr><th>Command</th><th>Shows</th></tr></thead>
+            <tbody>
+              <tr><th>/status</th><td>Active settings sources, including whether managed settings apply</td></tr>
+              <tr><th>/memory, /context</th><td>Which memory files loaded, and what's in context</td></tr>
+              <tr><th>/hooks</th><td>Registered hooks. Matchers are <b>case-sensitive</b>, and a wrong one fails <b>silently</b>.</td></tr>
+              <tr><th>/mcp</th><td>Server states: <b>failed</b> (see <code>claude --debug=mcp</code>), <b>unapproved</b> (approve it here), or <b>connected with 0 tools</b> (it started but returns no tool list)</td></tr>
+              <tr><th>/permissions, /doctor</th><td>Effective rules; installation health</td></tr>
+            </tbody>
+          </table></div>
+          <p class="muted">Being read isn't the same as winning: settings.local.json overrides settings.json. Isolate faults with <b>safe mode</b> or a <b>clean config directory</b>. If the problem persists, the cause is outside your user and project config.</p>
+        </section>
+
+        <!-- ============ CHEAT SHEET ============ -->
         <section class="domain" id="cheatsheet">
           <div class="domain-head">
             <span class="domain-num">★</span>
             <h2>Last-minute cheat sheet</h2>
           </div>
           <div class="cheatsheet">
-            <h3>Must remember</h3>
+            <h3>Numbers</h3>
             <ul>
-              <li>[Fact 1]</li>
-              <li>[Fact 2]</li>
-              <li>[Fact 3]</li>
-              <li>[Fact 4]</li>
+              <li>Exam: 63 questions · 120 min · 720/1000 · $175</li>
+              <li>Largest domain: D3 at 19%; smallest: D7 at 7%</li>
+              <li>Multi-agent: 3–10× the tokens</li>
+              <li>Caching: write 1.25× (5 min) or 2× (1 h); read about 0.1×</li>
+              <li>Caching: 4 breakpoints, 20-block lookback</li>
+              <li>Corpus under 200K tokens: put it in the prompt</li>
+              <li>Tool accuracy drops at 30–50 tools; under 10, load them all</li>
+              <li>ENABLE_TOOL_SEARCH=auto defers at 10% of context</li>
+              <li>Batches: 50% off, up to 24 h</li>
+              <li>Priority Tier: 99.5% on committed capacity</li>
+              <li>ZDR pilot: 30-day retention in one workspace</li>
+            </ul>
+          </div>
+          <div class="cheatsheet">
+            <h3>Reflexes</h3>
+            <ul>
+              <li>Process, then the simplest shape, then the build path, then the tier</li>
+              <li>Compare cost per solved task; lower effort before changing tier</li>
+              <li>Cached tokens still fill the window</li>
+              <li>Merge and namespace overlapping tools; scope by role</li>
+              <li>Tokens are bound to one audience; never pass them on</li>
+              <li>401 means re-authenticate; 403 means step up with the union of scopes</li>
+              <li>Contextual chunks feed both the embeddings and BM25</li>
+              <li>Third-party content goes only in tool_result, JSON-encoded</li>
+              <li>Permission order: hooks, deny, ask, mode, allow, canUseTool</li>
+              <li>dontAsk denies; bypass doesn't skip hooks</li>
+              <li>HIPAA rejects ineligible features; ZDR doesn't</li>
+              <li>Recommend with your own evals and bounded risk</li>
             </ul>
           </div>
         </section>
