@@ -27,14 +27,19 @@
     <div class="hero">
       <span class="exam-code">CCAR-F</span>
       <h1>Claude Certified Architect – Foundations</h1>
-      <p class="lead">[One-line summary of what this exam tests and who it is for.]</p>
+      <p class="lead">For solution architects designing and building production applications with Claude. It tests agentic loops and multi-agent orchestration, tool and MCP design, Claude Code configuration, prompt engineering for structured output, and context management and reliability.</p>
       <div class="meta-row">
-        <span class="meta">Level: <b>Architect · Foundations</b></span>
-        <span class="meta">Questions: <b>[n]</b></span>
-        <span class="meta">Time: <b>[n] min</b></span>
-        <span class="meta">Passing: <b>[n]%</b></span>
-        <span class="meta">Format: <b>[MCQ / scenario]</b></span>
+        <span class="meta">Questions: <b>60</b></span>
+        <span class="meta">Time: <b>120 min</b></span>
+        <span class="meta">Passing: <b>720 (scaled 100–1000)</b></span>
+        <span class="meta">Structure: <b>4 scenarios drawn from a bank of 6</b></span>
+        <span class="meta">Format: <b>Multiple choice and multiple response</b></span>
+        <span class="meta">Fee: <b>$125</b></span>
+        <span class="meta">Delivery: <b>Proctored, online or test center</b></span>
+        <span class="meta">Valid: <b>12 months</b></span>
+        <span class="meta">Recommended: <b>6+ months building with the Claude API, Agent SDK, Claude Code and MCP</b></span>
       </div>
+      <p class="source-note">Built from the CertSafari CCAR-F lessons (30 lessons, cited to Anthropic's documentation), read on 20 Nov 2026. Results are pass/fail with a scaled score and percent correct by domain. API details change, so check the official docs before your exam.</p>
     </div>
 
     <div class="with-toc">
@@ -46,65 +51,475 @@
       </aside>
 
       <div>
-        <input class="search" type="search" placeholder="Filter sections…" data-search aria-label="Filter sections">
+        <input class="search" type="search" placeholder="Filter sections, e.g. stop_reason, hooks, custom_id…" data-search aria-label="Filter sections">
+
+        <!-- ============ EXAM MAP ============ -->
+        <section class="domain" id="map">
+          <div class="domain-head">
+            <span class="domain-num">★</span>
+            <h2>Exam map: 5 domains</h2>
+          </div>
+          <div class="table-wrap">
+            <table class="compare">
+              <thead><tr><th>Domain</th><th>Weight</th><th>Lessons</th><th>Core idea</th></tr></thead>
+              <tbody>
+                <tr><th>D1 Agentic Architecture and Orchestration</th><td><b>27%</b></td><td>7</td><td>stop_reason drives the loop; subagents start empty; rules that must hold go in hooks</td></tr>
+                <tr><th>D2 Tool Design and MCP Integration</th><td>18%</td><td>5</td><td>The description is what Claude chooses from; errors must be structured</td></tr>
+                <tr><th>D3 Claude Code Configuration and Workflows</th><td>20%</td><td>6</td><td>Where a file lives decides who gets it and when it loads</td></tr>
+                <tr><th>D4 Prompt Engineering and Structured Output</th><td>20%</td><td>6</td><td>Explicit criteria and examples; a valid schema doesn't mean correct values</td></tr>
+                <tr><th>D5 Context Management and Reliability</th><td>15%</td><td>6</td><td>Context rot is real: keep exact facts outside the summarised history</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="callout key"><div><strong class="label">Pattern behind most questions</strong>Prefer the <b>deterministic, structural</b> fix over a wording fix. Use a hook, not a firmer prompt. Use a smaller tool set, not tool_choice. Use a fresh reviewer instance, not more thinking. Use a structured record, not a summary. Use categories in the prompt, not "be conservative". A bigger context window or a bigger model is almost never the answer.</div></div>
+        </section>
 
         <!-- ============ DOMAIN 1 ============ -->
         <section class="domain" id="d1">
           <div class="domain-head">
             <span class="domain-num">D1</span>
-            <h2>Domain 1: [Domain title]</h2>
-            <span class="weight">[xx]% <span class="bar"><i style="width:0%"></i></span></span>
+            <h2>Agentic Architecture and Orchestration</h2>
+            <span class="weight">27% <span class="bar"><i style="width:81%"></i></span></span>
           </div>
 
-          <div class="placeholder">Notes for Domain 1 go here. Copy components from <a href="../components.html">Components</a>.</div>
+          <h3 class="sub"><span>1.1</span> The agentic loop: control flow driven by stop_reason</h3>
+          <div class="flow loop">
+            <div class="step"><b>Send request</b><span>The full history plus the tools</span></div>
+            <div class="step"><b>Read stop_reason</b><span>The only field that controls the loop</span></div>
+            <div class="step"><b>"tool_use"</b><span>Run the tools</span></div>
+            <div class="step"><b>Add to history</b><span>The assistant turn, then a user turn with a tool_result for each tool_use_id</span></div>
+          </div>
+          <div class="table-wrap"><table class="compare">
+            <thead><tr><th>stop_reason</th><th>Meaning</th><th>Action</th></tr></thead>
+            <tbody>
+              <tr><th>tool_use</th><td>Claude is calling a tool</td><td class="yes">Run it, return the result, <b>go round again</b></td></tr>
+              <tr><th>end_turn</th><td>Claude finished naturally</td><td>Use the answer; the loop is <b>done</b></td></tr>
+              <tr><th>max_tokens</th><td>Hit your max_tokens</td><td>Raise the limit, or continue the response</td></tr>
+              <tr><th>pause_turn</th><td>A server-tool loop hit its iteration limit</td><td>Send the assistant content back to continue</td></tr>
+              <tr><th>refusal</th><td>Claude declined</td><td>Read stop_details; retry on a fallback model</td></tr>
+              <tr><th>model_context_window_exceeded</th><td>The response filled the context window</td><td>Treat it as truncated; trim or compact the context</td></tr>
+            </tbody>
+          </table></div>
+          <div class="callout trap"><div><strong class="label">Termination anti-patterns</strong>(1) Parsing the natural-language text for "done". (2) Using an iteration cap as the <b>main</b> stop. max_turns is a safety net, and hitting it is reported as <code>error_max_turns</code>, not success. (3) Treating any assistant text as completion. Also note: <code>end_turn</code> on the <b>first</b> response, with no tool call, is a valid finish.</div></div>
+          <div class="grid cols-2">
+            <div class="card accent"><h4>Workflow vs agent</h4><p>If <b>code fixes the path</b>, it's a workflow, even if it uses tool_use blocks. In an <b>agent</b>, the LLM directs its own process and chooses which tool to use next.</p></div>
+            <div class="card accent"><h4>History hygiene</h4><p>Send the assistant's <b>full</b> response, including its tool_use blocks, plus the tool_result blocks. Leave them out and Claude has no record of the result, so it may ask for the same call again.</p></div>
+          </div>
+
+          <h3 class="sub"><span>1.2</span> Coordinator–subagent orchestration (hub and spoke)</h3>
+          <ul>
+            <li>All communication goes <b>through the coordinator</b>. Subagents never talk to each other, which gives you observability, error handling and controlled information flow.</li>
+            <li>Choose <b>subagents per query</b>. Don't run the full pipeline every time: parallelism cuts wall-clock time, but every call is still paid for.</li>
+            <li><b>Partition the scope completely.</b> Facets that aren't assigned never show up in the report.</li>
+            <li><b>Refinement loop:</b> synthesise, find the gaps, re-delegate targeted queries, and stop when coverage is enough.</li>
+          </ul>
+
+          <h3 class="sub"><span>1.3</span> Spawning subagents: Task tool and AgentDefinition</h3>
+          <div class="callout key"><div><strong class="label">Context isolation</strong>A spawned subagent starts in a <b>new, empty conversation</b>. It sees its own system prompt and the coordinator's spawn prompt, never the coordinator's history, and only its <b>final message</b> comes back. Earlier decisions and findings must be <b>written into the spawn prompt</b>.</div></div>
+          <div class="table-wrap"><table class="compare">
+            <thead><tr><th>AgentDefinition field</th><th>Job</th></tr></thead>
+            <tbody>
+              <tr><th>description</th><td>When the coordinator should choose this subagent</td></tr>
+              <tr><th>prompt</th><td>The subagent's <b>standing system prompt</b>: its role, expertise and constraints. The per-call prompt carries the specific task.</td></tr>
+              <tr><th>tools</th><td>An <b>explicit allowlist</b>, e.g. <code>["Read","Grep"]</code> for a read-only reviewer. <b>Leaving it out gives the subagent every tool.</b></td></tr>
+            </tbody>
+          </table></div>
+          <ul>
+            <li><b>Parallel</b> means several Task tool_use blocks in <b>one</b> coordinator response. One spawn per turn runs them one after another.</li>
+            <li>A delegation prompt states the <b>goal and quality criteria</b> rather than the steps, but still gives the objective, output format, tool and source guidance, and boundaries.</li>
+            <li>Pass on complete findings, keeping the <b>content separate from source metadata</b>.</li>
+            <li><b>Fork</b> instead of spawning when the new branch needs the shared analysis so far.</li>
+          </ul>
+
+          <h3 class="sub"><span>1.4</span> Prerequisite gates and human handoff</h3>
+          <div class="flow">
+            <div class="step"><b>PostToolUse on get_customer</b><span>Records "verified" only after a <b>successful</b> call</span></div>
+            <div class="step"><b>PreToolUse on process_refund</b><span>Denies the call until that record exists</span></div>
+            <div class="step"><b>Claude plans the order</b><span>But cannot skip the step</span></div>
+          </div>
+          <div class="callout trap"><div><strong class="label">Exam traps</strong>Writing the marker in PreToolUse on get_customer is wrong, because the marker exists even if the lookup fails. A system-prompt rule like "verify identity first" is guidance, not enforcement. A matcher like <code>.*refund</code> is an unanchored regex that also matches <code>issue_refund_note</code>; use <code>^process_refund$</code> or the plain exact name.</div></div>
+          <p><b>Multi-concern requests:</b> run parallel investigations that share the case context, then combine them into one resolution. <b>Handoff to a human:</b> a structured summary they can act on <b>without reading the transcript</b>.</p>
+
+          <h3 class="sub"><span>1.5</span> Agent SDK hooks</h3>
+          <div class="grid cols-2">
+            <div class="card accent"><h4>Matcher rules (tested against the tool name only)</h4><ul><li><code>*</code>, an empty string or no matcher: <b>all tools</b></li><li>Only letters, digits, <code>_ - , |</code> and spaces: <b>exact name(s)</b>, e.g. <code>Edit|Write</code></li><li>Any other character: an <b>unanchored regex</b>, e.g. <code>mcp__billing__.*</code> for every tool on one server</li><li>MCP tools are named <code>mcp__&lt;server&gt;__&lt;action&gt;</code></li><li>Conditions on <b>arguments</b> go in the callback, reading <code>tool_input</code></li></ul></div>
+            <div class="card accent"><h4>Decisions and normalisation</h4><ul><li>PreToolUse returns <code>"deny"</code> with a <b>permissionDecisionReason</b> that names the alternative (e.g. "call escalate_refund"), so the agent doesn't keep retrying</li><li><code>"ask"</code> brings back a prompt; Claude never sees <code>systemMessage</code></li><li>PostToolUse with <b><code>updatedToolOutput</code></b> replaces the output of <b>any</b> tool. <code>updatedMCPToolOutput</code> works only for MCP tools.</li><li>Use it to normalise mixed formats (Unix epochs, ISO dates, status codes) before Claude reads them</li></ul></div>
+          </div>
+          <div class="callout key"><div><strong class="label">Rule</strong>Anything that must be guaranteed (refund limits, ordering, compliance) belongs in a <b>hook</b>. A prompt instruction always has some failure rate.</div></div>
+
+          <h3 class="sub"><span>1.6</span> Task decomposition: fixed chain or adaptive?</h3>
+          <div class="table-wrap"><table class="compare">
+            <thead><tr><th>Can you list the subtasks before the run?</th><th>Pattern</th><th>Example</th></tr></thead>
+            <tbody>
+              <tr><th>Yes, in a fixed order</th><td><b>Prompt chain</b> sequenced in code, with gates between steps</td><td>Summarise, check in code, then translate into 3 languages</td></tr>
+              <tr><th>Yes, independent parts</th><td>Fixed parallel sectioning</td><td>Per-file review passes, then a cross-file integration pass</td></tr>
+              <tr><th>No, they emerge as you go</th><td><b>Adaptive</b>: an orchestrator plans each next step from what it finds, with a stopping condition</td><td>Investigating an incident from a vague alert</td></tr>
+            </tbody>
+          </table></div>
+          <ul>
+            <li>Writing "step 1, step 2" in a system prompt <b>doesn't</b> make a pipeline. Each step must be a separate call that your code sequences.</li>
+            <li>A bigger context window doesn't fix <b>attention dilution</b> in a 40-file review. Recall drops on every model.</li>
+            <li>Adding tests to a legacy codebase: <b>map the structure, prioritise, then follow a plan that adapts</b> as dependencies turn up.</li>
+          </ul>
+
+          <h3 class="sub"><span>1.7</span> Sessions: continue, resume, fork</h3>
+          <div class="table-wrap"><table class="compare">
+            <thead><tr><th>Option</th><th>What it does</th><th>Watch out</th></tr></thead>
+            <tbody>
+              <tr><th>continue</th><td>Opens the <b>most recent</b> session in the directory</td><td>Wrong for many users sharing one directory</td></tr>
+              <tr><th>resume</th><td>Opens a specific session: <code>claude --resume payment-retry-bug</code> by name, or by <b>session ID</b> in the SDK (also after hitting max-turns or a budget limit)</td><td>Store each user's session ID</td></tr>
+              <tr><th>fork</th><td>Copies the history into a <b>new</b> session to compare approaches</td><td><code>fork_session()</code> only writes the copy and returns its ID; resume that ID to run it. "Allow for this session" grants are <b>not</b> inherited.</td></tr>
+            </tbody>
+          </table></div>
+          <div class="callout trap"><div><strong class="label">Exam trap</strong>A resumed session replays the <b>old tool results</b>. If files have changed, name them so the agent re-reads them, or start fresh seeded with a <b>structured summary</b> of the conclusions.</div></div>
+
+          <div class="quiz" data-answer="C">
+            <div class="q">A read-only "doc-reviewer" subagent must never edit files. The coordinator has Read, Edit, Write, Grep and Glob. What guarantees this?</div>
+            <ol>
+              <li>Write "never modify files" in its AgentDefinition prompt</li>
+              <li>Leave tools unset so it inherits from the coordinator</li>
+              <li>Set <code>tools: ["Read","Grep"]</code> on its AgentDefinition</li>
+              <li>Set tool_choice to none</li>
+            </ol>
+            <div class="why"><b>C.</b> The tools field is an explicit allowlist. A prompt line is only guidance, and leaving tools unset grants <i>every</i> tool.</div>
+          </div>
         </section>
 
         <!-- ============ DOMAIN 2 ============ -->
         <section class="domain" id="d2">
           <div class="domain-head">
             <span class="domain-num">D2</span>
-            <h2>Domain 2: [Domain title]</h2>
-            <span class="weight">[xx]% <span class="bar"><i style="width:0%"></i></span></span>
+            <h2>Tool Design and MCP Integration</h2>
+            <span class="weight">18% <span class="bar"><i style="width:54%"></i></span></span>
           </div>
 
-          <div class="placeholder">Notes for Domain 2 go here. Copy components from <a href="../components.html">Components</a>.</div>
+          <h3 class="sub"><span>2.1</span> Tool descriptions decide which tool is chosen</h3>
+          <p>Claude matches the request against each tool's <b>name and description</b>, and nothing else about the tool. If two descriptions are near-identical, selection becomes a coin flip.</p>
+          <div class="grid cols-2">
+            <div class="card accent"><h4>A description ready for selection covers</h4><ul><li>Purpose</li><li>Inputs, with examples</li><li>Edge cases</li><li><b>Boundaries against similar tools</b>: <i>when</i> to use it and when not to</li></ul></div>
+            <div class="card accent"><h4>Fixing misrouting</h4><ul><li><b>Rename and rescope</b> the overlapping tools; exclude the case the other tool handles</li><li><b>Split</b> a generic tool into purpose-specific ones with clear contracts</li><li>Check the <b>system prompt</b> for keyword-triggered rules that pull calls away from the right tool</li></ul></div>
+          </div>
+          <div class="callout trap"><div><strong class="label">Exam trap</strong>Changing the order of tools in the array or adding backend priorities adds <b>no signal</b>. <code>input_examples</code> only <i>supplement</i> a description; they don't say when to use the tool.</div></div>
+
+          <h3 class="sub"><span>2.2</span> Structured error responses for MCP tools</h3>
+          <div class="table-wrap"><table class="compare">
+            <thead><tr><th>Channel</th><th>Used for</th><th>Does the model see it?</th></tr></thead>
+            <tbody>
+              <tr><th>JSON-RPC protocol error</th><td>Protocol-level problems</td><td class="no">No</td></tr>
+              <tr><th>Tool result with <code>isError: true</code></th><td>Failures <b>inside the tool</b></td><td class="yes">Yes, so it can recover</td></tr>
+            </tbody>
+          </table></div>
+          <div class="table-wrap"><table class="compare">
+            <thead><tr><th>errorCategory</th><th>Example</th><th>isRetryable</th><th>Next step</th></tr></thead>
+            <tbody>
+              <tr><th>transient</th><td>Timeout, rate limit, overload</td><td class="yes">true</td><td>A few retries with backoff</td></tr>
+              <tr><th>validation</th><td>Missing or invalid argument</td><td class="no">false</td><td>Correct the input</td></tr>
+              <tr><th>business</th><td>A policy refusal</td><td class="no">false</td><td>Explain it in customer-friendly words</td></tr>
+              <tr><th>permission</th><td>The token lacks the role</td><td class="no">false</td><td>Get the right credential, or escalate</td></tr>
+            </tbody>
+          </table></div>
+          <ul>
+            <li>isRetryable asks: <b>would the identical request succeed if sent again?</b></li>
+            <li>A generic "Operation failed" hides the category, so the agent can't choose a recovery.</li>
+            <li>A query with <b>no matches is a success</b> with an empty result. Don't set isError.</li>
+            <li>A subagent returns <b>partial results</b> plus a list of what failed and what it tried.</li>
+          </ul>
+
+          <h3 class="sub"><span>2.3</span> Scoping tools per agent and tool_choice</h3>
+          <p>Selection gets less reliable as the tool count grows; compare 18 tools with 4–5. Give each role only the tools it needs (<code>tools</code> / <code>disallowedTools</code>), plus at most one narrow cross-role tool for a frequent need.</p>
+          <div class="table-wrap"><table class="compare">
+            <thead><tr><th>tool_choice</th><th>Guarantee</th><th>Fits</th></tr></thead>
+            <tbody>
+              <tr><th><code>{"type":"auto"}</code></th><td>None: Claude decides (the default when tools are given)</td><td>Agents choosing between acting and replying</td></tr>
+              <tr><th><code>{"type":"any"}</code></th><td><b>Some</b> tool is called, and Claude picks which</td><td>Every turn must be a tool call</td></tr>
+              <tr><th><code>{"type":"tool","name":"x"}</code></th><td>That <b>specific</b> tool is called</td><td>Forcing a first step, e.g. extract_metadata</td></tr>
+              <tr><th><code>{"type":"none"}</code></th><td>No tool call</td><td>A text-only turn</td></tr>
+            </tbody>
+          </table></div>
+          <div class="callout trap"><div><strong class="label">Exam traps</strong>tool_choice controls <i>whether</i> a tool is called, not <i>which tools exist</i>. To stop out-of-role calls, remove those tools and keep auto. Forced <code>any</code> or <code>tool</code> <b>errors with manual extended thinking</b>, and Opus 5.5, Sonnet 5.5, Fable 5.1 and Mythos 5.1 return a 400. Models with adaptive thinking accept a forced call, but the response starts with the tool call and has <b>no thinking block</b>. Force the first call, then let later turns use auto.</div></div>
+
+          <h3 class="sub"><span>2.4</span> MCP servers in Claude Code</h3>
+          <div class="table-wrap"><table class="compare">
+            <thead><tr><th>Scope</th><th>File</th><th>Available to</th></tr></thead>
+            <tbody>
+              <tr><th>local (the default)</th><td><code>~/.claude.json</code>, under this project</td><td>Only you, only this project</td></tr>
+              <tr><th>project</th><td><code>.mcp.json</code> at the repo root (committed)</td><td>Everyone who clones the repo</td></tr>
+              <tr><th>user</th><td><code>~/.claude.json</code>, top-level mcpServers</td><td>Only you, in all projects</td></tr>
+            </tbody>
+          </table></div>
+          <ul>
+            <li>Every configured server connects, and the agent gets <b>one combined tool list</b> (with server-prefixed names) usable in a single request.</li>
+            <li>On a <b>name clash, local overrides project</b> entirely. Nothing is merged and no error is raised.</li>
+            <li>Project servers show as <b>Pending approval</b> until each developer approves them.</li>
+            <li>Keep secrets out of git: commit <code>.mcp.json</code> with <code>Authorization: Bearer ${GITHUB_TOKEN}</code>, and each teammate sets the variable themselves.</li>
+            <li>Expose content catalogs as <b>resources</b>. Write tool descriptions that can compete with built-ins like Grep. <b>Use an existing server</b> before building your own.</li>
+          </ul>
+
+          <h3 class="sub"><span>2.5</span> Built-in tools</h3>
+          <div class="table-wrap"><table class="compare">
+            <thead><tr><th>Tool</th><th>Use it for</th></tr></thead>
+            <tbody>
+              <tr><th>Grep</th><td>Searching file <b>contents</b>: function names, error strings, imports</td></tr>
+              <tr><th>Glob</th><td>Matching file <b>paths</b>, e.g. <code>**/*.test.tsx</code>. Find untested components by comparing two Glob lists.</td></tr>
+              <tr><th>Read</th><td>Reading a file you found by searching</td></tr>
+              <tr><th>Edit</th><td>Exact replacement. <code>old_string</code> must match <b>exactly once</b>; otherwise lengthen it, or set <code>replace_all</code> to change <b>every</b> match.</td></tr>
+              <tr><th>Write</th><td>Creates or <b>overwrites the whole file</b>. Fallback when there's no unique anchor: Read, change, then Write the full contents.</td></tr>
+              <tr><th>Bash</th><td>Running commands</td></tr>
+            </tbody>
+          </table></div>
+          <p class="muted">Explore a codebase by searching for the entry point first, then reading along the call chain. Don't read everything under <code>src</code>. To trace through a wrapper module, list what it exports and search for each name.</p>
         </section>
 
         <!-- ============ DOMAIN 3 ============ -->
         <section class="domain" id="d3">
           <div class="domain-head">
             <span class="domain-num">D3</span>
-            <h2>Domain 3: [Domain title]</h2>
-            <span class="weight">[xx]% <span class="bar"><i style="width:0%"></i></span></span>
+            <h2>Claude Code Configuration and Workflows</h2>
+            <span class="weight">20% <span class="bar"><i style="width:60%"></i></span></span>
           </div>
 
-          <div class="placeholder">Notes for Domain 3 go here. Copy components from <a href="../components.html">Components</a>.</div>
+          <h3 class="sub"><span>3.1</span> The CLAUDE.md hierarchy</h3>
+          <div class="stack">
+            <div class="layer" style="--i:0">Managed settings <small>policy nobody can override, e.g. /etc/claude-code/</small></div>
+            <div class="layer" style="--i:1">User: ~/.claude/CLAUDE.md <small>only you, every project</small></div>
+            <div class="layer" style="--i:2">Project: ./CLAUDE.md or ./.claude/CLAUDE.md <small>the team, via git</small></div>
+            <div class="layer" style="--i:3">Directory: api/CLAUDE.md <small>loads on demand</small></div>
+          </div>
+          <ul>
+            <li><b>At launch:</b> the user file, plus project files <b>at and above</b> the working directory. <b>On demand:</b> subdirectory files, when Claude reads files there.</li>
+            <li>A teammate is missing a rule? It's probably in someone's <b>user-level</b> file, which never reaches the repo.</li>
+            <li><code>@path</code> imports load <b>whenever the importing file loads</b>, so a root import is loaded at launch.</li>
+            <li>Split a monolithic CLAUDE.md into <code>.claude/rules/</code> topic files. Use <b><code>/memory</code></b> to see which files actually loaded.</li>
+            <li>Organisation-wide policy belongs in <b>managed settings</b>, not a CLAUDE.md copied into every repo.</li>
+          </ul>
+
+          <h3 class="sub"><span>3.2</span> Slash commands and skills</h3>
+          <div class="grid cols-2">
+            <div class="card accent"><h4>Where they live</h4><ul><li><code>.claude/commands/x.md</code> (project): <b>shared</b> once committed</li><li><code>~/.claude/commands/</code>: personal</li><li><code>.claude/skills/x/SKILL.md</code> (project): shared</li><li><code>~/.claude/skills/</code>: personal, never in git</li><li>Precedence on a name clash: <b>enterprise &gt; personal &gt; project</b></li></ul></div>
+            <div class="card accent"><h4>SKILL.md frontmatter</h4><ul><li><code>argument-hint</code>: prompts the user for arguments</li><li><code>allowed-tools</code>: <b>pre-approves</b> those tools. It doesn't remove others; use <code>disallowed-tools</code> for that.</li><li><code>context: fork</code>: runs the skill in a subagent and returns only the result</li><li><code>disable-model-invocation</code>: controls only <i>who can trigger</i> the skill</li><li>Only the description loads every session; the full content loads when it's used</li></ul></div>
+          </div>
+          <p class="muted">Instructions Claude should <b>always</b> follow go in CLAUDE.md. A reusable procedure you invoke goes in a skill.</p>
+
+          <h3 class="sub"><span>3.3</span> Path-scoped rules</h3>
+          <pre><code>---
+paths:
+  - "src/api/**/*.ts"
+  - "src/**/*.{ts,tsx}"
+---</code></pre>
+          <ul>
+            <li><code>paths</code> is the <b>only</b> frontmatter field. Keys like <code>include:</code> don't work.</li>
+            <li><code>terraform/*</code> matches only the top level; use <code>terraform/**/*</code> for nested files.</li>
+            <li>Patterns resolve from the <b>repo root</b>, so <code>api/**/*.ts</code> won't match <code>src/api/</code>.</li>
+            <li>For a convention scattered across many directories (e.g. <code>**/*.test.tsx</code>), use one path rule rather than a CLAUDE.md in every folder.</li>
+          </ul>
+
+          <h3 class="sub"><span>3.4</span> Plan mode or direct execution?</h3>
+          <div class="dodont">
+            <div class="do"><h4>Plan mode</h4><ul><li>Many files, architectural reach, <b>several valid approaches</b> (a 45-file migration, splitting a monolith)</li><li>Claude reads and proposes; <b>no edits until you approve</b></li><li>Then implement as direct execution</li><li>Use the <b>Explore subagent</b> to keep verbose discovery out of the main context</li></ul></div>
+            <div class="dont"><h4>Direct execution</h4><ul><li>Clear scope and a known cause (a null check pinpointed by a stack trace)</li><li>Planning here only adds overhead</li><li>Risk of skipping a plan on big work: <b>inconsistent patterns</b> across files, then rework</li></ul></div>
+          </div>
+
+          <h3 class="sub"><span>3.5</span> Iterative refinement</h3>
+          <ul>
+            <li>When prose gets read in different ways, give <b>2–3 concrete input/output examples</b>, including edge cases like nulls, empty cells and quoted commas.</li>
+            <li><b>Tests first:</b> cover behaviour, edge cases and performance, then give Claude the <b>actual failures</b>.</li>
+            <li>In an unfamiliar domain, use the <b>interview pattern</b>: have Claude ask about design considerations before building.</li>
+            <li>Report failures whose fixes <b>interact</b> together in one message; fix <b>independent</b> failures one at a time.</li>
+          </ul>
+
+          <h3 class="sub"><span>3.6</span> Headless Claude Code in CI</h3>
+          <div class="table-wrap"><table class="compare">
+            <thead><tr><th>Need</th><th>Flag</th></tr></thead>
+            <tbody>
+              <tr><th>Don't wait for keyboard input</th><td><code>-p</code> / <code>--print</code>. Without it the job hangs until it times out.</td></tr>
+              <tr><th>Don't stall on permission prompts</th><td><code>--allowedTools "Bash(git status *),…"</code>, a permissions.allow rule, or <code>--permission-mode</code> (e.g. dontAsk)</td></tr>
+              <tr><th>Machine-readable output</th><td><code>--output-format json</code>; the text is in <code>.result</code></td></tr>
+              <tr><th>Output matching a schema</th><td><code>--json-schema</code>; read <b><code>.structured_output</code></b>, not .result</td></tr>
+              <tr><th>Inline PR comments (GitHub Action)</th><td>Name the inline-comment tool in <code>--allowedTools</code> inside <code>claude_args</code></td></tr>
+            </tbody>
+          </table></div>
+          <p class="muted">Project guidance for CI runs, like what counts as a valuable test or which fixtures exist, goes in the repo's <b>CLAUDE.md</b>, which every run loads.</p>
         </section>
 
         <!-- ============ DOMAIN 4 ============ -->
         <section class="domain" id="d4">
           <div class="domain-head">
             <span class="domain-num">D4</span>
-            <h2>Domain 4: [Domain title]</h2>
-            <span class="weight">[xx]% <span class="bar"><i style="width:0%"></i></span></span>
+            <h2>Prompt Engineering and Structured Output</h2>
+            <span class="weight">20% <span class="bar"><i style="width:60%"></i></span></span>
           </div>
 
-          <div class="placeholder">Notes for Domain 4 go here. Copy components from <a href="../components.html">Components</a>.</div>
+          <h3 class="sub"><span>4.1</span> Explicit criteria reduce false positives</h3>
+          <div class="dodont">
+            <div class="do"><h4>✓ Precise</h4><ul><li>Name the categories to <b>report</b> (bugs, security) and to <b>skip</b> (style, local patterns)</li><li>Wrap each category in its own <b>XML tag</b>: <code>&lt;security_criteria&gt;</code></li><li>Give each severity level a <b>concrete code example</b></li><li>Measure against the <b>documented project standard</b> (CLAUDE.md)</li><li>Switch off a noisy category while you rewrite it, to protect developer trust</li></ul></div>
+            <div class="dont"><h4>✗ Vague</h4><ul><li>"Be conservative" or "only report high-confidence findings": no new rule, same mistakes, and real bugs get suppressed</li><li>Comparing against the most common style in the file, which may itself be legacy</li><li>Adjectives like "serious" for severity</li></ul></div>
+          </div>
+
+          <h3 class="sub"><span>4.2</span> Few-shot prompting</h3>
+          <ul>
+            <li>If the format still drifts despite detailed instructions, add <b>examples in the exact target format</b>.</li>
+            <li>Use <b>2–4 targeted examples</b> that show <i>why</i> one action beat a plausible alternative. Twenty literal pairs teach matching, not judgment.</li>
+            <li>Contrast acceptable patterns with real issues.</li>
+            <li><b>Diversify</b> length, language and structure. Regressions usually mean the examples share an accidental trait.</li>
+            <li>For extraction, include examples of <b>vague or missing values handled honestly</b>, otherwise the model learns to always invent a precise value.</li>
+          </ul>
+
+          <h3 class="sub"><span>4.3</span> Structured output with tool use</h3>
+          <div class="grid cols-2">
+            <div class="card accent"><h4>Extraction tool pattern</h4><p>Define a tool you never run. Its <code>input_schema</code> is the output shape, and the <code>tool_use.input</code> <b>is</b> your result. To make sure it runs, force it with <code>{"type":"tool","name":"extract_…"}</code>. <code>any</code> lets Claude pick another tool. A forced call means <b>no text before the call</b>.</p></div>
+            <div class="card accent"><h4>Schema design</h4><ul><li>Make fields the document may not contain <b>optional or nullable</b>. Required plus absent forces a made-up value.</li><li>Use closed enums with <code>other</code> and <code>unclear</code> as escape values</li><li>Put normalisation rules in the prompt</li><li><b>Strict mode</b> guarantees structure (types, required fields, tool name), <b>not semantics</b></li></ul></div>
+          </div>
+
+          <h3 class="sub"><span>4.4</span> Validation and retry with error feedback</h3>
+          <div class="flow">
+            <div class="step"><b>Extract</b><span>With strict schema validity</span></div>
+            <div class="step"><b>Validate in code</b><span>e.g. calculated_total vs stated_total, conflict_detected</span></div>
+            <div class="step"><b>Retry</b><span>Send the <b>original document, the failed extraction and the specific errors</b></span></div>
+            <div class="step"><b>Or send to a person</b><span>If the value isn't in the source</span></div>
+          </div>
+          <ul>
+            <li>A retry request carries nothing over from the first attempt, so it must include all three inputs.</li>
+            <li>If a field is still empty because the form was left blank, <b>stop retrying</b>. No model can recover a value that isn't there.</li>
+            <li>Add a <b><code>detected_pattern</code></b> field so dismissed findings can be analysed by code construct. A dismissal_reason field doesn't allow that.</li>
+          </ul>
+
+          <h3 class="sub"><span>4.5</span> The Message Batches API</h3>
+          <div class="grid">
+            <div class="card accent"><h4>The deal</h4><p><b>50% cheaper</b>, with <b>no latency promise</b>. Results arrive within a <b>24-hour expiry</b> window. Use it for nightly or non-blocking work, never for a blocking merge gate.</p></div>
+            <div class="card accent"><h4>Limits</h4><p>At most <b>100,000 requests or 256 MB</b> per batch, whichever comes first (a 413 if exceeded). <code>custom_id</code>: <b>1–64 characters</b> of letters, digits, <code>-</code> and <code>_</code>.</p></div>
+            <div class="card accent"><h4>Results</h4><p><b>Not in submission order</b>, so match them by custom_id. A batch can't be edited. Resubmit <b>only the failed ids</b>, with a fix, in a new batch. No client-side tool loops: each request is single-shot.</p></div>
+          </div>
+          <div class="callout key"><div><strong class="label">SLA formula</strong><b>interval + 24 h ≤ SLA</b>. A 48-hour SLA allows a nightly batch. A 30-hour SLA allows submitting <b>every 4 hours</b> (6 hours of slack, minus time to collect and process).</div></div>
+
+          <h3 class="sub"><span>4.6</span> Independent and multi-pass review</h3>
+          <ul>
+            <li>The generating session is a <b>weak reviewer</b>: it reuses its own reasoning. More extended thinking or "critically re-examine" doesn't make it independent.</li>
+            <li>Independence means a <b>fresh context</b>: a second session or a new subagent. Resuming the generator's session isn't independent.</li>
+            <li>For big reviews, run per-file passes, then a <b>cross-file integration pass</b>, which settles conflicting per-file findings.</li>
+            <li>The <b>finding pass</b> aims for coverage and attaches confidence; a separate <b>verification pass</b> filters and routes the findings.</li>
+          </ul>
+          <div class="quiz" data-answer="B">
+            <div class="q">Line items sum to $940, but order_total reads $980. Both pass the strict schema. What is this, and what's the fix?</div>
+            <ol>
+              <li>A syntax error; tighten the schema</li>
+              <li>A semantic error; add a check in code that recomputes the sum and compares it</li>
+              <li>A model error; switch to a larger model</li>
+              <li>Not an error, because the schema passed</li>
+            </ol>
+            <div class="why"><b>B.</b> Strict mode only guarantees types and fields. Relationships between fields have to be checked by your own validation code, and a failure can trigger a retry with error feedback.</div>
+          </div>
         </section>
 
-        <!-- ============ FINAL CHEAT SHEET ============ -->
+        <!-- ============ DOMAIN 5 ============ -->
+        <section class="domain" id="d5">
+          <div class="domain-head">
+            <span class="domain-num">D5</span>
+            <h2>Context Management and Reliability</h2>
+            <span class="weight">15% <span class="bar"><i style="width:45%"></i></span></span>
+          </div>
+
+          <h3 class="sub"><span>5.1</span> Preserving critical facts in long conversations</h3>
+          <p>The <b>Messages API is stateless</b>, so every turn resends the whole history. <b>Context rot</b> means recall drops as context grows, and a bigger window doesn't fix it.</p>
+          <div class="grid cols-2">
+            <div class="card accent"><h4>Problems</h4><ul><li>Repeated summarisation blurs amounts, dates and customer expectations ($214.88 becomes "a refund soon")</li><li>Verbose tool payloads with 40+ fields pile up</li><li>Findings in the middle of long inputs get <b>lost</b></li></ul></div>
+            <div class="card accent"><h4>Fixes</h4><ul><li>A persistent <b>case-facts block</b> kept outside the summary</li><li>Trim tool results <b>in code</b> to the relevant fields. Don't truncate or summarise them with a model.</li><li>Put a <b>key-findings summary first</b> and give each section a clear heading</li><li>Upstream agents return <b>structured facts with metadata</b>, not their reasoning</li></ul></div>
+          </div>
+
+          <h3 class="sub"><span>5.2</span> Escalation triggers</h3>
+          <div class="grid">
+            <div class="card accent"><h4>✓ Trigger 1</h4><p>The customer <b>explicitly asks for a human</b>. Hand off immediately, without first trying a fix.</p></div>
+            <div class="card accent"><h4>✓ Trigger 2</h4><p>Policy is <b>silent or ambiguous</b>, e.g. a competitor price match when policy only covers your own site. Don't decline it and don't approve it.</p></div>
+            <div class="card accent"><h4>✓ Trigger 3</h4><p>The agent <b>can't make meaningful progress</b>.</p></div>
+          </div>
+          <div class="callout trap"><div><strong class="label">Not triggers</strong><b>Sentiment</b>: for an angry customer with a solvable issue, acknowledge it, resolve it, and offer a human as an option. The agent's <b>own sense of confidence or difficulty</b>. If the customer repeats a preference for a person after your offer, then escalate. If a lookup returns <b>several customers</b>, ask for another identifier; don't pick "the most recent".</div></div>
+
+          <h3 class="sub"><span>5.3</span> Error propagation across agents</h3>
+          <div class="flow">
+            <div class="step"><b>Transient?</b><span>A few local retries (rate limit, overload)</span></div>
+            <div class="step"><b>Can't clear?</b><span>Report to the coordinator right away (e.g. an auth failure)</span></div>
+            <div class="step"><b>Structured payload</b><span>Category, attempted action, partial results, alternatives</span></div>
+            <div class="step"><b>Synthesis</b><span>Annotate coverage: which findings are well supported, where the gaps are</span></div>
+          </div>
+          <div class="callout trap"><div><strong class="label">Anti-patterns</strong>Hiding an access failure as an <b>empty success</b>, so the report claims full coverage. A bare "search unavailable" or a status code like UNAVAILABLE. <b>Halting the whole workflow</b> because one source failed.</div></div>
+
+          <h3 class="sub"><span>5.4</span> Context in large codebase exploration</h3>
+          <ul>
+            <li>Send verbose discovery (e.g. a 50,000-file search) to a <b>subagent</b> that returns only the final list. Compacting afterwards still floods the context first.</li>
+            <li>Use <b>scratchpad files</b>, one uniquely named file <b>per concurrent subagent</b>, and have the coordinator combine them. Read the notes back <b>before answering</b>.</li>
+            <li><code>/compact</code> reclaims space but can drop details, so keep exact values in files. <code>/clear</code> starts clean.</li>
+            <li>Feed a <b>summary of each phase</b> into the next phase's subagent prompts.</li>
+            <li>For crash recovery, keep per-agent state exports and a <b>coordinator manifest</b>; skip the work that's already done.</li>
+          </ul>
+
+          <h3 class="sub"><span>5.5</span> Human review routing and confidence calibration</h3>
+          <ul>
+            <li><b>97% overall</b> can hide a failing segment. Break accuracy down by <b>document type and field</b> before reducing review.</li>
+            <li>Have the model give a confidence score <b>per field</b> on a defined scale, then <b>calibrate it on a labeled validation set</b>. A self-reported 0.9 isn't a measurement.</li>
+            <li>Route low-confidence or ambiguous items to people, e.g. weights with no clear unit (70% accurate). Let clean segments pass.</li>
+            <li>Keep taking <b>stratified random samples</b> of auto-accepted output to catch drift and new error patterns.</li>
+          </ul>
+
+          <h3 class="sub"><span>5.6</span> Provenance in multi-source synthesis</h3>
+          <div class="mnemonic">
+            <div class="word">C S E D</div>
+            <ul>
+              <li><b>C</b>laim</li>
+              <li><b>S</b>ource (document or URL)</li>
+              <li><b>E</b>xcerpt that supports it</li>
+              <li><b>D</b>ate of publication or collection</li>
+            </ul>
+          </div>
+          <ul>
+            <li>A bibliography isn't provenance: each <b>claim</b> needs its own source.</li>
+            <li>When credible sources conflict ($420M vs $460M), <b>report both with attribution and flag the conflict</b>. Never average them.</li>
+            <li>With dates attached, different figures can show a <b>trend</b> rather than a contradiction.</li>
+            <li>Separate <b>established</b> from <b>contested</b> findings, and keep quotes word for word.</li>
+          </ul>
+          <div class="flashcards">
+            <details class="qa"><summary>A customer asks for a human about a trivial issue. What does the agent do?</summary><div class="a"><p>Hands off immediately. An explicit request is honoured without first trying a fix.</p></div></details>
+            <details class="qa"><summary>Where should exact refund amounts live in a long, summarised support chat?</summary><div class="a"><p>In a structured case-facts block passed alongside every summary.</p></div></details>
+            <details class="qa"><summary>Concurrent subagents and scratchpads: one shared file or several?</summary><div class="a"><p>One uniquely named file per subagent, combined by the coordinator after all of them finish.</p></div></details>
+            <details class="qa"><summary>How do you make a model's 0.9 confidence trustworthy?</summary><div class="a"><p>Calibrate it against a labeled validation set, per field and per segment, and set thresholds where observed accuracy meets the target.</p></div></details>
+          </div>
+        </section>
+
+        <!-- ============ CHEAT SHEET ============ -->
         <section class="domain" id="cheatsheet">
           <div class="domain-head">
             <span class="domain-num">★</span>
             <h2>Last-minute cheat sheet</h2>
           </div>
           <div class="cheatsheet">
-            <h3>Must remember</h3>
+            <h3>Numbers and names</h3>
             <ul>
-              <li>[Fact 1]</li>
-              <li>[Fact 2]</li>
-              <li>[Fact 3]</li>
-              <li>[Fact 4]</li>
+              <li>Exam: 60 questions · 120 min · scaled 720/1000 · 4 of 6 scenarios</li>
+              <li>Largest domain: D1 at 27%; D3 and D4 at 20% each</li>
+              <li>The loop continues only on <code>tool_use</code></li>
+              <li>Hitting max_turns gives <code>error_max_turns</code>, not success</li>
+              <li>MCP tool names: <code>mcp__server__action</code></li>
+              <li><code>updatedToolOutput</code> works for any tool; <code>updatedMCPToolOutput</code> for MCP only</li>
+              <li>Batches: 50% off, 24 h expiry, 100k requests or 256 MB</li>
+              <li>custom_id: 1–64 characters of letters, digits, <code>-</code> and <code>_</code></li>
+              <li>Batch SLA rule: interval + 24 h ≤ SLA</li>
+              <li>Few-shot: 2–4 targeted examples</li>
+              <li>CI: <code>-p</code>, <code>--allowedTools</code>, and <code>.structured_output</code></li>
+            </ul>
+          </div>
+          <div class="cheatsheet">
+            <h3>Reflexes</h3>
+            <ul>
+              <li>Guarantees go in hooks, not prompts</li>
+              <li>Subagents start empty, so write the context into the spawn</li>
+              <li>Leaving <code>tools</code> unset means ALL tools</li>
+              <li>Fewer tools per agent gives better selection</li>
+              <li><code>any</code> means some tool; <code>tool</code> means that tool</li>
+              <li>isError goes in the result, and must be structured</li>
+              <li>An empty result is a success, not an error</li>
+              <li>local &gt; project for MCP; enterprise &gt; personal &gt; project for skills</li>
+              <li>A valid schema doesn't mean correct values</li>
+              <li>Independent review needs a fresh context</li>
+              <li>The three escalation triggers; sentiment isn't one</li>
+              <li>Claim, source, excerpt and date; never average conflicting figures</li>
             </ul>
           </div>
         </section>
