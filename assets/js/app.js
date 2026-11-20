@@ -1,7 +1,8 @@
 /* Claude Exam Visual Notes — small, dependency-free behaviours.
-   1. Theme toggle   2. Auto table of contents + scroll spy
+   1. Theme toggle   2. Table of contents (sidebar, or a bar on phones)
    3. Section search 4. "Done" progress tracking (localStorage)
-   5. Practice quizzes                                          */
+   5. Phone-friendly tables and diagrams   6. Learn with Gemini
+   7. Practice quizzes                                          */
 (() => {
   const store = {
     get(k, d) { try { const v = localStorage.getItem(k); return v === null ? d : JSON.parse(v); } catch { return d; } },
@@ -18,6 +19,8 @@
         ? root.dataset.theme === "dark"
         : matchMedia("(prefers-color-scheme: dark)").matches;
       btn.textContent = dark ? "☀️" : "🌙";
+      const meta = document.querySelector('meta[name="theme-color"]');
+      if (meta) meta.content = getComputedStyle(root).getPropertyValue("--bg").trim();
       btn.setAttribute("aria-label", dark ? "Switch to light theme" : "Switch to dark theme");
     };
     btn.addEventListener("click", () => {
@@ -32,20 +35,66 @@
   const exam = document.body.dataset.exam;
   const domains = [...document.querySelectorAll("section.domain[id]")];
 
-  /* 2. TOC + scroll spy -------------------------------------------------- */
+  /* 2. TOC + scroll spy --------------------------------------------------
+        Desktop shows it as a sidebar. On phones and tablets (CSS) it is a bar
+        stuck to the top of the screen: it names the section you are reading
+        and opens the full list. */
   const toc = document.querySelector("[data-toc]");
+  const aside = toc?.closest(".toc");
+  let tocLinks = [];
+  let tocMeta = null;
   if (toc && domains.length) {
     domains.forEach((sec) => {
       const a = document.createElement("a");
       a.href = `#${sec.id}`;
-      a.textContent = sec.querySelector("h2")?.textContent ?? sec.id;
       a.dataset.target = sec.id;
+      const num = sec.querySelector(".domain-num")?.textContent.trim();
+      if (num) {
+        const n = document.createElement("span");
+        n.className = "toc-num";
+        n.textContent = num;
+        a.appendChild(n);
+      }
+      const label = document.createElement("span");
+      label.className = "toc-label";
+      label.textContent = sec.querySelector("h2")?.textContent.trim() ?? sec.id;
+      a.appendChild(label);
       toc.appendChild(a);
     });
-    const links = [...toc.querySelectorAll("a")];
+    tocLinks = [...toc.querySelectorAll("a")];
+
+    // Wrap the aside's contents in a panel and add the phone toggle bar.
+    const panel = document.createElement("div");
+    panel.className = "toc-panel";
+    panel.id = "toc-panel";
+    panel.append(...aside.childNodes);
+    const toggle = document.createElement("button");
+    toggle.type = "button";
+    toggle.className = "toc-toggle";
+    toggle.setAttribute("aria-expanded", "false");
+    toggle.setAttribute("aria-controls", "toc-panel");
+    toggle.innerHTML = `<span class="toc-cur"><span class="toc-label">${panel.querySelector(".toc-title")?.textContent ?? "Sections"}</span></span>
+      <span class="toc-meta"></span><span class="toc-caret" aria-hidden="true">▼</span>`;
+    aside.append(toggle, panel);
+    const cur = toggle.querySelector(".toc-cur");
+    tocMeta = toggle.querySelector(".toc-meta");
+    const setOpen = (open) => {
+      aside.classList.toggle("open", open);
+      toggle.setAttribute("aria-expanded", String(open));
+    };
+    toggle.addEventListener("click", () => setOpen(!aside.classList.contains("open")));
+    tocLinks.forEach((a) => a.addEventListener("click", () => setOpen(false)));
+    document.addEventListener("click", (e) => { if (!aside.contains(e.target)) setOpen(false); });
+    document.addEventListener("keydown", (e) => { if (e.key === "Escape") setOpen(false); });
+
     const io = new IntersectionObserver((entries) => {
       entries.forEach((e) => {
-        if (e.isIntersecting) links.forEach((l) => l.classList.toggle("active", l.dataset.target === e.target.id));
+        if (!e.isIntersecting) return;
+        tocLinks.forEach((l) => {
+          const on = l.dataset.target === e.target.id;
+          l.classList.toggle("active", on);
+          if (on) cur.replaceChildren(...[...l.children].map((c) => c.cloneNode(true)));
+        });
       });
     }, { rootMargin: "-20% 0px -70% 0px" });
     domains.forEach((s) => io.observe(s));
@@ -65,7 +114,10 @@
   const renderProgress = () => {
     if (!exam) return;
     const done = store.get(progressKey(exam), []);
-    const pct = domains.length ? Math.round((done.filter((id) => domains.some((d) => d.id === id)).length / domains.length) * 100) : 0;
+    const n = done.filter((id) => domains.some((d) => d.id === id)).length;
+    const pct = domains.length ? Math.round((n / domains.length) * 100) : 0;
+    tocLinks.forEach((l) => l.classList.toggle("done", done.includes(l.dataset.target)));
+    if (tocMeta) tocMeta.textContent = `${n}/${domains.length} done`;
     document.querySelectorAll("[data-progress-self]").forEach((el) => {
       el.querySelector("i").style.width = `${pct}%`;
       const label = el.nextElementSibling;
@@ -108,6 +160,37 @@
       if (label) label.textContent = "";
     }
   });
+
+  /* 5. Phones: tables with three or more columns become one card per row.
+         Each cell gets its column name, which the CSS shows as a label. */
+  document.querySelectorAll("table.compare").forEach((t) => {
+    const heads = [...t.querySelectorAll("thead th")].map((th) => th.textContent.trim());
+    if (heads.length < 3) return;
+    t.classList.add("stackable");
+    t.querySelectorAll("tbody tr").forEach((tr) => {
+      [...tr.children].forEach((cell, i) => {
+        if (cell.tagName !== "TD") return;
+        cell.dataset.label = heads[i] ?? "";
+        const value = document.createElement("div");   // keeps mixed text and bold together
+        value.className = "cv";
+        value.append(...cell.childNodes);
+        cell.append(value);
+      });
+    });
+  });
+
+  /*    Diagrams wider than the screen scroll sideways; mark them so only
+         those show the swipe hint and edge shadows. */
+  const figs = [...document.querySelectorAll("figure.dg")];
+  const markScrolling = () => figs.forEach((f) => {
+    const box = f.querySelector(".dg-scroll");
+    if (box) f.classList.toggle("scrolls", box.scrollWidth > box.clientWidth + 2);
+  });
+  if (figs.length) {
+    markScrolling();
+    let t;
+    addEventListener("resize", () => { clearTimeout(t); t = setTimeout(markScrolling, 150); });
+  }
 
   /* 6. "Learn with Gemini": every exam domain gets a button that copies a
         Malayalam lesson prompt built from that domain's own notes (diagram
@@ -193,7 +276,7 @@
       const card = document.createElement("div");
       card.className = "gm-card";
       card.innerHTML = `
-        <a class="gm-btn" target="_blank" rel="noopener"><span aria-hidden="true">✨</span> Learn this domain in Malayalam with Gemini</a>
+        <a class="gm-btn" target="_blank" rel="noopener"><span aria-hidden="true">✨</span> Learn in Malayalam with Gemini</a>
         <span class="gm-status" aria-live="polite">Copies a lesson prompt and opens Gemini: the full lesson first, then questions.</span>
         <details class="gm-prompt"><summary>See the prompt</summary><textarea readonly rows="9" aria-label="Gemini prompt"></textarea></details>`;
       const link = card.querySelector(".gm-btn");
@@ -211,7 +294,7 @@
     });
   }
 
-  /* 5. Quizzes: <div class="quiz" data-answer="B"> -------------------------- */
+  /* 7. Quizzes: <div class="quiz" data-answer="B"> -------------------------- */
   document.querySelectorAll(".quiz[data-answer]").forEach((quiz) => {
     const answer = quiz.dataset.answer.trim().toUpperCase().charCodeAt(0) - 65;
     const opts = [...quiz.querySelectorAll("ol > li")];

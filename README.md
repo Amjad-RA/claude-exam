@@ -16,7 +16,7 @@ The site is plain HTML, CSS and JavaScript. There is no build step and nothing t
 index.html            Home page with a tile and progress bar for each exam
 components.html       Every note component, shown live with copy-paste HTML
 exams/*.html          One page per exam, one <section class="domain"> per domain
-assets/css/style.css  Design system (light and dark themes, print styles)
+assets/css/style.css  Design system, mobile first (light and dark themes, print styles)
 assets/js/app.js      Theme toggle, table of contents, search, progress, quizzes
 .github/workflows/    GitHub Pages deploy
 ```
@@ -32,6 +32,12 @@ Components: concept cards, callouts (key, trap, tip, note), flow diagrams, compa
 
 ## Features
 
+- Mobile first: phones get the main layout, and wider screens build on it (sidebar from 960px)
+  - a bar stuck to the top of the screen names the section you're reading and opens the section list
+  - tables with three or more columns turn into one card per row
+  - process steps stack top to bottom, and sit side by side once there's room
+  - big tap targets for quiz answers, flashcards, "Done" and the Gemini button
+  - wide diagrams scroll sideways, with a swipe hint only on the ones that need it
 - Light and dark themes, following the system setting, with a toggle
 - An auto-generated table of contents that highlights the current section
 - A filter box on each page
@@ -61,7 +67,7 @@ Each diagram sits between `<!-- dg:ID -->` and `<!-- /dg:ID -->` markers in its 
 
 ## Learn with Gemini
 
-Every exam domain has a "Learn this domain in Malayalam with Gemini" button. It copies a lesson prompt built from that domain's notes (diagram captions, callouts, flashcards, practice questions) and opens Gemini: the Gemini app on Android, gemini.google.com elsewhere. Paste and send: Gemini first teaches the whole domain as one flowing lesson, written to be listened to with its Listen (read aloud) option, and only then asks five questions, one at a time. The prompt is also shown under "See the prompt" in case copying is blocked.
+Every exam domain has a "Learn in Malayalam with Gemini" button. It copies a lesson prompt built from that domain's notes (diagram captions, callouts, flashcards, practice questions) and opens Gemini: the Gemini app on Android, gemini.google.com elsewhere. Paste and send: Gemini first teaches the whole domain as one flowing lesson, written to be listened to with its Listen (read aloud) option, and only then asks five questions, one at a time. The prompt is also shown under "See the prompt" in case copying is blocked.
 
 ## Preview locally
 
