@@ -94,6 +94,55 @@
           <div class="callout trap"><div><strong class="label">Exam traps</strong>Support chat isn't one task. Split it into greeting, product information, conversation management and quotes, and evaluate each. "Touches several systems" doesn't mean you need an agent. <b>Agent SDK</b> means the loop runs in <i>your</i> process; <b>Managed Agents</b> means Anthropic hosts the loop, tools and runtime.</div></div>
 
           <h3 class="sub"><span>1.2</span> End-to-end architecture: input, processing, output, feedback</h3>
+<!-- dg:ap-exec -->
+<figure class="dg" id="fig-ap-exec">
+<div class="dg-scroll">
+<svg viewBox="0 0 760 256" role="img" aria-label="Client tools run in your application; server tools run inside the Anthropic API" style="min-width:608px;max-width:874px;margin:0 auto" xmlns="http://www.w3.org/2000/svg">
+<defs><marker id="ah-ap-exec" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="ah"/></marker><marker id="ah-ap-exec-a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="ah a"/></marker><marker id="ah-ap-exec-x" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="ah bad"/></marker><marker id="ah-ap-exec-o" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="ah ok"/></marker></defs>
+<g class="bx frame"><rect x="10" y="10" width="250" height="236" rx="7"/>
+</g>
+<g class="tx ">
+<text x="24" y="36" class="b" text-anchor="start">Your application</text>
+</g>
+<g class="tx ">
+<text x="30" y="95" class="s" text-anchor="start">you run these, return tool_result</text>
+</g>
+<g class="bx "><rect x="30" y="110" width="210" height="48" rx="7"/>
+<text x="135" y="138" class="b" text-anchor="middle">Your custom tools</text>
+</g>
+<g class="bx "><rect x="30" y="170" width="210" height="56" rx="7"/>
+<text x="135" y="194.5" class="b" text-anchor="middle">bash · text_editor</text>
+<text x="135" y="209.5" class="s" text-anchor="middle">computer: Anthropic schema</text>
+</g>
+<g class="bx frame"><rect x="500" y="10" width="250" height="236" rx="7"/>
+</g>
+<g class="tx ">
+<text x="514" y="36" class="b" text-anchor="start">Anthropic API</text>
+</g>
+<g class="bx a"><rect x="520" y="50" width="210" height="44" rx="7"/>
+<text x="625" y="76" class="b" text-anchor="middle">Claude</text>
+</g>
+<g class="bx a"><rect x="520" y="150" width="210" height="56" rx="7"/>
+<text x="625" y="174.5" class="b" text-anchor="middle">web_search · web_fetch</text>
+<text x="625" y="189.5" class="s" text-anchor="middle">code_execution · tool_search</text>
+</g>
+<path class="ln a" d="M600,94 L600,150" marker-end="url(#ah-ap-exec-a)"/>
+<path class="ln a" d="M650,150 L650,94" marker-end="url(#ah-ap-exec-a)"/>
+<text x="606" y="126" class="lb " text-anchor="start">runs here</text>
+<g class="tx ">
+<text x="625" y="231" class="s" text-anchor="middle">loop cap hit → pause_turn: resend</text>
+</g>
+<path class="ln " d="M260,64 L500,64" marker-end="url(#ah-ap-exec)"/>
+<text x="380" y="56" class="lb " text-anchor="middle">request</text>
+<path class="ln " d="M500,104 L260,104" marker-end="url(#ah-ap-exec)"/>
+<text x="380" y="96" class="lb " text-anchor="middle">tool_use (client tool)</text>
+<path class="ln " d="M260,144 L500,144" marker-end="url(#ah-ap-exec)"/>
+<text x="380" y="136" class="lb " text-anchor="middle">tool_result</text>
+</svg>
+</div>
+<figcaption>Who runs a tool decides who writes the loop. Client tools, including Anthropic-defined bash, text_editor and computer, run in your code; only server tools run inside the API, which returns pause_turn when its own loop hits the cap.</figcaption>
+</figure>
+<!-- /dg:ap-exec -->
           <div class="grid cols-2">
             <div class="card accent"><h4>Who runs the tool?</h4><ul><li><b>Client tools</b> (your code runs them): your own tools, <b>plus</b> Anthropic-schema tools like <code>bash</code>, <code>text_editor</code> and <code>computer</code></li><li><b>Server tools</b> (Anthropic runs them): <code>web_search</code>, <code>web_fetch</code>, <code>code_execution</code>, <code>tool_search</code></li><li><code>pause_turn</code> means the server loop hit its cap. Send the conversation back, including the paused response, to continue.</li></ul></div>
             <div class="card accent"><h4>Feedback that corrects the run</h4><ul><li>Tool results feed the next turn</li><li><b>Hooks</b> give deterministic behaviour, e.g. a PostToolUse hook on Edit and Write that appends to an audit log</li><li><b>Outcome loops</b> use a separate grader in its own context; the agent doesn't grade itself</li><li>Use MCP for standard access to wikis, databases and chat tools</li></ul></div>
@@ -101,6 +150,205 @@
 
           <h3 class="sub"><span>1.3</span> Augmented LLM, workflow or agent</h3>
           <p>Everything is built from the <b>augmented LLM</b>: a model with retrieval, tools and memory. The key question is <b>who decides the next step</b>: your code (a workflow) or the model (an agent). Agents trade latency and cost for flexibility.</p>
+<!-- dg:ap-patterns -->
+<figure class="dg" id="fig-ap-patterns">
+<div class="dg-scroll">
+<svg viewBox="0 0 780 380" role="img" aria-label="Six patterns: prompt chaining, routing, sectioning, voting, orchestrator-workers, evaluator-optimizer" style="min-width:640px;max-width:897px;margin:0 auto" xmlns="http://www.w3.org/2000/svg">
+<defs><marker id="ah-ap-patterns" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="ah"/></marker><marker id="ah-ap-patterns-a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="ah a"/></marker><marker id="ah-ap-patterns-x" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="ah bad"/></marker><marker id="ah-ap-patterns-o" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="ah ok"/></marker></defs>
+<g class="bx frame"><rect x="6" y="6" width="248" height="178" rx="7"/>
+</g>
+<g class="tx ">
+<text x="18" y="30" class="b" text-anchor="start">Prompt chaining</text>
+</g>
+<g class="tx ">
+<text x="130" y="171" class="s" text-anchor="middle">fixed steps, code gates</text>
+</g>
+<g class="bx frame"><rect x="266" y="6" width="248" height="178" rx="7"/>
+</g>
+<g class="tx ">
+<text x="278" y="30" class="b" text-anchor="start">Routing</text>
+</g>
+<g class="tx ">
+<text x="390" y="171" class="s" text-anchor="middle">one tuned path per category</text>
+</g>
+<g class="bx frame"><rect x="526" y="6" width="248" height="178" rx="7"/>
+</g>
+<g class="tx ">
+<text x="538" y="30" class="b" text-anchor="start">Parallel: sectioning</text>
+</g>
+<g class="tx ">
+<text x="650" y="171" class="s" text-anchor="middle">different tasks at once</text>
+</g>
+<g class="bx frame"><rect x="6" y="196" width="248" height="178" rx="7"/>
+</g>
+<g class="tx ">
+<text x="18" y="220" class="b" text-anchor="start">Parallel: voting</text>
+</g>
+<g class="tx ">
+<text x="130" y="361" class="s" text-anchor="middle">same task, several runs</text>
+</g>
+<g class="bx frame"><rect x="266" y="196" width="248" height="178" rx="7"/>
+</g>
+<g class="tx ">
+<text x="278" y="220" class="b" text-anchor="start">Orchestrator-workers</text>
+</g>
+<g class="tx ">
+<text x="390" y="361" class="s" text-anchor="middle">subtasks chosen at run time</text>
+</g>
+<g class="bx frame"><rect x="526" y="196" width="248" height="178" rx="7"/>
+</g>
+<g class="tx ">
+<text x="538" y="220" class="b" text-anchor="start">Evaluator-optimizer</text>
+</g>
+<g class="tx ">
+<text x="650" y="361" class="s" text-anchor="middle">LLM critique, then revise</text>
+</g>
+<g class="bx dash" data-maxw="22.1"><circle cx="30" cy="96" r="13"/>
+<text x="30" y="99" class="s" text-anchor="middle">in</text>
+</g>
+<g class="bx a"><rect x="56" y="83" width="58" height="26" rx="6"/>
+<text x="85" y="100" class="r" text-anchor="middle">LLM 1</text>
+</g>
+<path class="ln " d="M43,96 L56,96" marker-end="url(#ah-ap-patterns)"/>
+<path class="ln " d="M114,96 L122,96" marker-end="url(#ah-ap-patterns)"/>
+<g class="bx ok" data-maxw="18.7"><circle cx="134" cy="96" r="11"/>
+<text x="134" y="100" class="b" text-anchor="middle">✓</text>
+</g>
+<path class="ln " d="M145,96 L154,96" marker-end="url(#ah-ap-patterns)"/>
+<g class="bx a"><rect x="154" y="83" width="58" height="26" rx="6"/>
+<text x="183" y="100" class="r" text-anchor="middle">LLM 2</text>
+</g>
+<path class="ln " d="M212,96 L221,96" marker-end="url(#ah-ap-patterns)"/>
+<g class="bx dash" data-maxw="22.1"><circle cx="234" cy="96" r="13"/>
+<text x="234" y="99" class="s" text-anchor="middle">out</text>
+</g>
+<g class="bx dash" data-maxw="22.1"><circle cx="284" cy="96" r="13"/>
+<text x="284" y="99" class="s" text-anchor="middle">in</text>
+</g>
+<g class="bx a"><rect x="306" y="83" width="66" height="26" rx="6"/>
+<text x="339" y="100" class="r" text-anchor="middle">Router</text>
+</g>
+<path class="ln " d="M297,96 L306,96" marker-end="url(#ah-ap-patterns)"/>
+<g class="bx "><rect x="396" y="43" width="62" height="26" rx="6"/>
+<text x="427" y="60" class="r" text-anchor="middle">billing</text>
+</g>
+<path class="ln " d="M372,96 L396,56" marker-end="url(#ah-ap-patterns)"/>
+<path class="ln " d="M458,56 L479,91" marker-end="url(#ah-ap-patterns)"/>
+<g class="bx "><rect x="396" y="83" width="62" height="26" rx="6"/>
+<text x="427" y="100" class="r" text-anchor="middle">bugs</text>
+</g>
+<path class="ln " d="M372,96 L396,96" marker-end="url(#ah-ap-patterns)"/>
+<path class="ln " d="M458,96 L479,96" marker-end="url(#ah-ap-patterns)"/>
+<g class="bx "><rect x="396" y="123" width="62" height="26" rx="6"/>
+<text x="427" y="140" class="r" text-anchor="middle">cancel</text>
+</g>
+<path class="ln " d="M372,96 L396,136" marker-end="url(#ah-ap-patterns)"/>
+<path class="ln " d="M458,136 L479,101" marker-end="url(#ah-ap-patterns)"/>
+<g class="bx dash" data-maxw="22.1"><circle cx="492" cy="96" r="13"/>
+<text x="492" y="99" class="s" text-anchor="middle">out</text>
+</g>
+<g class="bx dash" data-maxw="22.1"><circle cx="544" cy="96" r="13"/>
+<text x="544" y="99" class="s" text-anchor="middle">in</text>
+</g>
+<g class="bx a"><rect x="574" y="43" width="64" height="26" rx="6"/>
+<text x="606" y="60" class="r" text-anchor="middle">vulns</text>
+</g>
+<path class="ln " d="M557,96 L574,56" marker-end="url(#ah-ap-patterns)"/>
+<path class="ln " d="M638,56 L666,88" marker-end="url(#ah-ap-patterns)"/>
+<g class="bx a"><rect x="574" y="83" width="64" height="26" rx="6"/>
+<text x="606" y="100" class="r" text-anchor="middle">licence</text>
+</g>
+<path class="ln " d="M557,96 L574,96" marker-end="url(#ah-ap-patterns)"/>
+<path class="ln " d="M638,96 L666,96" marker-end="url(#ah-ap-patterns)"/>
+<g class="bx a"><rect x="574" y="123" width="64" height="26" rx="6"/>
+<text x="606" y="140" class="r" text-anchor="middle">style</text>
+</g>
+<path class="ln " d="M557,96 L574,136" marker-end="url(#ah-ap-patterns)"/>
+<path class="ln " d="M638,136 L666,104" marker-end="url(#ah-ap-patterns)"/>
+<g class="bx "><rect x="666" y="83" width="58" height="26" rx="6"/>
+<text x="695" y="100" class="r" text-anchor="middle">Merge</text>
+</g>
+<path class="ln " d="M724,96 L739,96" marker-end="url(#ah-ap-patterns)"/>
+<g class="bx dash" data-maxw="22.1"><circle cx="752" cy="96" r="13"/>
+<text x="752" y="99" class="s" text-anchor="middle">out</text>
+</g>
+<g class="bx dash" data-maxw="22.1"><circle cx="24" cy="286" r="13"/>
+<text x="24" y="289" class="s" text-anchor="middle">in</text>
+</g>
+<g class="bx a"><rect x="54" y="233" width="64" height="26" rx="6"/>
+<text x="86" y="250" class="r" text-anchor="middle">run 1</text>
+</g>
+<path class="ln " d="M37,286 L54,246" marker-end="url(#ah-ap-patterns)"/>
+<path class="ln " d="M118,246 L146,278" marker-end="url(#ah-ap-patterns)"/>
+<g class="bx a"><rect x="54" y="273" width="64" height="26" rx="6"/>
+<text x="86" y="290" class="r" text-anchor="middle">run 2</text>
+</g>
+<path class="ln " d="M37,286 L54,286" marker-end="url(#ah-ap-patterns)"/>
+<path class="ln " d="M118,286 L146,286" marker-end="url(#ah-ap-patterns)"/>
+<g class="bx a"><rect x="54" y="313" width="64" height="26" rx="6"/>
+<text x="86" y="330" class="r" text-anchor="middle">run 3</text>
+</g>
+<path class="ln " d="M37,286 L54,326" marker-end="url(#ah-ap-patterns)"/>
+<path class="ln " d="M118,326 L146,294" marker-end="url(#ah-ap-patterns)"/>
+<g class="bx "><rect x="146" y="273" width="58" height="26" rx="6"/>
+<text x="175" y="290" class="r" text-anchor="middle">Vote</text>
+</g>
+<path class="ln " d="M204,286 L219,286" marker-end="url(#ah-ap-patterns)"/>
+<g class="bx dash" data-maxw="22.1"><circle cx="232" cy="286" r="13"/>
+<text x="232" y="289" class="s" text-anchor="middle">out</text>
+</g>
+<g class="bx dash" data-maxw="22.1"><circle cx="286" cy="246" r="13"/>
+<text x="286" y="249" class="s" text-anchor="middle">in</text>
+</g>
+<g class="bx a"><rect x="332" y="233" width="116" height="26" rx="6"/>
+<text x="390" y="250" class="r" text-anchor="middle">Orchestrator</text>
+</g>
+<path class="ln " d="M299,246 L332,246" marker-end="url(#ah-ap-patterns)"/>
+<g class="bx dash"><rect x="300" y="278" width="56" height="24" rx="6"/>
+<text x="328" y="294" class="r" text-anchor="middle">worker</text>
+</g>
+<path class="ln " d="M390,259 L328,278" marker-end="url(#ah-ap-patterns)"/>
+<path class="ln " d="M328,302 L369,318" marker-end="url(#ah-ap-patterns)"/>
+<g class="bx dash"><rect x="362" y="278" width="56" height="24" rx="6"/>
+<text x="390" y="294" class="r" text-anchor="middle">worker</text>
+</g>
+<path class="ln " d="M390,259 L390,278" marker-end="url(#ah-ap-patterns)"/>
+<path class="ln " d="M390,302 L390,318" marker-end="url(#ah-ap-patterns)"/>
+<g class="bx dash"><rect x="424" y="278" width="56" height="24" rx="6"/>
+<text x="452" y="294" class="r" text-anchor="middle">worker</text>
+</g>
+<path class="ln " d="M390,259 L452,278" marker-end="url(#ah-ap-patterns)"/>
+<path class="ln " d="M452,302 L410,318" marker-end="url(#ah-ap-patterns)"/>
+<g class="bx "><rect x="336" y="318" width="108" height="26" rx="6"/>
+<text x="390" y="335" class="r" text-anchor="middle">Synthesizer</text>
+</g>
+<path class="ln " d="M444,331 L473,331" marker-end="url(#ah-ap-patterns)"/>
+<g class="bx dash" data-maxw="22.1"><circle cx="486" cy="331" r="13"/>
+<text x="486" y="334" class="s" text-anchor="middle">out</text>
+</g>
+<g class="bx dash" data-maxw="22.1"><circle cx="546" cy="260" r="13"/>
+<text x="546" y="263" class="s" text-anchor="middle">in</text>
+</g>
+<g class="bx a"><rect x="572" y="247" width="100" height="26" rx="6"/>
+<text x="622" y="264" class="r" text-anchor="middle">Generator</text>
+</g>
+<g class="bx "><rect x="572" y="299" width="100" height="26" rx="6"/>
+<text x="622" y="316" class="r" text-anchor="middle">Evaluator</text>
+</g>
+<path class="ln " d="M559,260 L572,260" marker-end="url(#ah-ap-patterns)"/>
+<path class="ln " d="M644,273 L644,299" marker-end="url(#ah-ap-patterns)"/>
+<path class="ln a" d="M600,299 L600,273" marker-end="url(#ah-ap-patterns-a)"/>
+<text x="594" y="290" class="lb " text-anchor="end">feedback</text>
+<path class="ln ok" d="M672,312 L733,312" marker-end="url(#ah-ap-patterns-o)"/>
+<text x="702" y="306" class="lb " text-anchor="middle">pass</text>
+<g class="bx dash" data-maxw="22.1"><circle cx="746" cy="312" r="13"/>
+<text x="746" y="315" class="s" text-anchor="middle">out</text>
+</g>
+</svg>
+</div>
+<figcaption>The six building blocks, each made of augmented LLM calls. In the first four your code fixes the path; in orchestrator-workers the model chooses the subtasks at run time; evaluator-optimizer loops until an LLM judge passes the output.</figcaption>
+</figure>
+<!-- /dg:ap-patterns -->
           <div class="table-wrap"><table class="compare">
             <thead><tr><th>Pattern</th><th>Use when</th><th>Example</th></tr></thead>
             <tbody>
@@ -190,6 +438,53 @@
           </ul>
 
           <h3 class="sub"><span>2.4</span> Context window budgeting</h3>
+<!-- dg:ap-budget -->
+<figure class="dg" id="fig-ap-budget">
+<div class="dg-scroll">
+<svg viewBox="0 0 760 240" role="img" aria-label="One context window shared by system prompt, tools, history, tool results, thinking and output" style="min-width:608px;max-width:874px;margin:0 auto" xmlns="http://www.w3.org/2000/svg">
+<defs><marker id="ah-ap-budget" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="ah"/></marker><marker id="ah-ap-budget-a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="ah a"/></marker><marker id="ah-ap-budget-x" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="ah bad"/></marker><marker id="ah-ap-budget-o" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="ah ok"/></marker></defs>
+<g class="tx ">
+<text x="20" y="24" class="b" text-anchor="start">One context window (not to scale)</text>
+</g>
+<g class="bx a"><rect x="20" y="70" width="96" height="44" rx="0"/>
+<text x="68" y="96" class="b" text-anchor="middle">System</text>
+</g>
+<g class="bx a"><rect x="116" y="70" width="120" height="44" rx="0"/>
+<text x="176" y="96" class="b" text-anchor="middle">Tools</text>
+</g>
+<g class="bx a"><rect x="236" y="70" width="190" height="44" rx="0"/>
+<text x="331" y="96" class="b" text-anchor="middle">History</text>
+</g>
+<g class="bx "><rect x="426" y="70" width="140" height="44" rx="0"/>
+<text x="496" y="96" class="b" text-anchor="middle">Tool results</text>
+</g>
+<g class="bx "><rect x="566" y="70" width="80" height="44" rx="0"/>
+<text x="606" y="96" class="b" text-anchor="middle">Thinking</text>
+</g>
+<g class="bx "><rect x="646" y="70" width="94" height="44" rx="0"/>
+<text x="693" y="96" class="b" text-anchor="middle">Output</text>
+</g>
+<path class="ln " d="M20,64 L20,52 L426,52 L426,64"/>
+<text x="223" y="44" class="lb " text-anchor="middle">cached prefix: cheaper, still takes space</text>
+<path class="ln bad" d="M744,40 L744,132"/>
+<text x="740" y="148" class="lb " text-anchor="end">window limit</text>
+<g class="bx bad"><rect x="20" y="170" width="230" height="60" rx="7"/>
+<text x="135" y="196.5" class="b" text-anchor="middle">Input &gt; window</text>
+<text x="135" y="211.5" class="s" text-anchor="middle">400 error</text>
+</g>
+<g class="bx warn"><rect x="265" y="170" width="230" height="60" rx="7"/>
+<text x="380" y="196.5" class="b" text-anchor="middle">Input + max_tokens &gt; window</text>
+<text x="380" y="211.5" class="s" text-anchor="middle">accepted; may stop early</text>
+</g>
+<g class="bx "><rect x="510" y="170" width="230" height="60" rx="7"/>
+<text x="625" y="196.5" class="b" text-anchor="middle">Measure it</text>
+<text x="625" y="211.5" class="s" text-anchor="middle">count_tokens · usage fields</text>
+</g>
+</svg>
+</div>
+<figcaption>Everything in a request draws on one budget: system prompt, tool definitions, history, tool results, thinking and output. Caching changes the price of the prefix, not the space it takes.</figcaption>
+</figure>
+<!-- /dg:ap-budget -->
           <p>One shared budget covers the <b>system prompt, tool definitions, message history and tool results, the output, and thinking</b>. <b>Cached tokens still take up space in the window</b>; caching only changes their price.</p>
           <div class="table-wrap"><table class="compare">
             <thead><tr><th>Situation</th><th>API behaviour</th></tr></thead>
@@ -201,6 +496,61 @@
           <p class="muted">Measure <b>before</b> a request with the token-counting endpoint and <b>after</b> with the <code>usage</code> fields. For tool-heavy agents, reduce cost with tool search, clearing tool results, and compaction.</p>
 
           <h3 class="sub"><span>2.5</span> Prompt reuse: caching, modular layout, Skills</h3>
+<!-- dg:ap-cache -->
+<figure class="dg" id="fig-ap-cache">
+<div class="dg-scroll">
+<svg viewBox="0 0 760 256" role="img" aria-label="Prompt cache prefix of tools, system and messages, with what each change invalidates" style="min-width:608px;max-width:874px;margin:0 auto" xmlns="http://www.w3.org/2000/svg">
+<defs><marker id="ah-ap-cache" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="ah"/></marker><marker id="ah-ap-cache-a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="ah a"/></marker><marker id="ah-ap-cache-x" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="ah bad"/></marker><marker id="ah-ap-cache-o" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="ah ok"/></marker></defs>
+<g class="bx a"><rect x="20" y="56" width="110" height="40" rx="4"/>
+<text x="75" y="80" class="b" text-anchor="middle">Tools</text>
+</g>
+<g class="bx a"><rect x="134" y="56" width="110" height="40" rx="4"/>
+<text x="189" y="80" class="b" text-anchor="middle">System</text>
+</g>
+<g class="bx "><rect x="248" y="56" width="58" height="40" rx="4"/>
+<text x="277" y="80" class="r" text-anchor="middle">m1</text>
+</g>
+<g class="bx "><rect x="310" y="56" width="58" height="40" rx="4"/>
+<text x="339" y="80" class="r" text-anchor="middle">m2</text>
+</g>
+<g class="bx "><rect x="372" y="56" width="58" height="40" rx="4"/>
+<text x="401" y="80" class="r" text-anchor="middle">m3</text>
+</g>
+<g class="bx "><rect x="434" y="56" width="58" height="40" rx="4"/>
+<text x="463" y="80" class="r" text-anchor="middle">m4</text>
+</g>
+<g class="bx "><rect x="496" y="56" width="58" height="40" rx="4"/>
+<text x="525" y="80" class="r" text-anchor="middle">m5</text>
+</g>
+<g class="bx "><rect x="558" y="56" width="58" height="40" rx="4"/>
+<text x="587" y="80" class="r" text-anchor="middle">m6</text>
+</g>
+<g class="bx "><rect x="620" y="56" width="58" height="40" rx="4"/>
+<text x="649" y="80" class="r" text-anchor="middle">m7</text>
+</g>
+<g class="bx "><rect x="682" y="56" width="58" height="40" rx="4"/>
+<text x="711" y="80" class="r" text-anchor="middle">m8</text>
+</g>
+<polygon class="bp" points="238,40 250,40 244,50"/>
+<polygon class="bp" points="734,40 746,40 740,50"/>
+<text x="740" y="22" class="lb " text-anchor="end">▼ cache_control breakpoint (up to 4, free)</text>
+<g class="bx bad"><rect x="20" y="116" width="720" height="24" rx="4"/>
+<text x="30" y="132" class="r" text-anchor="start">Edit tool definitions → everything is re-processed</text>
+</g>
+<g class="bx warn"><rect x="134" y="148" width="606" height="24" rx="4"/>
+<text x="144" y="164" class="r" text-anchor="start">Edit the system prompt → system + messages</text>
+</g>
+<g class="bx warn"><rect x="248" y="180" width="492" height="24" rx="4"/>
+<text x="258" y="196" class="r" text-anchor="start">Change tool_choice → messages only</text>
+</g>
+<g class="tx ">
+<text x="20" y="236" class="r" text-anchor="start">Lookback: up to 20 blocks back from a breakpoint, so long chats need another breakpoint</text>
+</g>
+</svg>
+</div>
+<figcaption>Caching reuses a byte-identical prefix. Invalidation cascades from tools to system to messages, so order content from most to least stable and put variables last.</figcaption>
+</figure>
+<!-- /dg:ap-cache -->
           <div class="grid cols-2">
             <div class="card accent"><h4>Caching facts</h4><ul><li>Reuses a <b>byte-identical prefix</b></li><li>Write costs <b>1.25×</b> (5-minute TTL) or <b>2×</b> (1-hour); reads cost about <b>0.1×</b></li><li>The TTL counts from the <b>start</b> of the request that wrote or read the entry, and refreshes free on each use</li><li>Up to <b>4 breakpoints</b>, which are free; automatic caching is also available</li><li>Lookback is <b>20 blocks</b>. Add a breakpoint further back if the gap grows past that.</li><li>Invalidation cascades <b>tools → system → messages</b>. A tool_choice change invalidates only the messages.</li></ul></div>
             <div class="card accent"><h4>Layout and Skills</h4><ul><li>Order content from most stable to least; <b>variables go last</b></li><li>SKILL.md <code>name</code>: lowercase letters, digits and hyphens; <b>"claude" and "anthropic" are reserved</b></li><li>Progressive disclosure has 3 levels: the name and description always load, the body loads when used, linked files load on demand</li><li>A custom Skill uploaded in claude.ai belongs to <b>that user</b>; Skills uploaded through the API are shared workspace-wide</li></ul></div>
@@ -236,12 +586,48 @@
           <div class="callout trap"><div><strong class="label">Exam trap</strong><code>allowedTools</code> only <b>pre-approves</b> tools; unlisted ones fall through to the permission mode and canUseTool. To lock the surface, combine it with <code>permissionMode: "dontAsk"</code>, which denies everything else, or use disallowedTools. Subagents don't automatically get a subset of the parent's tools.</div></div>
 
           <h3 class="sub"><span>3.2</span> MCP authorization</h3>
-          <div class="flow">
-            <div class="step"><b>Unauthenticated request</b><span>Gets a 401 with WWW-Authenticate: resource_metadata=…, scope=…</span></div>
-            <div class="step"><b>Protected Resource Metadata</b><span>At /.well-known/oauth-protected-resource; names the authorization server</span></div>
-            <div class="step"><b>Register the client</b><span>Pre-registered, else a Client ID Metadata Document, else Dynamic Client Registration, else ask the user</span></div>
-            <div class="step"><b>Token for one server</b><span>Bound to the server's canonical URI</span></div>
-          </div>
+<!-- dg:ap-oauth -->
+<figure class="dg" id="fig-ap-oauth">
+<div class="dg-scroll">
+<svg viewBox="0 0 760 350" role="img" aria-label="Sequence diagram: MCP authorization discovery, token issue, use and step-up" style="min-width:608px;max-width:874px;margin:0 auto" xmlns="http://www.w3.org/2000/svg">
+<defs><marker id="ah-ap-oauth" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="ah"/></marker><marker id="ah-ap-oauth-a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="ah a"/></marker><marker id="ah-ap-oauth-x" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="ah bad"/></marker><marker id="ah-ap-oauth-o" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="ah ok"/></marker></defs>
+<g class="bx a"><rect x="30" y="10" width="160" height="36" rx="7"/>
+<text x="110" y="32" class="b" text-anchor="middle">MCP client</text>
+</g>
+<path class="ln d" d="M110,46 L110,340"/>
+<g class="bx a"><rect x="300" y="10" width="160" height="36" rx="7"/>
+<text x="380" y="32" class="b" text-anchor="middle">MCP server</text>
+</g>
+<path class="ln d" d="M380,46 L380,340"/>
+<g class="bx a"><rect x="570" y="10" width="160" height="36" rx="7"/>
+<text x="650" y="32" class="b" text-anchor="middle">Auth server</text>
+</g>
+<path class="ln d" d="M650,46 L650,340"/>
+<path class="ln " d="M110,76 L380,76" marker-end="url(#ah-ap-oauth)"/>
+<text x="245" y="70" class="lb " text-anchor="middle">1 · request, no token</text>
+<path class="ln bad" d="M380,106 L110,106" marker-end="url(#ah-ap-oauth-x)"/>
+<text x="245" y="100" class="lb " text-anchor="middle">2 · 401 + resource_metadata, scope</text>
+<path class="ln " d="M110,136 L380,136" marker-end="url(#ah-ap-oauth)"/>
+<text x="245" y="130" class="lb " text-anchor="middle">3 · fetch protected-resource metadata</text>
+<path class="ln " d="M110,166 L650,166" marker-end="url(#ah-ap-oauth)"/>
+<text x="380" y="160" class="lb " text-anchor="middle">4 · read AS metadata, register the client</text>
+<path class="ln " d="M110,196 L650,196" marker-end="url(#ah-ap-oauth)"/>
+<text x="380" y="190" class="lb " text-anchor="middle">5 · authorize (scopes)</text>
+<path class="ln a" d="M650,226 L110,226" marker-end="url(#ah-ap-oauth-a)"/>
+<text x="380" y="220" class="lb " text-anchor="middle">6 · token, audience = this MCP server</text>
+<path class="ln ok" d="M110,256 L380,256" marker-end="url(#ah-ap-oauth-o)"/>
+<text x="245" y="250" class="lb " text-anchor="middle">7 · request + token → 200</text>
+<path class="ln bad" d="M380,286 L110,286" marker-end="url(#ah-ap-oauth-x)"/>
+<text x="245" y="280" class="lb " text-anchor="middle">8 · 403 → step up: old ∪ new scopes</text>
+<path class="ln d bad" d="M380,322 L430,322" marker-end="url(#ah-ap-oauth-x)"/>
+<g class="bx bad"><rect x="430" y="304" width="200" height="36" rx="7"/>
+<text x="530" y="326" class="b" text-anchor="middle">Never forward the token</text>
+</g>
+</svg>
+</div>
+<figcaption>Discovery starts from a 401 that points to the server's metadata. The token is bound to one MCP server's canonical URI; a 403 means step up to more scopes, and the server never passes the token on to another service.</figcaption>
+</figure>
+<!-- /dg:ap-oauth -->
           <ul>
             <li>The <b>transport decides</b> how a server authenticates: HTTP servers use OAuth, local stdio servers use environment credentials.</li>
             <li>A server must <b>reject tokens issued for other audiences</b> and <b>never pass a token on</b> to downstream APIs; doing so creates a <b>confused deputy</b>.</li>
@@ -270,6 +656,65 @@
           </ul>
 
           <h3 class="sub"><span>3.5</span> RAG ingestion</h3>
+<!-- dg:ap-rag -->
+<figure class="dg" id="fig-ap-rag">
+<div class="dg-scroll">
+<svg viewBox="0 0 760 300" role="img" aria-label="Contextual retrieval pipeline: ingest with chunk context into embeddings and BM25, then hybrid search" style="min-width:608px;max-width:874px;margin:0 auto" xmlns="http://www.w3.org/2000/svg">
+<defs><marker id="ah-ap-rag" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="ah"/></marker><marker id="ah-ap-rag-a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="ah a"/></marker><marker id="ah-ap-rag-x" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="ah bad"/></marker><marker id="ah-ap-rag-o" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="ah ok"/></marker></defs>
+<g class="tx ">
+<text x="20" y="24" class="b" text-anchor="start">Ingest, once</text>
+</g>
+<g class="tx ">
+<text x="560" y="24" class="b" text-anchor="start">Each query</text>
+</g>
+<g class="bx "><rect x="20" y="36" width="230" height="40" rx="7"/>
+<text x="135" y="60" class="b" text-anchor="middle">Document</text>
+</g>
+<path class="ln " d="M135,76 L135,96" marker-end="url(#ah-ap-rag)"/>
+<g class="bx "><rect x="20" y="96" width="230" height="40" rx="7"/>
+<text x="135" y="120" class="b" text-anchor="middle">Chunks</text>
+</g>
+<path class="ln " d="M135,136 L135,156" marker-end="url(#ah-ap-rag)"/>
+<g class="bx a"><rect x="20" y="156" width="230" height="52" rx="7"/>
+<text x="135" y="178.5" class="b" text-anchor="middle">Claude writes context</text>
+<text x="135" y="193.5" class="s" text-anchor="middle">per chunk · document cached</text>
+</g>
+<path class="ln " d="M135,208 L135,228" marker-end="url(#ah-ap-rag)"/>
+<g class="bx "><rect x="20" y="228" width="230" height="40" rx="7"/>
+<text x="135" y="252" class="b" text-anchor="middle">Context + chunk</text>
+</g>
+<g class="bx frame"><rect x="320" y="100" width="172" height="120" rx="7"/>
+</g>
+<g class="bx "><rect x="328" y="108" width="156" height="50" rx="7"/>
+<text x="406" y="129.5" class="b" text-anchor="middle">Embeddings</text>
+<text x="406" y="144.5" class="s" text-anchor="middle">input_type=document</text>
+</g>
+<g class="bx "><rect x="328" y="164" width="156" height="50" rx="7"/>
+<text x="406" y="185.5" class="b" text-anchor="middle">BM25 index</text>
+<text x="406" y="200.5" class="s" text-anchor="middle">exact terms</text>
+</g>
+<path class="ln " d="M250,248 L320,190" marker-end="url(#ah-ap-rag)"/>
+<text x="300" y="250" class="lb " text-anchor="start">same text to both</text>
+<g class="bx "><rect x="560" y="36" width="190" height="52" rx="7"/>
+<text x="655" y="58.5" class="b" text-anchor="middle">Query</text>
+<text x="655" y="73.5" class="s" text-anchor="middle">input_type=query</text>
+</g>
+<path class="ln " d="M560,62 L406,62 L406,100" marker-end="url(#ah-ap-rag)"/>
+<text x="483" y="54" class="lb " text-anchor="middle">search both</text>
+<path class="ln " d="M492,160 L560,160" marker-end="url(#ah-ap-rag)"/>
+<g class="bx a"><rect x="560" y="134" width="190" height="52" rx="7"/>
+<text x="655" y="156.5" class="b" text-anchor="middle">Hybrid merge</text>
+<text x="655" y="171.5" class="s" text-anchor="middle">weights tuned to data</text>
+</g>
+<path class="ln " d="M655,186 L655,228" marker-end="url(#ah-ap-rag)"/>
+<g class="bx ok"><rect x="560" y="228" width="190" height="48" rx="7"/>
+<text x="655" y="256" class="b" text-anchor="middle">Top chunks → Claude</text>
+</g>
+</svg>
+</div>
+<figcaption>Claude writes a short context for each chunk; the same contextual text is embedded and indexed for BM25. Each query searches both indexes and a hybrid merge picks the chunks Claude answers from.</figcaption>
+</figure>
+<!-- /dg:ap-rag -->
           <div class="callout key"><div><strong class="label">Contextual retrieval</strong>Claude writes a short, <b>chunk-specific</b> context that places each chunk within its document. Prepend it to the chunk <b>for both the embedding and the BM25 index</b>, and use prompt caching to keep this cheap. A generic document summary on every chunk doesn't give the same gain.</div></div>
           <ul>
             <li>Chunk size, boundaries and overlap all matter. A chunk split off from its document loses context.</li>
@@ -277,6 +722,48 @@
           </ul>
 
           <h3 class="sub"><span>3.6</span> Retrieval strategy</h3>
+<!-- dg:ap-retrieval -->
+<figure class="dg" id="fig-ap-retrieval">
+<div class="dg-scroll">
+<svg viewBox="0 0 760 310" role="img" aria-label="Decision: put the corpus in the prompt, or choose BM25, embeddings, hybrid or live search" style="min-width:608px;max-width:874px;margin:0 auto" xmlns="http://www.w3.org/2000/svg">
+<defs><marker id="ah-ap-retrieval" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="ah"/></marker><marker id="ah-ap-retrieval-a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="ah a"/></marker><marker id="ah-ap-retrieval-x" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="ah bad"/></marker><marker id="ah-ap-retrieval-o" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="ah ok"/></marker></defs>
+<g class="dm " data-maxw="132"><polygon points="110,25 210,70 110,115 10,70"/>
+<text x="110" y="65.5" class="b" text-anchor="middle">Corpus under</text>
+<text x="110" y="82.5" class="b" text-anchor="middle">200K tokens?</text>
+</g>
+<path class="ln ok" d="M210,70 L290,70" marker-end="url(#ah-ap-retrieval-o)"/>
+<text x="250" y="64" class="lb " text-anchor="middle">yes</text>
+<g class="bx ok"><rect x="290" y="46" width="250" height="48" rx="7"/>
+<text x="415" y="66.5" class="b" text-anchor="middle">Put it in the prompt</text>
+<text x="415" y="81.5" class="s" text-anchor="middle">+ prompt caching, no RAG</text>
+</g>
+<path class="ln " d="M110,115 L110,155" marker-end="url(#ah-ap-retrieval)"/>
+<text x="118" y="138" class="lb " text-anchor="start">no</text>
+<g class="dm " data-maxw="112.2"><polygon points="110,155 195,200 110,245 25,200"/>
+<text x="110" y="195.5" class="b" text-anchor="middle">How do</text>
+<text x="110" y="212.5" class="b" text-anchor="middle">people ask?</text>
+</g>
+<path class="ln " d="M195,200 L300,153" marker-end="url(#ah-ap-retrieval)"/>
+<g class="bx a"><rect x="300" y="136" width="300" height="34" rx="7"/>
+<text x="450" y="157" class="b" text-anchor="middle">Exact IDs, error codes → BM25</text>
+</g>
+<path class="ln " d="M195,200 L300,197" marker-end="url(#ah-ap-retrieval)"/>
+<g class="bx a"><rect x="300" y="180" width="300" height="34" rx="7"/>
+<text x="450" y="201" class="b" text-anchor="middle">Meaning, paraphrase → embeddings</text>
+</g>
+<path class="ln " d="M195,200 L300,241" marker-end="url(#ah-ap-retrieval)"/>
+<g class="bx a"><rect x="300" y="224" width="300" height="34" rx="7"/>
+<text x="450" y="245" class="b" text-anchor="middle">Mixed traffic → hybrid blend</text>
+</g>
+<path class="ln " d="M195,200 L300,285" marker-end="url(#ah-ap-retrieval)"/>
+<g class="bx a"><rect x="300" y="268" width="300" height="34" rx="7"/>
+<text x="450" y="289" class="b" text-anchor="middle">Changes fast → agent searches live</text>
+</g>
+</svg>
+</div>
+<figcaption>Pick retrieval from the data and the queries. A corpus that fits goes straight into the prompt with caching; otherwise BM25 handles exact identifiers, embeddings handle meaning, and hybrid search blends both.</figcaption>
+</figure>
+<!-- /dg:ap-retrieval -->
           <div class="table-wrap"><table class="compare">
             <thead><tr><th>Data or query shape</th><th>Strategy</th></tr></thead>
             <tbody>
@@ -296,6 +783,33 @@
           </div>
 
           <h3 class="sub"><span>3.8</span> Progressive discovery: tool search</h3>
+<!-- dg:ap-toolsearch -->
+<figure class="dg" id="fig-ap-toolsearch">
+<div class="dg-scroll">
+<svg viewBox="0 0 760 186" role="img" aria-label="Context used by loading every tool definition compared with tool search" style="min-width:608px;max-width:874px;margin:0 auto" xmlns="http://www.w3.org/2000/svg">
+<defs><marker id="ah-ap-toolsearch" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="ah"/></marker><marker id="ah-ap-toolsearch-a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="ah a"/></marker><marker id="ah-ap-toolsearch-x" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="ah bad"/></marker><marker id="ah-ap-toolsearch-o" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="ah ok"/></marker></defs>
+<g class="tx ">
+<text x="20" y="60" class="b" text-anchor="start">Load every tool</text>
+</g>
+<g class="bx bad"><rect x="200" y="40" width="520" height="32" rx="4"/>
+<text x="460" y="60" class="r" text-anchor="middle">≈55K tokens of definitions, every request</text>
+</g>
+<g class="tx ">
+<text x="20" y="120" class="b" text-anchor="start">Tool search</text>
+</g>
+<g class="bx a"><rect x="200" y="100" width="78" height="32" rx="4"/>
+</g>
+<g class="tx ">
+<text x="290" y="120" class="r" text-anchor="start">search tool + the 3–5 definitions a request needs</text>
+</g>
+<g class="tx ">
+<text x="20" y="169" class="s" text-anchor="start">Selection accuracy slips at around 30–50 loaded tools. Under ~10 small, always-used tools: load them all.</text>
+</g>
+</svg>
+</div>
+<figcaption>Tool search keeps a search tool in context and pulls in only the definitions a request needs, cutting tool context by over 85% in this example. Every full definition is still sent with the request.</figcaption>
+</figure>
+<!-- /dg:ap-toolsearch -->
           <ul>
             <li>Selection accuracy drops with about <b>30–50 tools</b> loaded. For example, 55K tokens of definitions from 5 MCP servers can be cut by over <b>85%</b> with tool search.</li>
             <li>Mark tools with <code>defer_loading</code>, but still send <b>every full definition</b> in the request; <code>tool_reference</code> blocks expand them as needed.</li>
@@ -373,6 +887,52 @@
           <p class="muted">1-hour cache: writes cost 2× instead of 1.25×. It pays only when about <b>1 in 20 gaps</b> falls between 5 and 60 minutes. With requests 30–90 seconds apart, the 5-minute default is right.</p>
 
           <h3 class="sub"><span>4.6</span> OpenTelemetry</h3>
+<!-- dg:ap-trace -->
+<figure class="dg" id="fig-ap-trace">
+<div class="dg-scroll">
+<svg viewBox="0 0 760 272" role="img" aria-label="Illustrative trace of one agent turn with spans for model requests, tools and a subagent" style="min-width:608px;max-width:874px;margin:0 auto" xmlns="http://www.w3.org/2000/svg">
+<defs><marker id="ah-ap-trace" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="ah"/></marker><marker id="ah-ap-trace-a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="ah a"/></marker><marker id="ah-ap-trace-x" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="ah bad"/></marker><marker id="ah-ap-trace-o" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="ah ok"/></marker></defs>
+<g class="tx ">
+<text x="20" y="38" class="r" text-anchor="start">Turn</text>
+</g>
+<g class="bx a"><rect x="200" y="24" width="540" height="20" rx="3"/>
+</g>
+<g class="tx ">
+<text x="20" y="72" class="r" text-anchor="start">Model request</text>
+</g>
+<g class="bx ok"><rect x="200" y="58" width="100" height="20" rx="3"/>
+</g>
+<g class="tx ">
+<text x="20" y="106" class="r" text-anchor="start">Tool: Grep</text>
+</g>
+<g class="bx warn"><rect x="300" y="92" width="45" height="20" rx="3"/>
+</g>
+<g class="tx ">
+<text x="20" y="140" class="r" text-anchor="start">Subagent: explore</text>
+</g>
+<g class="bx a"><rect x="345" y="126" width="255" height="20" rx="3"/>
+</g>
+<g class="tx ">
+<text x="36" y="174" class="r" text-anchor="start">└ model request</text>
+</g>
+<g class="bx ok"><rect x="360" y="160" width="70" height="20" rx="3"/>
+</g>
+<g class="tx ">
+<text x="36" y="208" class="r" text-anchor="start">└ tool: Read</text>
+</g>
+<g class="bx warn"><rect x="430" y="194" width="160" height="20" rx="3"/>
+</g>
+<g class="tx ">
+<text x="20" y="242" class="r" text-anchor="start">Model request (answer)</text>
+</g>
+<g class="bx ok"><rect x="600" y="228" width="140" height="20" rx="3"/>
+</g>
+<text x="740" y="266" class="lb " text-anchor="end">time →</text>
+</svg>
+</div>
+<figcaption>Illustrative trace of one agent turn: a parent span with child spans for model requests, tools and a subagent with its own children. It shows where time and tokens went, which a flat list of API calls cannot.</figcaption>
+</figure>
+<!-- /dg:ap-trace -->
           <div class="grid">
             <div class="card accent"><h4>3 signals, all opt-in</h4><p><b>Metrics</b> (counters), <b>log events</b> (one record per event), <b>traces</b> (timed spans). <code>CLAUDE_CODE_ENABLE_TELEMETRY=1</code> only enables collection. Each signal also needs its <b>exporter</b> (<code>OTEL_METRICS_EXPORTER</code>, <code>OTEL_LOGS_EXPORTER</code>, <code>OTEL_TRACES_EXPORTER</code> plus the beta flag), a protocol and an endpoint.</p></div>
             <div class="card accent"><h4>Cardinality</h4><p><code>OTEL_METRICS_INCLUDE_SESSION_ID=false</code> drops session.id and keeps model. The export interval affects only how often data is flushed, not cardinality.</p></div>
@@ -389,6 +949,51 @@
           </div>
 
           <h3 class="sub"><span>5.1</span> Guardrails chosen from the threat model</h3>
+<!-- dg:ap-trust -->
+<figure class="dg" id="fig-ap-trust">
+<div class="dg-scroll">
+<svg viewBox="0 0 760 262" role="img" aria-label="Three input channels, their adversary, and the guard for each" style="min-width:608px;max-width:874px;margin:0 auto" xmlns="http://www.w3.org/2000/svg">
+<defs><marker id="ah-ap-trust" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="ah"/></marker><marker id="ah-ap-trust-a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="ah a"/></marker><marker id="ah-ap-trust-x" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="ah bad"/></marker><marker id="ah-ap-trust-o" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="ah ok"/></marker></defs>
+<g class="bx ok"><rect x="50" y="20" width="210" height="56" rx="7"/>
+<text x="155" y="44.5" class="b" text-anchor="middle">System prompt</text>
+<text x="155" y="59.5" class="s" text-anchor="middle">operator: trusted</text>
+</g>
+<path class="ln " d="M260,48 L300,48" marker-end="url(#ah-ap-trust)"/>
+<g class="bx "><rect x="300" y="20" width="230" height="56" rx="7"/>
+<text x="415" y="44.5" class="b" text-anchor="middle">Hardened rules</text>
+<text x="415" y="59.5" class="s" text-anchor="middle">+ untrusted-content policy</text>
+</g>
+<path class="ln " d="M530,48 L580,116" marker-end="url(#ah-ap-trust)"/>
+<g class="bx warn"><rect x="50" y="106" width="210" height="56" rx="7"/>
+<text x="155" y="130.5" class="b" text-anchor="middle">User message</text>
+<text x="155" y="145.5" class="s" text-anchor="middle">may be an attacker</text>
+</g>
+<path class="ln " d="M260,134 L300,134" marker-end="url(#ah-ap-trust)"/>
+<g class="bx "><rect x="300" y="106" width="230" height="56" rx="7"/>
+<text x="415" y="130.5" class="b" text-anchor="middle">Haiku pre-screen</text>
+<text x="415" y="145.5" class="s" text-anchor="middle">is_harmful verdict, validation</text>
+</g>
+<path class="ln " d="M530,134 L580,134" marker-end="url(#ah-ap-trust)"/>
+<g class="bx bad"><rect x="50" y="192" width="210" height="56" rx="7"/>
+<text x="155" y="216.5" class="b" text-anchor="middle">Web page, email, file</text>
+<text x="155" y="231.5" class="s" text-anchor="middle">third-party content</text>
+</g>
+<path class="ln " d="M260,220 L300,220" marker-end="url(#ah-ap-trust)"/>
+<g class="bx "><rect x="300" y="192" width="230" height="56" rx="7"/>
+<text x="415" y="216.5" class="b" text-anchor="middle">Inside tool_result only</text>
+<text x="415" y="231.5" class="s" text-anchor="middle">as a JSON-encoded string</text>
+</g>
+<path class="ln " d="M530,220 L580,152" marker-end="url(#ah-ap-trust)"/>
+<g class="bx a"><rect x="580" y="96" width="170" height="76" rx="7"/>
+<text x="665" y="138" class="b" text-anchor="middle">Claude</text>
+</g>
+<path class="ln d bad" d="M50,212 L26,212 L26,48 L50,48" marker-end="url(#ah-ap-trust-x)"/>
+<text x="26" y="140" class="xm" text-anchor="middle">✗</text>
+</svg>
+</div>
+<figcaption>Pick guards by who the adversary is. Users get a cheap pre-screen and repeat-offender handling; third-party content enters only as JSON-encoded tool_result data, never through the system prompt, which carries operator authority.</figcaption>
+</figure>
+<!-- /dg:ap-trust -->
           <div class="table-wrap"><table class="compare">
             <thead><tr><th>Adversary</th><th>Threat</th><th>Layered controls</th></tr></thead>
             <tbody>
@@ -414,14 +1019,78 @@
           <p>Prompt-level defences <b>reduce but don't stop</b> attacks, so red-team the system and <b>design for breach</b>: limit the blast radius and audit.</p>
 
           <h3 class="sub"><span>5.3</span> Human approval checkpoints</h3>
-          <div class="flow">
-            <div class="step"><b>1. Hooks</b><span>Can allow, deny or modify; hold even under bypass</span></div>
-            <div class="step"><b>2. Deny rules</b><span>Nothing later can lift them</span></div>
-            <div class="step"><b>3. Ask rules</b><span>Confirm</span></div>
-            <div class="step"><b>4. Permission mode</b><span>bypass, acceptEdits, plan…</span></div>
-            <div class="step"><b>5. Allow rules</b><span>A bare "Read" approves the whole tool</span></div>
-            <div class="step"><b>6. canUseTool</b><span>The person decides</span></div>
-          </div>
+<!-- dg:ap-perms -->
+<figure class="dg" id="fig-ap-perms">
+<div class="dg-scroll">
+<svg viewBox="0 0 860 214" role="img" aria-label="Permission pipeline: hooks, deny rules, ask rules, mode, allow rules, canUseTool" style="min-width:700px;max-width:989px;margin:0 auto" xmlns="http://www.w3.org/2000/svg">
+<defs><marker id="ah-ap-perms" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="ah"/></marker><marker id="ah-ap-perms-a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="ah a"/></marker><marker id="ah-ap-perms-x" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="ah bad"/></marker><marker id="ah-ap-perms-o" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="ah ok"/></marker></defs>
+<g class="bx a"><rect x="10" y="34" width="128" height="54" rx="7"/>
+<text x="74" y="57.5" class="b" text-anchor="middle">1 Hooks</text>
+<text x="74" y="72.5" class="s" text-anchor="middle">allow · deny · ask</text>
+</g>
+<path class="ln " d="M74,88 L74,124" marker-end="url(#ah-ap-perms)"/>
+<g class="bx a"><rect x="10" y="124" width="128" height="70" rx="7"/>
+<text x="74" y="155.5" class="r" text-anchor="middle">decides first</text>
+<text x="74" y="170.5" class="s" text-anchor="middle">holds under bypass</text>
+</g>
+<path class="ln " d="M138,61 L150,61" marker-end="url(#ah-ap-perms)"/>
+<g class="bx "><rect x="150" y="34" width="128" height="54" rx="7"/>
+<text x="214" y="57.5" class="b" text-anchor="middle">2 Deny rules</text>
+<text x="214" y="72.5" class="s" text-anchor="middle">blocks</text>
+</g>
+<path class="ln " d="M214,88 L214,124" marker-end="url(#ah-ap-perms)"/>
+<g class="bx bad"><rect x="150" y="124" width="128" height="70" rx="7"/>
+<text x="214" y="155.5" class="r" text-anchor="middle">blocked</text>
+<text x="214" y="170.5" class="s" text-anchor="middle">nothing lifts it</text>
+</g>
+<path class="ln " d="M278,61 L290,61" marker-end="url(#ah-ap-perms)"/>
+<g class="bx "><rect x="290" y="34" width="128" height="54" rx="7"/>
+<text x="354" y="57.5" class="b" text-anchor="middle">3 Ask rules</text>
+<text x="354" y="72.5" class="s" text-anchor="middle">asks</text>
+</g>
+<path class="ln " d="M354,88 L354,124" marker-end="url(#ah-ap-perms)"/>
+<g class="bx warn"><rect x="290" y="124" width="128" height="70" rx="7"/>
+<text x="354" y="163" class="r" text-anchor="middle">prompt the user</text>
+</g>
+<path class="ln " d="M418,61 L430,61" marker-end="url(#ah-ap-perms)"/>
+<g class="bx "><rect x="430" y="34" width="128" height="54" rx="7"/>
+<text x="494" y="57.5" class="b" text-anchor="middle">4 Mode</text>
+<text x="494" y="72.5" class="s" text-anchor="middle">per mode</text>
+</g>
+<path class="ln " d="M494,88 L494,124" marker-end="url(#ah-ap-perms)"/>
+<g class="bx "><rect x="430" y="124" width="128" height="70" rx="7"/>
+<text x="494" y="148" class="r" text-anchor="middle">bypass: approve</text>
+<text x="494" y="163" class="s" text-anchor="middle">acceptEdits: files</text>
+<text x="494" y="178" class="s" text-anchor="middle">plan: edits → 6</text>
+</g>
+<path class="ln " d="M558,61 L570,61" marker-end="url(#ah-ap-perms)"/>
+<g class="bx "><rect x="570" y="34" width="128" height="54" rx="7"/>
+<text x="634" y="57.5" class="b" text-anchor="middle">5 Allow rules</text>
+<text x="634" y="72.5" class="s" text-anchor="middle">approves</text>
+</g>
+<path class="ln " d="M634,88 L634,124" marker-end="url(#ah-ap-perms)"/>
+<g class="bx ok"><rect x="570" y="124" width="128" height="70" rx="7"/>
+<text x="634" y="155.5" class="r" text-anchor="middle">tool approved</text>
+<text x="634" y="170.5" class="s" text-anchor="middle">bare entry: all calls</text>
+</g>
+<path class="ln " d="M698,61 L710,61" marker-end="url(#ah-ap-perms)"/>
+<g class="bx a"><rect x="710" y="34" width="128" height="54" rx="7"/>
+<text x="774" y="57.5" class="b" text-anchor="middle">6 canUseTool</text>
+<text x="774" y="72.5" class="s" text-anchor="middle">a person</text>
+</g>
+<path class="ln " d="M774,88 L774,124" marker-end="url(#ah-ap-perms)"/>
+<g class="bx "><rect x="710" y="124" width="128" height="70" rx="7"/>
+<text x="774" y="155.5" class="r" text-anchor="middle">person decides</text>
+<text x="774" y="170.5" class="s" text-anchor="middle">dontAsk: denied</text>
+</g>
+<g class="tx ">
+<text x="430" y="19" class="s" text-anchor="middle">undecided calls move right; the first step that decides settles the call</text>
+</g>
+</svg>
+</div>
+<figcaption>Every tool call walks this pipeline and the first step that decides settles it. A person is asked only if nothing earlier approved or denied the call; hooks and deny rules still apply under bypassPermissions, and dontAsk turns the last step into a denial.</figcaption>
+</figure>
+<!-- /dg:ap-perms -->
           <div class="table-wrap"><table class="compare">
             <thead><tr><th>Mode</th><th>Behaviour</th></tr></thead>
             <tbody>
@@ -442,6 +1111,43 @@
               <tr><th>Amazon Bedrock, Google Cloud Agent Platform</th><td>The <b>cloud provider</b></td></tr>
             </tbody>
           </table></div>
+<!-- dg:ap-hipaa -->
+<figure class="dg" id="fig-ap-hipaa">
+<div class="dg-scroll">
+<svg viewBox="0 0 760 236" role="img" aria-label="The same request with an ineligible feature is rejected under HIPAA readiness and accepted under ZDR" style="min-width:608px;max-width:874px;margin:0 auto" xmlns="http://www.w3.org/2000/svg">
+<defs><marker id="ah-ap-hipaa" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="ah"/></marker><marker id="ah-ap-hipaa-a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="ah a"/></marker><marker id="ah-ap-hipaa-x" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="ah bad"/></marker><marker id="ah-ap-hipaa-o" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="ah ok"/></marker></defs>
+<g class="bx "><rect x="20" y="86" width="200" height="56" rx="7"/>
+<text x="120" y="110.5" class="b" text-anchor="middle">Ineligible feature</text>
+<text x="120" y="125.5" class="s" text-anchor="middle">used in a request</text>
+</g>
+<path class="ln " d="M220,104 L290,52" marker-end="url(#ah-ap-hipaa)"/>
+<path class="ln " d="M220,124 L290,178" marker-end="url(#ah-ap-hipaa)"/>
+<g class="bx a"><rect x="290" y="24" width="180" height="56" rx="7"/>
+<text x="380" y="48.5" class="b" text-anchor="middle">HIPAA-ready org</text>
+<text x="380" y="63.5" class="s" text-anchor="middle">BAA + eligible only</text>
+</g>
+<g class="bx a"><rect x="290" y="150" width="180" height="56" rx="7"/>
+<text x="380" y="174.5" class="b" text-anchor="middle">ZDR org</text>
+<text x="380" y="189.5" class="s" text-anchor="middle">zero data retention</text>
+</g>
+<path class="ln bad" d="M470,52 L540,52" marker-end="url(#ah-ap-hipaa-x)"/>
+<path class="ln " d="M470,178 L540,178" marker-end="url(#ah-ap-hipaa)"/>
+<g class="bx bad"><rect x="540" y="24" width="210" height="56" rx="7"/>
+<text x="645" y="48.5" class="b" text-anchor="middle">Rejected: 400</text>
+<text x="645" y="63.5" class="s" text-anchor="middle">the API refuses it</text>
+</g>
+<g class="bx warn"><rect x="540" y="150" width="210" height="56" rx="7"/>
+<text x="645" y="174.5" class="b" text-anchor="middle">Accepted</text>
+<text x="645" y="189.5" class="s" text-anchor="middle">feature&#x27;s own retention</text>
+</g>
+<g class="tx ">
+<text x="380" y="229" class="s" text-anchor="middle">HIPAA readiness is permanent · Covered Model under ZDR: 30-day retention in one workspace</text>
+</g>
+</svg>
+</div>
+<figcaption>The same request meets two different guards. HIPAA readiness makes the API reject features outside the BAA; zero data retention lets the request through, and that feature's own retention applies.</figcaption>
+</figure>
+<!-- /dg:ap-hipaa -->
           <ul>
             <li><b>HIPAA readiness</b> means a BAA plus a dedicated HIPAA-enabled organisation using <b>only BAA-eligible features</b>. The API <b>rejects</b> ineligible features. It's <b>permanent</b> and immediate.</li>
             <li>Under <b>ZDR</b>, the API <b>doesn't</b> block ineligible features: the request goes through, and that data follows the feature's own retention.</li>
@@ -525,6 +1231,54 @@
           </div>
 
           <h3 class="sub"><span>7.1</span> Settings scopes and precedence</h3>
+<!-- dg:ap-settings -->
+<figure class="dg" id="fig-ap-settings">
+<div class="dg-scroll">
+<svg viewBox="0 0 760 230" role="img" aria-label="Single-value settings take the highest scope; permission arrays merge and deny is checked first" style="min-width:608px;max-width:874px;margin:0 auto" xmlns="http://www.w3.org/2000/svg">
+<defs><marker id="ah-ap-settings" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="ah"/></marker><marker id="ah-ap-settings-a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="ah a"/></marker><marker id="ah-ap-settings-x" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="ah bad"/></marker><marker id="ah-ap-settings-o" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="ah ok"/></marker></defs>
+<g class="tx ">
+<text x="20" y="24" class="b" text-anchor="start">One value: highest scope wins</text>
+</g>
+<g class="bx dash"><rect x="20" y="36" width="300" height="36" rx="7"/>
+<text x="30" y="58" class="r" text-anchor="start">managed: not set</text>
+</g>
+<g class="bx ok"><rect x="20" y="78" width="300" height="36" rx="7"/>
+<text x="30" y="100" class="r" text-anchor="start">local: model = opus   ✓ wins</text>
+</g>
+<g class="bx "><rect x="20" y="120" width="300" height="36" rx="7"/>
+<text x="30" y="142" class="r" text-anchor="start">project: model = sonnet</text>
+</g>
+<g class="bx "><rect x="20" y="162" width="300" height="36" rx="7"/>
+<text x="30" y="184" class="r" text-anchor="start">user: model = haiku</text>
+</g>
+<g class="tx ">
+<text x="400" y="24" class="b" text-anchor="start">Permission rules: merged</text>
+</g>
+<g class="bx bad"><rect x="400" y="36" width="170" height="48" rx="7"/>
+<text x="485" y="55.5" class="b" text-anchor="middle">project</text>
+<text x="485" y="72.5" class="m" text-anchor="middle">deny Bash(aws *)</text>
+</g>
+<g class="bx ok"><rect x="400" y="110" width="170" height="48" rx="7"/>
+<text x="485" y="129.5" class="b" text-anchor="middle">local</text>
+<text x="485" y="146.5" class="m" text-anchor="middle">allow Bash(aws s3 ls)</text>
+</g>
+<path class="ln " d="M570,60 L600,84" marker-end="url(#ah-ap-settings)"/>
+<path class="ln " d="M570,134 L600,110" marker-end="url(#ah-ap-settings)"/>
+<g class="bx "><rect x="600" y="60" width="150" height="74" rx="7"/>
+<text x="675" y="86" class="b" text-anchor="middle">Merged set</text>
+<text x="675" y="101" class="s" text-anchor="middle">checked deny → ask</text>
+<text x="675" y="116" class="s" text-anchor="middle">→ allow</text>
+</g>
+<path class="ln bad" d="M675,134 L675,168" marker-end="url(#ah-ap-settings-x)"/>
+<g class="bx bad"><rect x="600" y="168" width="150" height="48" rx="7"/>
+<text x="675" y="188.5" class="m" text-anchor="middle">aws s3 ls</text>
+<text x="675" y="203.5" class="s" text-anchor="middle">blocked</text>
+</g>
+</svg>
+</div>
+<figcaption>Single-value keys take the highest scope that sets them. Permission arrays merge across scopes and are checked deny first, so a narrow local allow cannot carve an exception out of a project deny.</figcaption>
+</figure>
+<!-- /dg:ap-settings -->
           <div class="stack">
             <div class="layer" style="--i:0">Managed settings <small>organisation security policy</small></div>
             <div class="layer" style="--i:1">--settings JSON <small>one session</small></div>

@@ -38,6 +38,27 @@ Components: concept cards, callouts (key, trap, tip, note), flow diagrams, compa
 - "Done" checkboxes per domain, saved in your browser, with progress shown on the home page
 - Printing any page gives a compact cheat sheet with all flashcard answers expanded
 
+## Diagrams
+
+The SVG diagrams are plain inline SVG, styled by `assets/css/style.css`, so they follow light/dark mode and each exam's colour. They are described in Python so they stay consistent and easy to change:
+
+```
+tools/dglib.py            helpers: boxes, decisions, arrows, labels, placement
+tools/dg_ccao.py          CCAO-F diagrams
+tools/dg_ccarf.py         CCAR-F diagrams
+tools/dg_ccarp.py         CCAR-P diagrams
+tools/dg_site.py          home page and components page
+tools/build_diagrams.py   writes every diagram into its page
+```
+
+After editing a `tools/dg_*.py` file, run:
+
+```bash
+python3 tools/build_diagrams.py
+```
+
+Each diagram sits between `<!-- dg:ID -->` and `<!-- /dg:ID -->` markers in its page, and only that block is rewritten. The site itself still needs no build step.
+
 ## Preview locally
 
 ```bash

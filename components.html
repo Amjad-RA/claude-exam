@@ -259,7 +259,60 @@
 &lt;/div&gt;</code></pre></div></details>
         </section>
 
-        <section class="domain" id="code">
+        <!-- dg:demo -->
+<section class="domain" id="diagram">
+          <div class="domain-head"><h2>Diagram (SVG)</h2></div>
+          <p class="muted">Inline SVG styled by the site's theme, so it follows dark mode and the page's exam colour. Describe diagrams in <code>tools/dg_*.py</code> and run <code>python3 tools/build_diagrams.py</code>; the markup below is what the build writes.</p>
+<figure class="dg" id="fig-demo">
+<div class="dg-scroll">
+<svg viewBox="0 0 560 110" role="img" aria-label="Example diagram: input, process, output" style="min-width:420px;max-width:644px;margin:0 auto" xmlns="http://www.w3.org/2000/svg">
+<defs><marker id="ah-demo" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="ah"/></marker><marker id="ah-demo-a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="ah a"/></marker><marker id="ah-demo-x" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="ah bad"/></marker><marker id="ah-demo-o" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="ah ok"/></marker></defs>
+<g class="bx "><rect x="10" y="30" width="140" height="50" rx="7"/>
+<text x="80" y="51.5" class="b" text-anchor="middle">Input</text>
+<text x="80" y="66.5" class="s" text-anchor="middle">what arrives</text>
+</g>
+<path class="ln " d="M150,55 L210,55" marker-end="url(#ah-demo)"/>
+<text x="180" y="49" class="lb " text-anchor="middle">sends</text>
+<g class="bx a"><rect x="210" y="30" width="140" height="50" rx="7"/>
+<text x="280" y="51.5" class="b" text-anchor="middle">Process</text>
+<text x="280" y="66.5" class="s" text-anchor="middle">the step that matters</text>
+</g>
+<path class="ln " d="M350,55 L410,55" marker-end="url(#ah-demo)"/>
+<text x="380" y="49" class="lb " text-anchor="middle">returns</text>
+<g class="bx ok"><rect x="410" y="30" width="140" height="50" rx="7"/>
+<text x="480" y="59" class="b" text-anchor="middle">Output</text>
+</g>
+</svg>
+</div>
+<figcaption>A caption that states what the picture shows.</figcaption>
+</figure>
+          <details class="qa code-toggle"><summary>Show HTML</summary><div class="a"><pre><code>&lt;figure class=&quot;dg&quot; id=&quot;fig-demo&quot;&gt;
+&lt;div class=&quot;dg-scroll&quot;&gt;
+&lt;svg viewBox=&quot;0 0 560 110&quot; role=&quot;img&quot; aria-label=&quot;Example diagram: input, process, output&quot; style=&quot;min-width:420px;max-width:644px;margin:0 auto&quot; xmlns=&quot;http://www.w3.org/2000/svg&quot;&gt;
+&lt;defs&gt;&lt;marker id=&quot;ah-demo&quot; viewBox=&quot;0 0 10 10&quot; refX=&quot;9&quot; refY=&quot;5&quot; markerWidth=&quot;6.5&quot; markerHeight=&quot;6.5&quot; orient=&quot;auto-start-reverse&quot;&gt;&lt;path d=&quot;M0,0 L10,5 L0,10 z&quot; class=&quot;ah&quot;/&gt;&lt;/marker&gt;&lt;marker id=&quot;ah-demo-a&quot; viewBox=&quot;0 0 10 10&quot; refX=&quot;9&quot; refY=&quot;5&quot; markerWidth=&quot;6.5&quot; markerHeight=&quot;6.5&quot; orient=&quot;auto-start-reverse&quot;&gt;&lt;path d=&quot;M0,0 L10,5 L0,10 z&quot; class=&quot;ah a&quot;/&gt;&lt;/marker&gt;&lt;marker id=&quot;ah-demo-x&quot; viewBox=&quot;0 0 10 10&quot; refX=&quot;9&quot; refY=&quot;5&quot; markerWidth=&quot;6.5&quot; markerHeight=&quot;6.5&quot; orient=&quot;auto-start-reverse&quot;&gt;&lt;path d=&quot;M0,0 L10,5 L0,10 z&quot; class=&quot;ah bad&quot;/&gt;&lt;/marker&gt;&lt;marker id=&quot;ah-demo-o&quot; viewBox=&quot;0 0 10 10&quot; refX=&quot;9&quot; refY=&quot;5&quot; markerWidth=&quot;6.5&quot; markerHeight=&quot;6.5&quot; orient=&quot;auto-start-reverse&quot;&gt;&lt;path d=&quot;M0,0 L10,5 L0,10 z&quot; class=&quot;ah ok&quot;/&gt;&lt;/marker&gt;&lt;/defs&gt;
+&lt;g class=&quot;bx &quot;&gt;&lt;rect x=&quot;10&quot; y=&quot;30&quot; width=&quot;140&quot; height=&quot;50&quot; rx=&quot;7&quot;/&gt;
+&lt;text x=&quot;80&quot; y=&quot;51.5&quot; class=&quot;b&quot; text-anchor=&quot;middle&quot;&gt;Input&lt;/text&gt;
+&lt;text x=&quot;80&quot; y=&quot;66.5&quot; class=&quot;s&quot; text-anchor=&quot;middle&quot;&gt;what arrives&lt;/text&gt;
+&lt;/g&gt;
+&lt;path class=&quot;ln &quot; d=&quot;M150,55 L210,55&quot; marker-end=&quot;url(#ah-demo)&quot;/&gt;
+&lt;text x=&quot;180&quot; y=&quot;49&quot; class=&quot;lb &quot; text-anchor=&quot;middle&quot;&gt;sends&lt;/text&gt;
+&lt;g class=&quot;bx a&quot;&gt;&lt;rect x=&quot;210&quot; y=&quot;30&quot; width=&quot;140&quot; height=&quot;50&quot; rx=&quot;7&quot;/&gt;
+&lt;text x=&quot;280&quot; y=&quot;51.5&quot; class=&quot;b&quot; text-anchor=&quot;middle&quot;&gt;Process&lt;/text&gt;
+&lt;text x=&quot;280&quot; y=&quot;66.5&quot; class=&quot;s&quot; text-anchor=&quot;middle&quot;&gt;the step that matters&lt;/text&gt;
+&lt;/g&gt;
+&lt;path class=&quot;ln &quot; d=&quot;M350,55 L410,55&quot; marker-end=&quot;url(#ah-demo)&quot;/&gt;
+&lt;text x=&quot;380&quot; y=&quot;49&quot; class=&quot;lb &quot; text-anchor=&quot;middle&quot;&gt;returns&lt;/text&gt;
+&lt;g class=&quot;bx ok&quot;&gt;&lt;rect x=&quot;410&quot; y=&quot;30&quot; width=&quot;140&quot; height=&quot;50&quot; rx=&quot;7&quot;/&gt;
+&lt;text x=&quot;480&quot; y=&quot;59&quot; class=&quot;b&quot; text-anchor=&quot;middle&quot;&gt;Output&lt;/text&gt;
+&lt;/g&gt;
+&lt;/svg&gt;
+&lt;/div&gt;
+&lt;figcaption&gt;A caption that states what the picture shows.&lt;/figcaption&gt;
+&lt;/figure&gt;</code></pre></div></details>
+        </section>
+
+<!-- /dg:demo -->
+<section class="domain" id="code">
           <div class="domain-head"><h2>Code snippet</h2></div>
           <p class="muted">For API calls, config or prompts.</p>
           <pre><code>{

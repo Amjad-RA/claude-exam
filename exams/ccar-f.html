@@ -83,12 +83,52 @@
           </div>
 
           <h3 class="sub"><span>1.1</span> The agentic loop: control flow driven by stop_reason</h3>
-          <div class="flow loop">
-            <div class="step"><b>Send request</b><span>The full history plus the tools</span></div>
-            <div class="step"><b>Read stop_reason</b><span>The only field that controls the loop</span></div>
-            <div class="step"><b>"tool_use"</b><span>Run the tools</span></div>
-            <div class="step"><b>Add to history</b><span>The assistant turn, then a user turn with a tool_result for each tool_use_id</span></div>
-          </div>
+<!-- dg:af-loop -->
+<figure class="dg" id="fig-af-loop">
+<div class="dg-scroll">
+<svg viewBox="0 0 760 270" role="img" aria-label="The agentic loop: send, Claude generates, branch on stop_reason, run tools, append results, send again" style="min-width:608px;max-width:874px;margin:0 auto" xmlns="http://www.w3.org/2000/svg">
+<defs><marker id="ah-af-loop" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="ah"/></marker><marker id="ah-af-loop-a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="ah a"/></marker><marker id="ah-af-loop-x" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="ah bad"/></marker><marker id="ah-af-loop-o" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="ah ok"/></marker></defs>
+<g class="bx "><rect x="20" y="82" width="140" height="56" rx="7"/>
+<text x="90" y="106.5" class="b" text-anchor="middle">Send request</text>
+<text x="90" y="121.5" class="s" text-anchor="middle">history + tools</text>
+</g>
+<path class="ln " d="M160,110 L180,110" marker-end="url(#ah-af-loop)"/>
+<g class="bx a"><rect x="180" y="82" width="115" height="56" rx="7"/>
+<text x="237.5" y="106.5" class="b" text-anchor="middle">Claude</text>
+<text x="237.5" y="121.5" class="s" text-anchor="middle">generates</text>
+</g>
+<path class="ln " d="M295,110 L310,110" marker-end="url(#ah-af-loop)"/>
+<g class="dm a" data-maxw="125.4"><polygon points="405,68 500,110 405,152 310,110"/>
+<text x="405" y="114" class="b" text-anchor="middle">stop_reason?</text>
+</g>
+<path class="ln " d="M405,68 L405,39 L570,39" marker-end="url(#ah-af-loop)"/>
+<text x="487" y="31" class="lb " text-anchor="middle">anything else</text>
+<g class="bx warn"><rect x="570" y="14" width="180" height="50" rx="7"/>
+<text x="660" y="35.5" class="b" text-anchor="middle">Handle the exit</text>
+<text x="660" y="50.5" class="s" text-anchor="middle">max_tokens · refusal · …</text>
+</g>
+<path class="ln " d="M500,110 L570,110" marker-end="url(#ah-af-loop)"/>
+<text x="535" y="102" class="lb " text-anchor="middle">end_turn</text>
+<g class="bx ok"><rect x="570" y="88" width="180" height="44" rx="7"/>
+<text x="660" y="114" class="b" text-anchor="middle">Done: use the answer</text>
+</g>
+<path class="ln a" d="M405,152 L405,196" marker-end="url(#ah-af-loop-a)"/>
+<text x="413" y="178" class="lb " text-anchor="start">tool_use</text>
+<g class="bx "><rect x="335" y="196" width="140" height="48" rx="7"/>
+<text x="405" y="224" class="b" text-anchor="middle">Run the tools</text>
+</g>
+<path class="ln a" d="M335,220 L310,220" marker-end="url(#ah-af-loop-a)"/>
+<g class="bx "><rect x="110" y="192" width="200" height="56" rx="7"/>
+<text x="210" y="216.5" class="b" text-anchor="middle">Append to history</text>
+<text x="210" y="231.5" class="s" text-anchor="middle">turn + tool_result per id</text>
+</g>
+<path class="ln a" d="M110,220 L90,220 L90,138" marker-end="url(#ah-af-loop-a)"/>
+<text x="84" y="180" class="lb " text-anchor="end">next request</text>
+</svg>
+</div>
+<figcaption>One field drives the loop: "tool_use" means run the tools, append the results and send again; any other stop_reason exits. A turn cap is a safety net, reported as error_max_turns, not success.</figcaption>
+</figure>
+<!-- /dg:af-loop -->
           <div class="table-wrap"><table class="compare">
             <thead><tr><th>stop_reason</th><th>Meaning</th><th>Action</th></tr></thead>
             <tbody>
@@ -107,6 +147,47 @@
           </div>
 
           <h3 class="sub"><span>1.2</span> Coordinator–subagent orchestration (hub and spoke)</h3>
+<!-- dg:af-hub -->
+<figure class="dg" id="fig-af-hub">
+<div class="dg-scroll">
+<svg viewBox="0 0 760 306" role="img" aria-label="Coordinator with three subagents: spawn prompts go down, only final messages come back" style="min-width:608px;max-width:874px;margin:0 auto" xmlns="http://www.w3.org/2000/svg">
+<defs><marker id="ah-af-hub" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="ah"/></marker><marker id="ah-af-hub-a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="ah a"/></marker><marker id="ah-af-hub-x" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="ah bad"/></marker><marker id="ah-af-hub-o" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="ah ok"/></marker></defs>
+<g class="bx a"><rect x="270" y="16" width="220" height="84" rx="7"/>
+<text x="380" y="47" class="b" text-anchor="middle">Coordinator</text>
+<text x="380" y="62" class="s" text-anchor="middle">full history</text>
+<text x="380" y="77" class="s" text-anchor="middle">the user&#x27;s decisions</text>
+</g>
+<path class="ln a" d="M330,100 L100,206" marker-end="url(#ah-af-hub-a)"/>
+<path class="ln d" d="M140,206 L350,100" marker-end="url(#ah-af-hub)"/>
+<g class="bx "><rect x="20" y="206" width="200" height="72" rx="7"/>
+<text x="120" y="231" class="b" text-anchor="middle">Subagent</text>
+<text x="120" y="246" class="s" text-anchor="middle">fresh, empty context</text>
+<text x="120" y="261" class="s" text-anchor="middle">own prompt + spawn prompt</text>
+</g>
+<path class="ln a" d="M370,100 L360,206" marker-end="url(#ah-af-hub-a)"/>
+<path class="ln d" d="M400,206 L390,100" marker-end="url(#ah-af-hub)"/>
+<g class="bx "><rect x="280" y="206" width="200" height="72" rx="7"/>
+<text x="380" y="231" class="b" text-anchor="middle">Subagent</text>
+<text x="380" y="246" class="s" text-anchor="middle">fresh, empty context</text>
+<text x="380" y="261" class="s" text-anchor="middle">own prompt + spawn prompt</text>
+</g>
+<path class="ln a" d="M410,100 L620,206" marker-end="url(#ah-af-hub-a)"/>
+<path class="ln d" d="M660,206 L430,100" marker-end="url(#ah-af-hub)"/>
+<g class="bx "><rect x="540" y="206" width="200" height="72" rx="7"/>
+<text x="640" y="231" class="b" text-anchor="middle">Subagent</text>
+<text x="640" y="246" class="s" text-anchor="middle">fresh, empty context</text>
+<text x="640" y="261" class="s" text-anchor="middle">own prompt + spawn prompt</text>
+</g>
+<text x="195" y="150" class="lb " text-anchor="end">spawn prompt: all it gets</text>
+<text x="565" y="150" class="lb " text-anchor="start">final message only</text>
+<text x="250" y="248" class="xm" text-anchor="middle">✗</text>
+<text x="510" y="248" class="xm" text-anchor="middle">✗</text>
+<text x="380" y="300" class="lb " text-anchor="middle">subagents never talk to each other</text>
+</svg>
+</div>
+<figcaption>Hub and spoke: each subagent starts empty, sees only its own system prompt plus what the coordinator writes into the spawn, and sends back only its final message. Several Task calls in one response run in parallel.</figcaption>
+</figure>
+<!-- /dg:af-hub -->
           <ul>
             <li>All communication goes <b>through the coordinator</b>. Subagents never talk to each other, which gives you observability, error handling and controlled information flow.</li>
             <li>Choose <b>subagents per query</b>. Don't run the full pipeline every time: parallelism cuts wall-clock time, but every call is still paid for.</li>
@@ -132,15 +213,105 @@
           </ul>
 
           <h3 class="sub"><span>1.4</span> Prerequisite gates and human handoff</h3>
-          <div class="flow">
-            <div class="step"><b>PostToolUse on get_customer</b><span>Records "verified" only after a <b>successful</b> call</span></div>
-            <div class="step"><b>PreToolUse on process_refund</b><span>Denies the call until that record exists</span></div>
-            <div class="step"><b>Claude plans the order</b><span>But cannot skip the step</span></div>
-          </div>
+<!-- dg:af-gate -->
+<figure class="dg" id="fig-af-gate">
+<div class="dg-scroll">
+<svg viewBox="0 0 760 256" role="img" aria-label="Prerequisite gate: PostToolUse records a verified lookup, PreToolUse blocks the refund until the record exists" style="min-width:608px;max-width:874px;margin:0 auto" xmlns="http://www.w3.org/2000/svg">
+<defs><marker id="ah-af-gate" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="ah"/></marker><marker id="ah-af-gate-a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="ah a"/></marker><marker id="ah-af-gate-x" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="ah bad"/></marker><marker id="ah-af-gate-o" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="ah ok"/></marker></defs>
+<g class="bx "><rect x="40" y="20" width="170" height="44" rx="7"/>
+<text x="125" y="46" class="b" text-anchor="middle">get_customer</text>
+</g>
+<g class="bx "><rect x="520" y="20" width="200" height="44" rx="7"/>
+<text x="620" y="46" class="b" text-anchor="middle">process_refund</text>
+</g>
+<path class="ln " d="M125,64 L125,110" marker-end="url(#ah-af-gate)"/>
+<text x="131" y="92" class="lb " text-anchor="start">succeeds</text>
+<path class="ln " d="M620,64 L620,110" marker-end="url(#ah-af-gate)"/>
+<text x="626" y="92" class="lb " text-anchor="start">attempted</text>
+<g class="bx a"><rect x="40" y="110" width="170" height="50" rx="7"/>
+<text x="125" y="131.5" class="b" text-anchor="middle">PostToolUse</text>
+<text x="125" y="146.5" class="s" text-anchor="middle">after a successful call</text>
+</g>
+<g class="bx a"><rect x="520" y="110" width="200" height="50" rx="7"/>
+<text x="620" y="131.5" class="b" text-anchor="middle">PreToolUse</text>
+<text x="620" y="146.5" class="s" text-anchor="middle">before the call runs</text>
+</g>
+<g class="bx dash"><rect x="290" y="108" width="150" height="54" rx="7"/>
+<text x="365" y="131.5" class="b" text-anchor="middle">Session state</text>
+<text x="365" y="146.5" class="s" text-anchor="middle">verified: cust_123</text>
+</g>
+<path class="ln " d="M210,135 L290,135" marker-end="url(#ah-af-gate)"/>
+<text x="250" y="129" class="lb " text-anchor="middle">writes</text>
+<path class="ln " d="M520,135 L440,135" marker-end="url(#ah-af-gate)"/>
+<text x="480" y="129" class="lb " text-anchor="middle">reads</text>
+<path class="ln bad" d="M580,160 L515,200" marker-end="url(#ah-af-gate-x)"/>
+<path class="ln ok" d="M660,160 L685,200" marker-end="url(#ah-af-gate-o)"/>
+<text x="540" y="178" class="lb " text-anchor="end">no record</text>
+<text x="678" y="178" class="lb " text-anchor="start">verified</text>
+<g class="bx bad"><rect x="430" y="200" width="170" height="44" rx="7"/>
+<text x="515" y="226" class="b" text-anchor="middle">deny + reason</text>
+</g>
+<g class="bx ok"><rect x="620" y="200" width="130" height="44" rx="7"/>
+<text x="685" y="226" class="b" text-anchor="middle">refund runs</text>
+</g>
+</svg>
+</div>
+<figcaption>The order is enforced outside the model: a record is written only after the lookup succeeds, and the refund tool is blocked until that record exists. A prompt can ask for this order; only the gate guarantees it.</figcaption>
+</figure>
+<!-- /dg:af-gate -->
           <div class="callout trap"><div><strong class="label">Exam traps</strong>Writing the marker in PreToolUse on get_customer is wrong, because the marker exists even if the lookup fails. A system-prompt rule like "verify identity first" is guidance, not enforcement. A matcher like <code>.*refund</code> is an unanchored regex that also matches <code>issue_refund_note</code>; use <code>^process_refund$</code> or the plain exact name.</div></div>
           <p><b>Multi-concern requests:</b> run parallel investigations that share the case context, then combine them into one resolution. <b>Handoff to a human:</b> a structured summary they can act on <b>without reading the transcript</b>.</p>
 
           <h3 class="sub"><span>1.5</span> Agent SDK hooks</h3>
+<!-- dg:af-hooks -->
+<figure class="dg" id="fig-af-hooks">
+<div class="dg-scroll">
+<svg viewBox="0 0 800 220" role="img" aria-label="Tool call path through PreToolUse and PostToolUse hooks" style="min-width:640px;max-width:920px;margin:0 auto" xmlns="http://www.w3.org/2000/svg">
+<defs><marker id="ah-af-hooks" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="ah"/></marker><marker id="ah-af-hooks-a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="ah a"/></marker><marker id="ah-af-hooks-x" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="ah bad"/></marker><marker id="ah-af-hooks-o" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="ah ok"/></marker></defs>
+<g class="bx "><rect x="10" y="40" width="120" height="56" rx="7"/>
+<text x="70" y="64.5" class="b" text-anchor="middle">Claude</text>
+<text x="70" y="79.5" class="s" text-anchor="middle">emits tool_use</text>
+</g>
+<path class="ln " d="M130,68 L165,68" marker-end="url(#ah-af-hooks)"/>
+<g class="bx a"><rect x="165" y="40" width="160" height="56" rx="7"/>
+<text x="245" y="64.5" class="b" text-anchor="middle">PreToolUse</text>
+<text x="245" y="79.5" class="s" text-anchor="middle">name match → callback</text>
+</g>
+<path class="ln " d="M325,68 L360,68" marker-end="url(#ah-af-hooks)"/>
+<text x="342" y="60" class="lb " text-anchor="middle">allow</text>
+<g class="bx "><rect x="360" y="40" width="110" height="56" rx="7"/>
+<text x="415" y="72" class="b" text-anchor="middle">Tool runs</text>
+</g>
+<path class="ln " d="M470,68 L505,68" marker-end="url(#ah-af-hooks)"/>
+<g class="bx a"><rect x="505" y="40" width="150" height="56" rx="7"/>
+<text x="580" y="64.5" class="b" text-anchor="middle">PostToolUse</text>
+<text x="580" y="79.5" class="s" text-anchor="middle">updatedToolOutput</text>
+</g>
+<path class="ln " d="M655,68 L690,68" marker-end="url(#ah-af-hooks)"/>
+<g class="bx "><rect x="690" y="40" width="100" height="56" rx="7"/>
+<text x="740" y="64.5" class="b" text-anchor="middle">Claude</text>
+<text x="740" y="79.5" class="s" text-anchor="middle">reads result</text>
+</g>
+<g class="tx ">
+<text x="580" y="115.5" class="s" text-anchor="middle">mixed formats in,</text>
+<text x="580" y="130.5" class="s" text-anchor="middle">one format out</text>
+</g>
+<path class="ln bad" d="M245,96 L245,150" marker-end="url(#ah-af-hooks-x)"/>
+<text x="251" y="128" class="lb " text-anchor="start">deny</text>
+<g class="bx bad"><rect x="150" y="150" width="190" height="56" rx="7"/>
+<text x="245" y="174.5" class="b" text-anchor="middle">Blocked</text>
+<text x="245" y="189.5" class="s" text-anchor="middle">reason names the next step</text>
+</g>
+<path class="ln " d="M340,178 L390,178" marker-end="url(#ah-af-hooks)"/>
+<g class="bx "><rect x="390" y="150" width="190" height="56" rx="7"/>
+<text x="485" y="174.5" class="b" text-anchor="middle">Agent follows it</text>
+<text x="485" y="189.5" class="s" text-anchor="middle">e.g. escalate_refund</text>
+</g>
+</svg>
+</div>
+<figcaption>PreToolUse decides before a call runs (allow, deny with a reason, or ask); PostToolUse can rewrite the result before Claude reads it. Matchers test only the tool name; argument checks go in the callback.</figcaption>
+</figure>
+<!-- /dg:af-hooks -->
           <div class="grid cols-2">
             <div class="card accent"><h4>Matcher rules (tested against the tool name only)</h4><ul><li><code>*</code>, an empty string or no matcher: <b>all tools</b></li><li>Only letters, digits, <code>_ - , |</code> and spaces: <b>exact name(s)</b>, e.g. <code>Edit|Write</code></li><li>Any other character: an <b>unanchored regex</b>, e.g. <code>mcp__billing__.*</code> for every tool on one server</li><li>MCP tools are named <code>mcp__&lt;server&gt;__&lt;action&gt;</code></li><li>Conditions on <b>arguments</b> go in the callback, reading <code>tool_input</code></li></ul></div>
             <div class="card accent"><h4>Decisions and normalisation</h4><ul><li>PreToolUse returns <code>"deny"</code> with a <b>permissionDecisionReason</b> that names the alternative (e.g. "call escalate_refund"), so the agent doesn't keep retrying</li><li><code>"ask"</code> brings back a prompt; Claude never sees <code>systemMessage</code></li><li>PostToolUse with <b><code>updatedToolOutput</code></b> replaces the output of <b>any</b> tool. <code>updatedMCPToolOutput</code> works only for MCP tools.</li><li>Use it to normalise mixed formats (Unix epochs, ISO dates, status codes) before Claude reads them</li></ul></div>
@@ -148,6 +319,44 @@
           <div class="callout key"><div><strong class="label">Rule</strong>Anything that must be guaranteed (refund limits, ordering, compliance) belongs in a <b>hook</b>. A prompt instruction always has some failure rate.</div></div>
 
           <h3 class="sub"><span>1.6</span> Task decomposition: fixed chain or adaptive?</h3>
+<!-- dg:af-decomp -->
+<figure class="dg" id="fig-af-decomp">
+<div class="dg-scroll">
+<svg viewBox="0 0 760 246" role="img" aria-label="Decision: prompt chain, parallel sections or adaptive orchestrator" style="min-width:608px;max-width:874px;margin:0 auto" xmlns="http://www.w3.org/2000/svg">
+<defs><marker id="ah-af-decomp" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="ah"/></marker><marker id="ah-af-decomp-a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="ah a"/></marker><marker id="ah-af-decomp-x" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="ah bad"/></marker><marker id="ah-af-decomp-o" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="ah ok"/></marker></defs>
+<g class="dm " data-maxw="138.6"><polygon points="120,62 225,110 120,158 15,110"/>
+<text x="120" y="105.5" class="b" text-anchor="middle">Subtasks known</text>
+<text x="120" y="122.5" class="b" text-anchor="middle">before the run?</text>
+</g>
+<path class="ln " d="M225,110 L250,110 L250,64 L280,64" marker-end="url(#ah-af-decomp)"/>
+<text x="256" y="92" class="lb " text-anchor="start">yes</text>
+<g class="dm " data-maxw="145.2"><polygon points="390,19 500,64 390,109 280,64"/>
+<text x="390" y="59.5" class="b" text-anchor="middle">Each step needs</text>
+<text x="390" y="76.5" class="b" text-anchor="middle">the last output?</text>
+</g>
+<path class="ln " d="M500,64 L530,64 L530,32 L560,32" marker-end="url(#ah-af-decomp)"/>
+<path class="ln " d="M530,64 L530,104 L560,104" marker-end="url(#ah-af-decomp)"/>
+<text x="536" y="50" class="lb " text-anchor="start">yes</text>
+<text x="536" y="92" class="lb " text-anchor="start">no</text>
+<g class="bx "><rect x="560" y="8" width="190" height="48" rx="7"/>
+<text x="655" y="28.5" class="b" text-anchor="middle">Prompt chain</text>
+<text x="655" y="43.5" class="s" text-anchor="middle">code sequences, gates</text>
+</g>
+<g class="bx "><rect x="560" y="80" width="190" height="48" rx="7"/>
+<text x="655" y="100.5" class="b" text-anchor="middle">Parallel sections</text>
+<text x="655" y="115.5" class="s" text-anchor="middle">+ integration pass</text>
+</g>
+<path class="ln " d="M120,158 L120,206 L300,206" marker-end="url(#ah-af-decomp)"/>
+<text x="126" y="186" class="lb " text-anchor="start">no</text>
+<g class="bx a"><rect x="300" y="182" width="230" height="48" rx="7"/>
+<text x="415" y="202.5" class="b" text-anchor="middle">Adaptive orchestrator</text>
+<text x="415" y="217.5" class="s" text-anchor="middle">next task from findings</text>
+</g>
+</svg>
+</div>
+<figcaption>Ask one question first: can you write the subtask list before the run? If yes, your code sequences or parallelises the steps; if the work only reveals itself as you go, an orchestrator plans each next step from what it found.</figcaption>
+</figure>
+<!-- /dg:af-decomp -->
           <div class="table-wrap"><table class="compare">
             <thead><tr><th>Can you list the subtasks before the run?</th><th>Pattern</th><th>Example</th></tr></thead>
             <tbody>
@@ -163,6 +372,51 @@
           </ul>
 
           <h3 class="sub"><span>1.7</span> Sessions: continue, resume, fork</h3>
+<!-- dg:af-sessions -->
+<figure class="dg" id="fig-af-sessions">
+<div class="dg-scroll">
+<svg viewBox="0 0 780 230" role="img" aria-label="Sessions as timelines: resume by name, continue picks the latest, fork creates a new branch" style="min-width:624px;max-width:897px;margin:0 auto" xmlns="http://www.w3.org/2000/svg">
+<defs><marker id="ah-af-sessions" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="ah"/></marker><marker id="ah-af-sessions-a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="ah a"/></marker><marker id="ah-af-sessions-x" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="ah bad"/></marker><marker id="ah-af-sessions-o" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="ah ok"/></marker></defs>
+<path class="ln " d="M200,50 L500,50"/>
+<circle class="dot m" cx="260" cy="50" r="5"/>
+<circle class="dot m" cx="380" cy="50" r="5"/>
+<circle class="dot m" cx="500" cy="50" r="5"/>
+<g class="tx ">
+<text x="200" y="34" class="b" text-anchor="start">C · most recent</text>
+</g>
+<path class="ln " d="M40,120 L400,120"/>
+<circle class="dot a" cx="80" cy="120" r="5"/>
+<circle class="dot a" cx="160" cy="120" r="5"/>
+<circle class="dot a" cx="240" cy="120" r="5"/>
+<circle class="dot a" cx="320" cy="120" r="5"/>
+<circle class="dot a" cx="400" cy="120" r="5"/>
+<g class="tx ">
+<text x="40" y="104" class="b" text-anchor="start">A · payment-retry-bug</text>
+</g>
+<path class="ln a" d="M240,120 L280,180 L500,180"/>
+<circle class="dot a" cx="360" cy="180" r="5"/>
+<circle class="dot a" cx="440" cy="180" r="5"/>
+<circle class="dot a" cx="500" cy="180" r="5"/>
+<g class="tx ">
+<text x="310" y="210" class="b" text-anchor="start">B · fork of A (A unchanged)</text>
+</g>
+<path class="ln a" d="M552,120 L412,120" marker-end="url(#ah-af-sessions-a)"/>
+<g class="tx ">
+<text x="560" y="124" class="m" text-anchor="start">--resume payment-retry-bug</text>
+</g>
+<path class="ln " d="M552,50 L512,50" marker-end="url(#ah-af-sessions)"/>
+<g class="tx ">
+<text x="560" y="54" class="m" text-anchor="start">--continue → latest in dir</text>
+</g>
+<path class="ln a" d="M552,180 L512,180" marker-end="url(#ah-af-sessions-a)"/>
+<g class="tx ">
+<text x="560" y="184" class="m" text-anchor="start">fork_session() → resume</text>
+</g>
+</svg>
+</div>
+<figcaption>continue takes whatever session is most recent in the directory; resume names the one you want; a fork copies history into a new session and leaves the original intact, without its "allow for this session" grants. A resumed session replays old tool results, so name any files that changed.</figcaption>
+</figure>
+<!-- /dg:af-sessions -->
           <div class="table-wrap"><table class="compare">
             <thead><tr><th>Option</th><th>What it does</th><th>Watch out</th></tr></thead>
             <tbody>
@@ -202,6 +456,56 @@
           <div class="callout trap"><div><strong class="label">Exam trap</strong>Changing the order of tools in the array or adding backend priorities adds <b>no signal</b>. <code>input_examples</code> only <i>supplement</i> a description; they don't say when to use the tool.</div></div>
 
           <h3 class="sub"><span>2.2</span> Structured error responses for MCP tools</h3>
+<!-- dg:af-errors -->
+<figure class="dg" id="fig-af-errors">
+<div class="dg-scroll">
+<svg viewBox="0 0 760 250" role="img" aria-label="Decision tree for MCP tool results: success, transient, validation, business, permission" style="min-width:608px;max-width:874px;margin:0 auto" xmlns="http://www.w3.org/2000/svg">
+<defs><marker id="ah-af-errors" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="ah"/></marker><marker id="ah-af-errors-a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="ah a"/></marker><marker id="ah-af-errors-x" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="ah bad"/></marker><marker id="ah-af-errors-o" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="ah ok"/></marker></defs>
+<g class="dm " data-maxw="125.4"><polygon points="110,35 205,80 110,125 15,80"/>
+<text x="110" y="75.5" class="b" text-anchor="middle">Tool answered</text>
+<text x="110" y="92.5" class="b" text-anchor="middle">the question?</text>
+</g>
+<path class="ln ok" d="M110,125 L110,176" marker-end="url(#ah-af-errors-o)"/>
+<text x="118" y="156" class="lb " text-anchor="start">yes</text>
+<g class="bx ok"><rect x="20" y="176" width="180" height="56" rx="7"/>
+<text x="110" y="200.5" class="b" text-anchor="middle">Success</text>
+<text x="110" y="215.5" class="s" text-anchor="middle">0 matches is fine</text>
+</g>
+<path class="ln bad" d="M205,80 L305,80" marker-end="url(#ah-af-errors-x)"/>
+<text x="255" y="72" class="lb " text-anchor="middle">isError: true</text>
+<g class="dm " data-maxw="125.4"><polygon points="400,35 495,80 400,125 305,80"/>
+<text x="400" y="75.5" class="b" text-anchor="middle">Same request</text>
+<text x="400" y="92.5" class="b" text-anchor="middle">works later?</text>
+</g>
+<path class="ln " d="M495,80 L560,80" marker-end="url(#ah-af-errors)"/>
+<text x="527" y="72" class="lb " text-anchor="middle">yes</text>
+<g class="bx ok"><rect x="560" y="52" width="190" height="56" rx="7"/>
+<text x="655" y="76.5" class="b" text-anchor="middle">transient</text>
+<text x="655" y="91.5" class="s" text-anchor="middle">isRetryable: true</text>
+</g>
+<path class="ln " d="M400,125 L400,152"/>
+<path class="ln " d="M305,152 L635,152"/>
+<text x="410" y="146" class="lb " text-anchor="start">no · isRetryable: false</text>
+<path class="ln " d="M305,152 L305,176" marker-end="url(#ah-af-errors)"/>
+<g class="bx warn"><rect x="230" y="176" width="150" height="56" rx="7"/>
+<text x="305" y="200.5" class="b" text-anchor="middle">validation</text>
+<text x="305" y="215.5" class="s" text-anchor="middle">fix the input</text>
+</g>
+<path class="ln " d="M470,152 L470,176" marker-end="url(#ah-af-errors)"/>
+<g class="bx warn"><rect x="395" y="176" width="150" height="56" rx="7"/>
+<text x="470" y="200.5" class="b" text-anchor="middle">business</text>
+<text x="470" y="215.5" class="s" text-anchor="middle">explain the policy</text>
+</g>
+<path class="ln " d="M635,152 L635,176" marker-end="url(#ah-af-errors)"/>
+<g class="bx warn"><rect x="560" y="176" width="150" height="56" rx="7"/>
+<text x="635" y="200.5" class="b" text-anchor="middle">permission</text>
+<text x="635" y="215.5" class="s" text-anchor="middle">new credential</text>
+</g>
+</svg>
+</div>
+<figcaption>A query that ran and found nothing is a success. Real failures come back as isError results with a category, and isRetryable answers one question: would the identical request succeed if sent again?</figcaption>
+</figure>
+<!-- /dg:af-errors -->
           <div class="table-wrap"><table class="compare">
             <thead><tr><th>Channel</th><th>Used for</th><th>Does the model see it?</th></tr></thead>
             <tbody>
@@ -279,6 +583,49 @@
           </div>
 
           <h3 class="sub"><span>3.1</span> The CLAUDE.md hierarchy</h3>
+<!-- dg:af-claudemd -->
+<figure class="dg" id="fig-af-claudemd">
+<div class="dg-scroll">
+<svg viewBox="0 0 760 236" role="img" aria-label="Which CLAUDE.md files load at launch and which load on demand" style="min-width:608px;max-width:874px;margin:0 auto" xmlns="http://www.w3.org/2000/svg">
+<defs><marker id="ah-af-claudemd" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="ah"/></marker><marker id="ah-af-claudemd-a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="ah a"/></marker><marker id="ah-af-claudemd-x" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="ah bad"/></marker><marker id="ah-af-claudemd-o" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="ah ok"/></marker></defs>
+<g class="tx ">
+<text x="24" y="22" class="b" text-anchor="start">Working directory: repo/</text>
+</g>
+<g class="tx ">
+<text x="24" y="58" class="m" text-anchor="start">~/.claude/CLAUDE.md</text>
+</g>
+<g class="bx a"><rect x="380" y="40" width="360" height="28" rx="14"/>
+<text x="390" y="58" class="r" text-anchor="start">launch · user level, only you</text>
+</g>
+<g class="tx ">
+<text x="24" y="96" class="m" text-anchor="start">repo/CLAUDE.md</text>
+</g>
+<g class="bx a"><rect x="380" y="78" width="360" height="28" rx="14"/>
+<text x="390" y="96" class="r" text-anchor="start">launch · project, the team via git</text>
+</g>
+<g class="tx ">
+<text x="24" y="134" class="m" text-anchor="start">repo/api/CLAUDE.md</text>
+</g>
+<g class="bx dash"><rect x="380" y="116" width="360" height="28" rx="14"/>
+<text x="390" y="134" class="r" text-anchor="start">on demand · when api/ files are read</text>
+</g>
+<g class="tx ">
+<text x="24" y="172" class="m" text-anchor="start">repo/.claude/rules/tests.md</text>
+</g>
+<g class="bx a"><rect x="380" y="154" width="360" height="28" rx="14"/>
+<text x="390" y="172" class="r" text-anchor="start">launch, or on match if it has paths:</text>
+</g>
+<g class="tx ">
+<text x="24" y="210" class="m" text-anchor="start">@path import in a loaded file</text>
+</g>
+<g class="bx a"><rect x="380" y="192" width="360" height="28" rx="14"/>
+<text x="390" y="210" class="r" text-anchor="start">loads whenever its importer loads</text>
+</g>
+</svg>
+</div>
+<figcaption>Where a CLAUDE.md lives decides who gets it and when it loads: files at and above the working directory load at launch, files below it load only when Claude reads there. /memory shows what actually loaded.</figcaption>
+</figure>
+<!-- /dg:af-claudemd -->
           <div class="stack">
             <div class="layer" style="--i:0">Managed settings <small>policy nobody can override, e.g. /etc/claude-code/</small></div>
             <div class="layer" style="--i:1">User: ~/.claude/CLAUDE.md <small>only you, every project</small></div>
@@ -306,6 +653,16 @@ paths:
   - "src/api/**/*.ts"
   - "src/**/*.{ts,tsx}"
 ---</code></pre>
+<!-- dg:af-glob -->
+<div class="table-wrap"><table class="compare">
+            <thead><tr><th>File</th><th><code>terraform/*</code></th><th><code>terraform/**/*</code></th><th><code>api/**/*.ts</code></th><th><code>src/api/**/*.ts</code></th></tr></thead>
+            <tbody>
+              <tr><th><code>terraform/main.tf</code></th><td class="yes">✓</td><td class="yes">✓</td><td class="no">✗</td><td class="no">✗</td></tr>
+              <tr><th><code>terraform/modules/vpc/main.tf</code></th><td class="no">✗ nested</td><td class="yes">✓</td><td class="no">✗</td><td class="no">✗</td></tr>
+              <tr><th><code>src/api/routes/user.ts</code></th><td class="no">✗</td><td class="no">✗</td><td class="no">✗ starts at repo root</td><td class="yes">✓</td></tr>
+            </tbody>
+          </table></div>
+<!-- /dg:af-glob -->
           <ul>
             <li><code>paths</code> is the <b>only</b> frontmatter field. Keys like <code>include:</code> don't work.</li>
             <li><code>terraform/*</code> matches only the top level; use <code>terraform/**/*</code> for nested files.</li>
@@ -371,12 +728,53 @@ paths:
           </div>
 
           <h3 class="sub"><span>4.4</span> Validation and retry with error feedback</h3>
-          <div class="flow">
-            <div class="step"><b>Extract</b><span>With strict schema validity</span></div>
-            <div class="step"><b>Validate in code</b><span>e.g. calculated_total vs stated_total, conflict_detected</span></div>
-            <div class="step"><b>Retry</b><span>Send the <b>original document, the failed extraction and the specific errors</b></span></div>
-            <div class="step"><b>Or send to a person</b><span>If the value isn't in the source</span></div>
-          </div>
+<!-- dg:af-extract -->
+<figure class="dg" id="fig-af-extract">
+<div class="dg-scroll">
+<svg viewBox="0 0 780 220" role="img" aria-label="Extraction with a forced tool, validation in code, retry with feedback, or human review" style="min-width:624px;max-width:897px;margin:0 auto" xmlns="http://www.w3.org/2000/svg">
+<defs><marker id="ah-af-extract" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="ah"/></marker><marker id="ah-af-extract-a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="ah a"/></marker><marker id="ah-af-extract-x" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="ah bad"/></marker><marker id="ah-af-extract-o" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="ah ok"/></marker></defs>
+<g class="bx "><rect x="10" y="30" width="100" height="56" rx="7"/>
+<text x="60" y="62" class="b" text-anchor="middle">Document</text>
+</g>
+<path class="ln " d="M110,58 L150,58" marker-end="url(#ah-af-extract)"/>
+<g class="bx a"><rect x="150" y="30" width="170" height="56" rx="7"/>
+<text x="235" y="54.5" class="b" text-anchor="middle">Forced extract tool</text>
+<text x="235" y="69.5" class="s" text-anchor="middle">strict schema</text>
+</g>
+<path class="ln " d="M320,58 L360,58" marker-end="url(#ah-af-extract)"/>
+<g class="bx "><rect x="360" y="30" width="160" height="56" rx="7"/>
+<text x="440" y="54.5" class="b" text-anchor="middle">Validate in code</text>
+<text x="440" y="69.5" class="s" text-anchor="middle">sums · conflicts</text>
+</g>
+<path class="ln ok" d="M520,58 L620,58" marker-end="url(#ah-af-extract-o)"/>
+<text x="570" y="50" class="lb " text-anchor="middle">pass</text>
+<g class="bx ok"><rect x="620" y="30" width="150" height="56" rx="7"/>
+<text x="695" y="62" class="b" text-anchor="middle">Accept</text>
+</g>
+<path class="ln bad" d="M440,86 L440,130" marker-end="url(#ah-af-extract-x)"/>
+<text x="446" y="112" class="lb " text-anchor="start">fail</text>
+<g class="dm " data-maxw="125.4"><polygon points="440,130 535,170 440,210 345,170"/>
+<text x="440" y="165.5" class="b" text-anchor="middle">Value is in</text>
+<text x="440" y="182.5" class="b" text-anchor="middle">the source?</text>
+</g>
+<path class="ln " d="M345,170 L300,170" marker-end="url(#ah-af-extract)"/>
+<text x="322" y="162" class="lb " text-anchor="middle">yes</text>
+<g class="bx "><rect x="130" y="146" width="170" height="48" rx="7"/>
+<text x="215" y="166.5" class="b" text-anchor="middle">Retry with</text>
+<text x="215" y="181.5" class="s" text-anchor="middle">doc + output + errors</text>
+</g>
+<path class="ln a" d="M215,146 L215,86" marker-end="url(#ah-af-extract-a)"/>
+<path class="ln " d="M535,170 L620,170" marker-end="url(#ah-af-extract)"/>
+<text x="577" y="162" class="lb " text-anchor="middle">no</text>
+<g class="bx warn"><rect x="620" y="146" width="150" height="48" rx="7"/>
+<text x="695" y="166.5" class="b" text-anchor="middle">Human review</text>
+<text x="695" y="181.5" class="s" text-anchor="middle">stop retrying</text>
+</g>
+</svg>
+</div>
+<figcaption>A strict schema removes syntax errors; your own code catches the semantic ones. Retry only when the value exists in the source, sending the document, the failed output and the exact errors.</figcaption>
+</figure>
+<!-- /dg:af-extract -->
           <ul>
             <li>A retry request carries nothing over from the first attempt, so it must include all three inputs.</li>
             <li>If a field is still empty because the form was left blank, <b>stop retrying</b>. No model can recover a value that isn't there.</li>
@@ -390,8 +788,94 @@ paths:
             <div class="card accent"><h4>Results</h4><p><b>Not in submission order</b>, so match them by custom_id. A batch can't be edited. Resubmit <b>only the failed ids</b>, with a fix, in a new batch. No client-side tool loops: each request is single-shot.</p></div>
           </div>
           <div class="callout key"><div><strong class="label">SLA formula</strong><b>interval + 24 h ≤ SLA</b>. A 48-hour SLA allows a nightly batch. A 30-hour SLA allows submitting <b>every 4 hours</b> (6 hours of slack, minus time to collect and process).</div></div>
+<!-- dg:af-batch -->
+<figure class="dg" id="fig-af-batch">
+<div class="dg-scroll">
+<svg viewBox="0 0 760 220" role="img" aria-label="Worst-case batch timeline: wait one interval, then up to 24 hours, must fit the SLA" style="min-width:608px;max-width:874px;margin:0 auto" xmlns="http://www.w3.org/2000/svg">
+<defs><marker id="ah-af-batch" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="ah"/></marker><marker id="ah-af-batch-a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="ah a"/></marker><marker id="ah-af-batch-x" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="ah bad"/></marker><marker id="ah-af-batch-o" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="ah ok"/></marker></defs>
+<g class="tx ">
+<text x="380" y="28" class="b" text-anchor="middle">interval + 24 h ≤ SLA</text>
+</g>
+<g class="bx warn"><rect x="40" y="66" width="132" height="32" rx="4"/>
+<text x="106" y="86" class="r" text-anchor="middle">wait ≤ 6 h</text>
+</g>
+<g class="bx a"><rect x="172" y="66" width="528" height="32" rx="4"/>
+<text x="436" y="86" class="r" text-anchor="middle">batch may take the full 24 h</text>
+</g>
+<path class="ln " d="M40,102 L40,114"/>
+<path class="ln " d="M172,102 L172,114"/>
+<path class="ln " d="M700,102 L700,114"/>
+<g class="tx ">
+<text x="40" y="129.5" class="s" text-anchor="start">doc arrives just</text>
+<text x="40" y="144.5" class="s" text-anchor="start">after a submit</text>
+</g>
+<g class="tx ">
+<text x="172" y="131" class="s" text-anchor="middle">next submit</text>
+</g>
+<g class="tx ">
+<text x="700" y="132" class="b" text-anchor="middle">SLA: 30 h</text>
+</g>
+<g class="tx ">
+<text x="380" y="181.5" class="r" text-anchor="middle">48 h SLA → a nightly batch works</text>
+<text x="380" y="198.5" class="r" text-anchor="middle">30 h SLA → submit every 4 h, leaving slack</text>
+</g>
+</svg>
+</div>
+<figcaption>Plan for the unluckiest document: it just missed a submission, waits a full interval, then the batch uses the whole 24-hour window. The interval can be at most the SLA minus 24 hours.</figcaption>
+</figure>
+<!-- /dg:af-batch -->
 
           <h3 class="sub"><span>4.6</span> Independent and multi-pass review</h3>
+<!-- dg:af-review -->
+<figure class="dg" id="fig-af-review">
+<div class="dg-scroll">
+<svg viewBox="0 0 780 300" role="img" aria-label="Independent reviewer with a fresh context, and a multi-pass review pipeline" style="min-width:624px;max-width:897px;margin:0 auto" xmlns="http://www.w3.org/2000/svg">
+<defs><marker id="ah-af-review" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="ah"/></marker><marker id="ah-af-review-a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="ah a"/></marker><marker id="ah-af-review-x" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="ah bad"/></marker><marker id="ah-af-review-o" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="ah ok"/></marker></defs>
+<g class="bx "><rect x="20" y="40" width="200" height="60" rx="7"/>
+<text x="120" y="66.5" class="b" text-anchor="middle">Generator session</text>
+<text x="120" y="81.5" class="s" text-anchor="middle">code + its own reasoning</text>
+</g>
+<path class="ln bad" d="M70,100 C70,132 170,132 170,100" marker-end="url(#ah-af-review-x)"/>
+<g class="tx ">
+<text x="120" y="142" class="b x" text-anchor="middle">✗ grades itself</text>
+</g>
+<path class="ln a" d="M220,70 L320,70" marker-end="url(#ah-af-review-a)"/>
+<text x="270" y="64" class="lb " text-anchor="middle">code only</text>
+<g class="bx a"><rect x="320" y="40" width="200" height="60" rx="7"/>
+<text x="420" y="66.5" class="b" text-anchor="middle">Reviewer</text>
+<text x="420" y="81.5" class="s" text-anchor="middle">fresh context</text>
+</g>
+<g class="bx bad"><rect x="560" y="40" width="200" height="60" rx="7"/>
+<text x="660" y="66.5" class="b" text-anchor="middle">Not independent</text>
+<text x="660" y="81.5" class="s" text-anchor="middle">more thinking, same session</text>
+</g>
+<g class="bx "><rect x="20" y="160" width="150" height="36" rx="7"/>
+<text x="95" y="182" class="b" text-anchor="middle">File A pass</text>
+</g>
+<path class="ln " d="M170,178 L240,212" marker-end="url(#ah-af-review)"/>
+<g class="bx "><rect x="20" y="206" width="150" height="36" rx="7"/>
+<text x="95" y="228" class="b" text-anchor="middle">File B pass</text>
+</g>
+<path class="ln " d="M170,224 L240,224" marker-end="url(#ah-af-review)"/>
+<g class="bx "><rect x="20" y="252" width="150" height="36" rx="7"/>
+<text x="95" y="274" class="b" text-anchor="middle">File C pass</text>
+</g>
+<path class="ln " d="M170,270 L240,235" marker-end="url(#ah-af-review)"/>
+<g class="bx "><rect x="240" y="200" width="160" height="48" rx="7"/>
+<text x="320" y="220.5" class="b" text-anchor="middle">Integration pass</text>
+<text x="320" y="235.5" class="s" text-anchor="middle">cross-file</text>
+</g>
+<path class="ln " d="M400,224 L570,224" marker-end="url(#ah-af-review)"/>
+<text x="485" y="218" class="lb " text-anchor="middle">findings + confidence</text>
+<g class="bx a"><rect x="570" y="200" width="190" height="48" rx="7"/>
+<text x="665" y="220.5" class="b" text-anchor="middle">Verification pass</text>
+<text x="665" y="235.5" class="s" text-anchor="middle">filters and routes</text>
+</g>
+</svg>
+</div>
+<figcaption>A reviewer is independent only if it starts from a clean context and never sees the generator's reasoning. Large reviews run per-file passes, then a cross-file pass, then a separate verification pass that filters by confidence.</figcaption>
+</figure>
+<!-- /dg:af-review -->
           <ul>
             <li>The generating session is a <b>weak reviewer</b>: it reuses its own reasoning. More extended thinking or "critically re-examine" doesn't make it independent.</li>
             <li>Independence means a <b>fresh context</b>: a second session or a new subagent. Resuming the generator's session isn't independent.</li>
@@ -426,6 +910,60 @@ paths:
           </div>
 
           <h3 class="sub"><span>5.2</span> Escalation triggers</h3>
+<!-- dg:af-escalate -->
+<figure class="dg" id="fig-af-escalate">
+<div class="dg-scroll">
+<svg viewBox="0 0 870 296" role="img" aria-label="Escalation decision: explicit request, policy gap, or no progress; otherwise resolve" style="min-width:696px;max-width:1000px;margin:0 auto" xmlns="http://www.w3.org/2000/svg">
+<defs><marker id="ah-af-escalate" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="ah"/></marker><marker id="ah-af-escalate-a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="ah a"/></marker><marker id="ah-af-escalate-x" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="ah bad"/></marker><marker id="ah-af-escalate-o" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="ah ok"/></marker></defs>
+<g class="dm " data-maxw="132"><polygon points="130,20 230,64 130,108 30,64"/>
+<text x="130" y="59.5" class="b" text-anchor="middle">Asks for</text>
+<text x="130" y="76.5" class="b" text-anchor="middle">a human?</text>
+</g>
+<path class="ln a" d="M130,108 L130,150" marker-end="url(#ah-af-escalate-a)"/>
+<text x="138" y="132" class="lb " text-anchor="start">yes</text>
+<g class="bx a"><rect x="40" y="150" width="180" height="56" rx="7"/>
+<text x="130" y="174.5" class="b" text-anchor="middle">Hand off now</text>
+<text x="130" y="189.5" class="s" text-anchor="middle">no fix attempt first</text>
+</g>
+<path class="ln " d="M230,64 L250,64" marker-end="url(#ah-af-escalate)"/>
+<text x="240" y="56" class="lb " text-anchor="middle">no</text>
+<g class="dm " data-maxw="132"><polygon points="350,20 450,64 350,108 250,64"/>
+<text x="350" y="59.5" class="b" text-anchor="middle">Policy silent</text>
+<text x="350" y="76.5" class="b" text-anchor="middle">or unclear?</text>
+</g>
+<path class="ln a" d="M350,108 L350,150" marker-end="url(#ah-af-escalate-a)"/>
+<text x="358" y="132" class="lb " text-anchor="start">yes</text>
+<g class="bx a"><rect x="260" y="150" width="180" height="56" rx="7"/>
+<text x="350" y="174.5" class="b" text-anchor="middle">Escalate</text>
+<text x="350" y="189.5" class="s" text-anchor="middle">don&#x27;t invent a rule</text>
+</g>
+<path class="ln " d="M450,64 L470,64" marker-end="url(#ah-af-escalate)"/>
+<text x="460" y="56" class="lb " text-anchor="middle">no</text>
+<g class="dm " data-maxw="132"><polygon points="570,20 670,64 570,108 470,64"/>
+<text x="570" y="59.5" class="b" text-anchor="middle">Stuck, no</text>
+<text x="570" y="76.5" class="b" text-anchor="middle">real progress?</text>
+</g>
+<path class="ln a" d="M570,108 L570,150" marker-end="url(#ah-af-escalate-a)"/>
+<text x="578" y="132" class="lb " text-anchor="start">yes</text>
+<g class="bx a"><rect x="480" y="150" width="180" height="56" rx="7"/>
+<text x="570" y="174.5" class="b" text-anchor="middle">Escalate</text>
+<text x="570" y="189.5" class="s" text-anchor="middle">structured summary</text>
+</g>
+<path class="ln " d="M670,64 L700,64" marker-end="url(#ah-af-escalate)"/>
+<text x="685" y="56" class="lb " text-anchor="middle">no</text>
+<g class="bx ok"><rect x="700" y="40" width="160" height="48" rx="7"/>
+<text x="780" y="60.5" class="b" text-anchor="middle">Resolve it</text>
+<text x="780" y="75.5" class="s" text-anchor="middle">offer a human too</text>
+</g>
+<g class="bx dash"><rect x="20" y="232" width="840" height="52" rx="7"/>
+<text x="440" y="254.5" class="r" text-anchor="middle">Not triggers: anger or sentiment · the agent&#x27;s own confidence · how hard it feels</text>
+<text x="440" y="269.5" class="s" text-anchor="middle">Several customers match the lookup? Ask for another identifier; never pick one.</text>
+</g>
+</svg>
+</div>
+<figcaption>Three observable triggers send a case to a person. A customer's frustration alone is not one: acknowledge it, resolve the issue and offer a human.</figcaption>
+</figure>
+<!-- /dg:af-escalate -->
           <div class="grid">
             <div class="card accent"><h4>✓ Trigger 1</h4><p>The customer <b>explicitly asks for a human</b>. Hand off immediately, without first trying a fix.</p></div>
             <div class="card accent"><h4>✓ Trigger 2</h4><p>Policy is <b>silent or ambiguous</b>, e.g. a competitor price match when policy only covers your own site. Don't decline it and don't approve it.</p></div>
@@ -452,6 +990,48 @@ paths:
           </ul>
 
           <h3 class="sub"><span>5.5</span> Human review routing and confidence calibration</h3>
+<!-- dg:af-calib -->
+<figure class="dg" id="fig-af-calib">
+<div class="dg-scroll">
+<svg viewBox="0 0 760 300" role="img" aria-label="Illustrative calibration chart: stated confidence against observed accuracy with a threshold" style="min-width:608px;max-width:874px;margin:0 auto" xmlns="http://www.w3.org/2000/svg">
+<defs><marker id="ah-af-calib" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="ah"/></marker><marker id="ah-af-calib-a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="ah a"/></marker><marker id="ah-af-calib-x" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="ah bad"/></marker><marker id="ah-af-calib-o" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="ah ok"/></marker></defs>
+<rect class="zone" x="427.3" y="20" width="32.7" height="220"/>
+<path class="ln ax" d="M80,240 L460,240"/>
+<path class="ln ax" d="M80,240 L80,20"/>
+<text x="80" y="256" class="lb " text-anchor="middle">0.5</text>
+<text x="232" y="256" class="lb " text-anchor="middle">0.7</text>
+<text x="384" y="256" class="lb " text-anchor="middle">0.9</text>
+<text x="460" y="256" class="lb " text-anchor="middle">1.0</text>
+<text x="72" y="244" class="lb " text-anchor="end">40%</text>
+<text x="72" y="170.7" class="lb " text-anchor="end">60%</text>
+<text x="72" y="97.3" class="lb " text-anchor="end">80%</text>
+<text x="72" y="24" class="lb " text-anchor="end">100%</text>
+<text x="270" y="282" class="lb " text-anchor="middle">stated confidence →</text>
+<text x="84" y="12" class="lb " text-anchor="start">↑ observed accuracy</text>
+<path class="ln d" d="M80,203.3 L460,20"/>
+<text x="201.6" y="126" class="lb " text-anchor="middle">calibrated</text>
+<path class="ln curve" d="M80,214.3 L156,192.3 L232,163 L308,130 L384,86 L422,60.3 L460,34.7"/>
+<text x="251.2" y="172.7" class="lb " text-anchor="start">model as stated</text>
+<path class="ln d ok" d="M80,56.7 L460,56.7"/>
+<text x="88" y="50.7" class="lb " text-anchor="start">target 90%</text>
+<path class="ln d" d="M427.3,20 L427.3,240"/>
+<g class="bx ok"><rect x="490" y="30" width="260" height="50" rx="7"/>
+<text x="620" y="51.5" class="b" text-anchor="middle">Above the cut-off</text>
+<text x="620" y="66.5" class="s" text-anchor="middle">auto-accept + stratified samples</text>
+</g>
+<g class="bx warn"><rect x="490" y="100" width="260" height="50" rx="7"/>
+<text x="620" y="121.5" class="b" text-anchor="middle">Below the cut-off</text>
+<text x="620" y="136.5" class="s" text-anchor="middle">human review</text>
+</g>
+<g class="bx dash"><rect x="490" y="170" width="260" height="50" rx="7"/>
+<text x="620" y="191.5" class="b" text-anchor="middle">Calibrate per field</text>
+<text x="620" y="206.5" class="s" text-anchor="middle">and document type, on labeled data</text>
+</g>
+</svg>
+</div>
+<figcaption>Illustrative: a model's stated confidence is not a measurement. Plot it against observed accuracy on a labeled set and put the cut-off where accuracy meets the target, separately for each field and document type.</figcaption>
+</figure>
+<!-- /dg:af-calib -->
           <ul>
             <li><b>97% overall</b> can hide a failing segment. Break accuracy down by <b>document type and field</b> before reducing review.</li>
             <li>Have the model give a confidence score <b>per field</b> on a defined scale, then <b>calibrate it on a labeled validation set</b>. A self-reported 0.9 isn't a measurement.</li>
@@ -460,6 +1040,50 @@ paths:
           </ul>
 
           <h3 class="sub"><span>5.6</span> Provenance in multi-source synthesis</h3>
+<!-- dg:af-prov -->
+<figure class="dg" id="fig-af-prov">
+<div class="dg-scroll">
+<svg viewBox="0 0 760 250" role="img" aria-label="Claim records with source, excerpt and date merged into established and contested sections" style="min-width:608px;max-width:874px;margin:0 auto" xmlns="http://www.w3.org/2000/svg">
+<defs><marker id="ah-af-prov" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="ah"/></marker><marker id="ah-af-prov-a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="ah a"/></marker><marker id="ah-af-prov-x" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="ah bad"/></marker><marker id="ah-af-prov-o" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="ah ok"/></marker></defs>
+<g class="bx "><rect x="20" y="14" width="270" height="100" rx="7"/>
+<text x="30" y="45.5" class="b" text-anchor="start">claim: revenue $420M</text>
+<text x="30" y="60.5" class="s" text-anchor="start">source: press release</text>
+<text x="30" y="75.5" class="s" text-anchor="start">excerpt: &quot;…$420 million…&quot;</text>
+<text x="30" y="90.5" class="s" text-anchor="start">date: March</text>
+</g>
+<g class="bx "><rect x="20" y="134" width="270" height="100" rx="7"/>
+<text x="30" y="165.5" class="b" text-anchor="start">claim: revenue $460M</text>
+<text x="30" y="180.5" class="s" text-anchor="start">source: analyst report</text>
+<text x="30" y="195.5" class="s" text-anchor="start">excerpt: &quot;…$460 million…&quot;</text>
+<text x="30" y="210.5" class="s" text-anchor="start">date: May</text>
+</g>
+<path class="ln " d="M290,64 L330,112" marker-end="url(#ah-af-prov)"/>
+<path class="ln " d="M290,184 L330,138" marker-end="url(#ah-af-prov)"/>
+<g class="bx a"><rect x="330" y="97" width="150" height="56" rx="7"/>
+<text x="405" y="121.5" class="b" text-anchor="middle">Coordinator</text>
+<text x="405" y="136.5" class="s" text-anchor="middle">merges records</text>
+</g>
+<g class="bx frame"><rect x="520" y="10" width="230" height="230" rx="7"/>
+</g>
+<g class="tx ">
+<text x="532" y="34" class="b" text-anchor="start">Report</text>
+</g>
+<g class="bx ok"><rect x="535" y="44" width="200" height="60" rx="7"/>
+<text x="635" y="70.5" class="b" text-anchor="middle">Established</text>
+<text x="635" y="85.5" class="s" text-anchor="middle">agreed across sources</text>
+</g>
+<path class="ln " d="M480,125 L535,160" marker-end="url(#ah-af-prov)"/>
+<g class="bx warn"><rect x="535" y="118" width="200" height="108" rx="7"/>
+<text x="635" y="153.5" class="b" text-anchor="middle">Contested</text>
+<text x="635" y="168.5" class="s" text-anchor="middle">$420M · press · March</text>
+<text x="635" y="183.5" class="s" text-anchor="middle">$460M · analyst · May</text>
+<text x="635" y="198.5" class="s" text-anchor="middle">never averaged</text>
+</g>
+</svg>
+</div>
+<figcaption>Every claim travels with its source, a supporting excerpt and a date, so the final report can show conflicting credible figures side by side instead of averaging them away.</figcaption>
+</figure>
+<!-- /dg:af-prov -->
           <div class="mnemonic">
             <div class="word">C S E D</div>
             <ul>

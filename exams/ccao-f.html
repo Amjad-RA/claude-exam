@@ -98,9 +98,134 @@
             <div class="card accent"><h3><span class="ico">🧪</span> Show one example</h3><p>Start <b>one-shot</b> and add more examples only if the output still misses. Claude copies the details of examples closely. Wrap them in <code>&lt;example&gt;</code> tags.</p></div>
             <div class="card accent"><h3><span class="ico">🪞</span> Format: say it positively, and match it</h3><p>Write "use flowing prose paragraphs", not "don't use markdown". Claude <b>mirrors the prompt's own style</b>, so a prompt full of markdown pulls the answer towards markdown.</p></div>
           </div>
-          <div class="callout trap"><div><strong class="label">Exam trap</strong>Answers like "put 'NO MARKDOWN' in bold or capitals", "add more examples" or "put the question first with long documents" are wrong. Use a positive instruction, a prompt written in the style you want, one example, and the document above the question.</div></div>
+          <!-- dg:ao-prompt -->
+<figure class="dg" id="fig-ao-prompt">
+<div class="dg-scroll">
+<svg viewBox="0 0 760 340" role="img" aria-label="Layout of a document-grounded prompt: long documents on top, instructions with reasons, one example, the question last" style="min-width:608px;max-width:874px;margin:0 auto" xmlns="http://www.w3.org/2000/svg">
+<defs><marker id="ah-ao-prompt" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="ah"/></marker><marker id="ah-ao-prompt-a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="ah a"/></marker><marker id="ah-ao-prompt-x" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="ah bad"/></marker><marker id="ah-ao-prompt-o" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="ah ok"/></marker></defs>
+<g class="bx frame"><rect x="40" y="12" width="380" height="318" rx="7"/>
+</g>
+<g class="bx a"><rect x="60" y="30" width="340" height="100" rx="7"/>
+<text x="230" y="69" class="b" text-anchor="middle">&lt;document&gt;</text>
+<text x="230" y="84" class="s" text-anchor="middle">long source material,</text>
+<text x="230" y="99" class="s" text-anchor="middle">in its own tags</text>
+</g>
+<g class="bx "><rect x="60" y="142" width="340" height="78" rx="7"/>
+<text x="230" y="170" class="b" text-anchor="middle">&lt;instructions&gt;</text>
+<text x="230" y="185" class="s" text-anchor="middle">task · audience · format</text>
+<text x="230" y="200" class="s" text-anchor="middle">constraints · depth + why</text>
+</g>
+<g class="bx "><rect x="60" y="232" width="340" height="44" rx="7"/>
+<text x="230" y="258" class="b" text-anchor="middle">&lt;example&gt; × 1</text>
+</g>
+<g class="bx "><rect x="60" y="288" width="340" height="30" rx="7"/>
+<text x="230" y="307" class="b" text-anchor="middle">The question, last</text>
+</g>
+<path class="ln " d="M448,80 L406,80" marker-end="url(#ah-ao-prompt)"/>
+<g class="tx ">
+<text x="456" y="69" class="b" text-anchor="start">Long documents go on top</text>
+<text x="456" y="84" class="s" text-anchor="start">have Claude quote the relevant</text>
+<text x="456" y="99" class="s" text-anchor="start">passages before it answers</text>
+</g>
+<path class="ln " d="M448,181 L406,181" marker-end="url(#ah-ao-prompt)"/>
+<g class="tx ">
+<text x="456" y="177.5" class="b" text-anchor="start">Give the reason for each rule</text>
+<text x="456" y="192.5" class="s" text-anchor="start">Claude generalises from the why</text>
+</g>
+<path class="ln " d="M448,254 L406,254" marker-end="url(#ah-ao-prompt)"/>
+<g class="tx ">
+<text x="456" y="250.5" class="b" text-anchor="start">Start with one example</text>
+<text x="456" y="265.5" class="s" text-anchor="start">add more only if it still misses</text>
+</g>
+<path class="ln " d="M448,303 L406,303" marker-end="url(#ah-ao-prompt)"/>
+<g class="tx ">
+<text x="456" y="299.5" class="b" text-anchor="start">Say what you want, in that style</text>
+<text x="456" y="314.5" class="s" text-anchor="start">&quot;use prose&quot;, not &quot;no markdown&quot;</text>
+</g>
+</svg>
+</div>
+<figcaption>Where each part of a document-grounded prompt goes. Long material sits on top, the question comes last, and the prompt is written in the style you want back.</figcaption>
+</figure>
+<!-- /dg:ao-prompt -->
+<div class="callout trap"><div><strong class="label">Exam trap</strong>Answers like "put 'NO MARKDOWN' in bold or capitals", "add more examples" or "put the question first with long documents" are wrong. Use a positive instruction, a prompt written in the style you want, one example, and the document above the question.</div></div>
 
           <h3 class="sub"><span>1.2</span> Task decomposition</h3>
+<!-- dg:ao-chain -->
+<figure class="dg" id="fig-ao-chain">
+<div class="dg-scroll">
+<svg viewBox="0 0 760 330" role="img" aria-label="A sequential prompt chain with checks between stages, compared with parallel parts that are merged" style="min-width:608px;max-width:874px;margin:0 auto" xmlns="http://www.w3.org/2000/svg">
+<defs><marker id="ah-ao-chain" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="ah"/></marker><marker id="ah-ao-chain-a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="ah a"/></marker><marker id="ah-ao-chain-x" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="ah bad"/></marker><marker id="ah-ao-chain-o" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="ah ok"/></marker></defs>
+<g class="tx ">
+<text x="20" y="26" class="b" text-anchor="start">Sequential chain: each stage needs the previous output</text>
+</g>
+<g class="bx "><rect x="20" y="44" width="120" height="48" rx="7"/>
+<text x="80" y="64.5" class="b" text-anchor="middle">Extract</text>
+<text x="80" y="79.5" class="s" text-anchor="middle">key clauses</text>
+</g>
+<path class="ln " d="M140,68 L166,68" marker-end="url(#ah-ao-chain)"/>
+<g class="bx ok" data-maxw="22.1"><circle cx="180" cy="68" r="13"/>
+<text x="180" y="72" class="b" text-anchor="middle">✓</text>
+</g>
+<path class="ln " d="M194,68 L220,68" marker-end="url(#ah-ao-chain)"/>
+<g class="bx "><rect x="220" y="44" width="120" height="48" rx="7"/>
+<text x="280" y="64.5" class="b" text-anchor="middle">Compare</text>
+<text x="280" y="79.5" class="s" text-anchor="middle">point by point</text>
+</g>
+<path class="ln " d="M340,68 L366,68" marker-end="url(#ah-ao-chain)"/>
+<g class="bx ok" data-maxw="22.1"><circle cx="380" cy="68" r="13"/>
+<text x="380" y="72" class="b" text-anchor="middle">✓</text>
+</g>
+<path class="ln " d="M394,68 L420,68" marker-end="url(#ah-ao-chain)"/>
+<g class="bx "><rect x="420" y="44" width="120" height="48" rx="7"/>
+<text x="480" y="64.5" class="b" text-anchor="middle">Draft</text>
+<text x="480" y="79.5" class="s" text-anchor="middle">risk memo</text>
+</g>
+<path class="ln " d="M540,68 L566,68" marker-end="url(#ah-ao-chain)"/>
+<g class="bx ok" data-maxw="22.1"><circle cx="580" cy="68" r="13"/>
+<text x="580" y="72" class="b" text-anchor="middle">✓</text>
+</g>
+<path class="ln " d="M594,68 L620,68" marker-end="url(#ah-ao-chain)"/>
+<g class="bx a"><rect x="620" y="44" width="120" height="48" rx="7"/>
+<text x="680" y="64.5" class="b" text-anchor="middle">Review</text>
+<text x="680" y="79.5" class="s" text-anchor="middle">final check</text>
+</g>
+<g class="tx ">
+<text x="380" y="119" class="s" text-anchor="middle">check each hand-off: an unchecked early error is inherited by every later stage</text>
+</g>
+<g class="tx ">
+<text x="20" y="164" class="b" text-anchor="start">Parallel: independent parts, merged at the end</text>
+</g>
+<g class="bx "><rect x="20" y="226" width="120" height="48" rx="7"/>
+<text x="80" y="246.5" class="b" text-anchor="middle">Split</text>
+<text x="80" y="261.5" class="s" text-anchor="middle">by topic</text>
+</g>
+<g class="bx "><rect x="220" y="180" width="150" height="38" rx="7"/>
+<text x="295" y="203" class="b" text-anchor="middle">Cluster A → FAQs</text>
+</g>
+<path class="ln " d="M140,250 L220,199" marker-end="url(#ah-ao-chain)"/>
+<path class="ln " d="M370,199 L450,239" marker-end="url(#ah-ao-chain)"/>
+<g class="bx "><rect x="220" y="231" width="150" height="38" rx="7"/>
+<text x="295" y="254" class="b" text-anchor="middle">Cluster B → FAQs</text>
+</g>
+<path class="ln " d="M140,250 L220,250" marker-end="url(#ah-ao-chain)"/>
+<path class="ln " d="M370,250 L450,250" marker-end="url(#ah-ao-chain)"/>
+<g class="bx "><rect x="220" y="282" width="150" height="38" rx="7"/>
+<text x="295" y="305" class="b" text-anchor="middle">Cluster C → FAQs</text>
+</g>
+<path class="ln " d="M140,250 L220,301" marker-end="url(#ah-ao-chain)"/>
+<path class="ln " d="M370,301 L450,260" marker-end="url(#ah-ao-chain)"/>
+<g class="bx "><rect x="450" y="226" width="120" height="48" rx="7"/>
+<text x="510" y="254" class="b" text-anchor="middle">Merge</text>
+</g>
+<path class="ln " d="M570,250 L620,250" marker-end="url(#ah-ao-chain)"/>
+<g class="bx a"><rect x="620" y="226" width="120" height="48" rx="7"/>
+<text x="680" y="254" class="b" text-anchor="middle">One FAQ</text>
+</g>
+</svg>
+</div>
+<figcaption>Chain the stages that depend on each other and check each hand-off; run independent parts in parallel and merge. Chaining adds calls, so it is slower, but every step is easier and can be inspected.</figcaption>
+</figure>
+<!-- /dg:ao-chain -->
           <dl class="glossary">
             <dt>Prompt chaining</dt><dd>A fixed sequence of smaller prompts. Each does one job and works on the <b>checked</b> output of the step before.</dd>
             <dt>Trade-off</dt><dd>It's <b>slower</b>, because there are more calls. You get accuracy and reliability, and every intermediate result can be inspected.</dd>
@@ -177,6 +302,59 @@
           <div class="callout info"><div><strong class="label">Description–Discernment loop</strong>What an evaluation finds feeds a sharper description in the next prompt. Evaluation isn't the last step.</div></div>
 
           <h3 class="sub"><span>2.2</span> Hallucination, inconsistency or bias?</h3>
+<!-- dg:ao-flaw -->
+<figure class="dg" id="fig-ao-flaw">
+<div class="dg-scroll">
+<svg viewBox="0 0 620 420" role="img" aria-label="Decision tree: hallucination, inconsistency, bias or miscalibration" style="min-width:520px;max-width:713px;margin:0 auto" xmlns="http://www.w3.org/2000/svg">
+<defs><marker id="ah-ao-flaw" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="ah"/></marker><marker id="ah-ao-flaw-a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="ah a"/></marker><marker id="ah-ao-flaw-x" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="ah bad"/></marker><marker id="ah-ao-flaw-o" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="ah ok"/></marker></defs>
+<g class="bx "><rect x="20" y="10" width="180" height="40" rx="7"/>
+<text x="110" y="34" class="b" text-anchor="middle">Flawed output</text>
+</g>
+<path class="ln " d="M110,50 L110,63" marker-end="url(#ah-ao-flaw)"/>
+<g class="dm " data-maxw="145.2"><polygon points="110,63 220,105 110,147 0,105"/>
+<text x="110" y="100.5" class="b" text-anchor="middle">Any basis in</text>
+<text x="110" y="117.5" class="b" text-anchor="middle">a source?</text>
+</g>
+<g class="dm " data-maxw="145.2"><polygon points="110,163 220,205 110,247 0,205"/>
+<text x="110" y="200.5" class="b" text-anchor="middle">Contradicts itself</text>
+<text x="110" y="217.5" class="b" text-anchor="middle">or another run?</text>
+</g>
+<g class="dm " data-maxw="145.2"><polygon points="110,263 220,305 110,347 0,305"/>
+<text x="110" y="309" class="b" text-anchor="middle">Leans one way?</text>
+</g>
+<path class="ln " d="M220,105 L300,105" marker-end="url(#ah-ao-flaw)"/>
+<text x="260" y="99" class="lb " text-anchor="middle">no</text>
+<g class="bx bad"><rect x="300" y="81" width="300" height="48" rx="7"/>
+<text x="450" y="101.5" class="b" text-anchor="middle">Hallucination</text>
+<text x="450" y="116.5" class="s" text-anchor="middle">invented: fake citation, &quot;email sent&quot;</text>
+</g>
+<path class="ln " d="M220,205 L300,205" marker-end="url(#ah-ao-flaw)"/>
+<text x="260" y="199" class="lb " text-anchor="middle">yes</text>
+<g class="bx warn"><rect x="300" y="181" width="300" height="48" rx="7"/>
+<text x="450" y="201.5" class="b" text-anchor="middle">Inconsistency</text>
+<text x="450" y="216.5" class="s" text-anchor="middle">two values, no new input between</text>
+</g>
+<path class="ln " d="M220,305 L300,305" marker-end="url(#ah-ao-flaw)"/>
+<text x="260" y="299" class="lb " text-anchor="middle">yes</text>
+<g class="bx warn"><rect x="300" y="281" width="300" height="48" rx="7"/>
+<text x="450" y="301.5" class="b" text-anchor="middle">Bias</text>
+<text x="450" y="316.5" class="s" text-anchor="middle">skewed default · missing view · framing</text>
+</g>
+<path class="ln " d="M110,147 L110,163" marker-end="url(#ah-ao-flaw)"/>
+<text x="118" y="158" class="lb " text-anchor="start">yes</text>
+<path class="ln " d="M110,247 L110,263" marker-end="url(#ah-ao-flaw)"/>
+<text x="118" y="258" class="lb " text-anchor="start">no</text>
+<path class="ln " d="M110,347 L110,362" marker-end="url(#ah-ao-flaw)"/>
+<text x="118" y="358" class="lb " text-anchor="start">no</text>
+<g class="bx "><rect x="10" y="362" width="200" height="48" rx="7"/>
+<text x="110" y="382.5" class="b" text-anchor="middle">Miscalibrated?</text>
+<text x="110" y="397.5" class="s" text-anchor="middle">confidence not backed by evidence</text>
+</g>
+</svg>
+</div>
+<figcaption>Name the kind of wrong from what you can observe, then choose the fix. Two values for one fact with nothing new in between is an inconsistency; calling it a hallucination needs evidence of which one was invented.</figcaption>
+</figure>
+<!-- /dg:ao-flaw -->
           <div class="table-wrap"><table class="compare">
             <thead><tr><th>Kind</th><th>What it looks like</th><th>Example</th></tr></thead>
             <tbody>
@@ -200,6 +378,51 @@
           <div class="callout trap"><div><strong class="label">Exam trap</strong>"Ask Claude which of its claims are likely wrong" means the source being tested grades itself. "Tell it to answer more authoritatively" only changes how a guess is presented. To reduce fabrication, <b>explicitly allow Claude to say it can't verify something.</b> With no tools, a specific stock price from yesterday is almost certainly invented.</div></div>
 
           <h3 class="sub"><span>2.4</span> When human review is required</h3>
+<!-- dg:ao-review -->
+<figure class="dg" id="fig-ao-review">
+<div class="dg-scroll">
+<svg viewBox="0 0 760 320" role="img" aria-label="Two by two: review depth by stakes and audience" style="min-width:608px;max-width:874px;margin:0 auto" xmlns="http://www.w3.org/2000/svg">
+<defs><marker id="ah-ao-review" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="ah"/></marker><marker id="ah-ao-review-a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="ah a"/></marker><marker id="ah-ao-review-x" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="ah bad"/></marker><marker id="ah-ao-review-o" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="ah ok"/></marker></defs>
+<g class="bx warn"><rect x="130" y="20" width="250" height="120" rx="7"/>
+<text x="255" y="76.5" class="b" text-anchor="middle">Qualified reviewer</text>
+<text x="255" y="91.5" class="s" text-anchor="middle">checks the substance</text>
+</g>
+<g class="bx bad"><rect x="380" y="20" width="250" height="120" rx="7"/>
+<text x="505" y="76.5" class="b" text-anchor="middle">Qualified, accountable</text>
+<text x="505" y="91.5" class="s" text-anchor="middle">approves before release</text>
+</g>
+<g class="bx "><rect x="130" y="140" width="250" height="120" rx="7"/>
+<text x="255" y="196.5" class="b" text-anchor="middle">Light review</text>
+<text x="255" y="211.5" class="s" text-anchor="middle">you check it yourself</text>
+</g>
+<g class="bx "><rect x="380" y="140" width="250" height="120" rx="7"/>
+<text x="505" y="196.5" class="b" text-anchor="middle">Careful read</text>
+<text x="505" y="211.5" class="s" text-anchor="middle">before it goes out</text>
+</g>
+<text x="120" y="84" class="lb " text-anchor="end">high</text>
+<text x="120" y="204" class="lb " text-anchor="end">low</text>
+<g class="tx ">
+<text x="60" y="148" class="b" text-anchor="end">Stakes</text>
+</g>
+<text x="255" y="280" class="lb " text-anchor="middle">internal</text>
+<text x="505" y="280" class="lb " text-anchor="middle">external or affected people</text>
+<g class="tx ">
+<text x="380" y="308" class="b" text-anchor="middle">Audience</text>
+</g>
+<g class="bx dash"><rect x="648" y="20" width="102" height="240" rx="7"/>
+<text x="699" y="98" class="b" text-anchor="middle">Not a</text>
+<text x="699" y="115" class="b" text-anchor="middle">substitute</text>
+<text x="699" y="130" class="s" text-anchor="middle">self-check</text>
+<text x="699" y="145" class="s" text-anchor="middle">2nd Claude</text>
+<text x="699" y="160" class="s" text-anchor="middle">citations</text>
+<text x="699" y="175" class="s" text-anchor="middle">polished tone</text>
+<text x="699" y="190" class="s" text-anchor="middle">AI label</text>
+</g>
+</svg>
+</div>
+<figcaption>Who reviews, and how deeply, scales with the stakes and who will see the output. High-stakes output reaches no one until a qualified, accountable person has checked the substance.</figcaption>
+</figure>
+<!-- /dg:ao-review -->
           <p>Every output gets <i>some</i> review. The <b>stakes, audience and content type</b> decide who reviews it and how deeply. For high-stakes work, the reviewer must be <b>qualified in the field and accountable</b>, and must review <b>before</b> the output reaches anyone it could harm.</p>
           <div class="table-wrap"><table class="compare">
             <thead><tr><th>Use case</th><th>Required reviewer</th></tr></thead>
@@ -218,6 +441,47 @@
           </div>
 
           <h3 class="sub"><span>2.6</span> Choosing the output format</h3>
+<!-- dg:ao-format -->
+<figure class="dg" id="fig-ao-format">
+<div class="dg-scroll">
+<svg viewBox="0 0 760 300" role="img" aria-label="Decision tree for choosing JSON, an artifact or an inline answer" style="min-width:608px;max-width:874px;margin:0 auto" xmlns="http://www.w3.org/2000/svg">
+<defs><marker id="ah-ao-format" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="ah"/></marker><marker id="ah-ao-format-a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="ah a"/></marker><marker id="ah-ao-format-x" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="ah bad"/></marker><marker id="ah-ao-format-o" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="ah ok"/></marker></defs>
+<g class="dm " data-maxw="118.8"><polygon points="100,106 190,150 100,194 10,150"/>
+<text x="100" y="145.5" class="b" text-anchor="middle">Who reads</text>
+<text x="100" y="162.5" class="b" text-anchor="middle">the output?</text>
+</g>
+<path class="ln " d="M100,106 L100,60 L560,60" marker-end="url(#ah-ao-format)"/>
+<text x="330" y="52" class="lb " text-anchor="middle">a program</text>
+<g class="bx a"><rect x="560" y="36" width="190" height="48" rx="7"/>
+<text x="655" y="56.5" class="b" text-anchor="middle">JSON + schema</text>
+<text x="655" y="71.5" class="s" text-anchor="middle">valid ≠ correct values</text>
+</g>
+<path class="ln " d="M190,150 L290,150" marker-end="url(#ah-ao-format)"/>
+<text x="240" y="142" class="lb " text-anchor="middle">a person</text>
+<g class="dm " data-maxw="151.8"><polygon points="405,102 520,150 405,198 290,150"/>
+<text x="405" y="145.5" class="b" text-anchor="middle">Stands alone,</text>
+<text x="405" y="162.5" class="b" text-anchor="middle">15+ lines, reused?</text>
+</g>
+<path class="ln " d="M520,150 L560,150" marker-end="url(#ah-ao-format)"/>
+<text x="540" y="142" class="lb " text-anchor="middle">yes</text>
+<g class="bx ok"><rect x="560" y="126" width="190" height="48" rx="7"/>
+<text x="655" y="146.5" class="b" text-anchor="middle">Artifact</text>
+<text x="655" y="161.5" class="s" text-anchor="middle">SVG · Mermaid · React · doc</text>
+</g>
+<path class="ln " d="M405,198 L405,236" marker-end="url(#ah-ao-format)"/>
+<text x="413" y="222" class="lb " text-anchor="start">no</text>
+<g class="bx "><rect x="315" y="236" width="180" height="44" rx="7"/>
+<text x="405" y="262" class="b" text-anchor="middle">Inline answer</text>
+</g>
+<g class="bx dash"><rect x="560" y="236" width="190" height="44" rx="7"/>
+<text x="655" y="254.5" class="b" text-anchor="middle">Inline visual?</text>
+<text x="655" y="269.5" class="s" text-anchor="middle">save as an artifact to keep</text>
+</g>
+</svg>
+</div>
+<figcaption>The format follows the destination: a program gets schema-checked JSON; a person gets an artifact only when the piece stands alone and will be reused or edited.</figcaption>
+</figure>
+<!-- /dg:ao-format -->
           <p><b>The format follows the destination.</b> A quick answer goes inline. A standalone piece someone will reuse goes in an artifact. Output a program will parse needs a schema-enforced structure.</p>
           <div class="grid cols-2">
             <div class="card accent"><h4>Artifact: the four criteria</h4><ol><li>Significant and self-contained, typically <b>over 15 lines</b></li><li>Likely to be edited, iterated on or reused outside the chat</li><li>Stands on its own without the conversation</li><li>You'll refer back to it later</li></ol><p class="muted">SVG logos, Mermaid flowcharts and React components are all artifact types.</p></div>
@@ -251,6 +515,64 @@
           </div>
 
           <h3 class="sub"><span>3.1</span> Chat, Research, Projects or artifacts?</h3>
+<!-- dg:ao-feature -->
+<figure class="dg" id="fig-ao-feature">
+<div class="dg-scroll">
+<svg viewBox="0 0 870 230" role="img" aria-label="Decision path from plain chat to Research, Project or Artifact" style="min-width:696px;max-width:1000px;margin:0 auto" xmlns="http://www.w3.org/2000/svg">
+<defs><marker id="ah-ao-feature" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="ah"/></marker><marker id="ah-ao-feature-a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="ah a"/></marker><marker id="ah-ao-feature-x" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="ah bad"/></marker><marker id="ah-ao-feature-o" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="ah ok"/></marker></defs>
+<g class="bx "><rect x="10" y="40" width="110" height="48" rx="7"/>
+<text x="65" y="60.5" class="b" text-anchor="middle">Plain chat</text>
+<text x="65" y="75.5" class="s" text-anchor="middle">start here</text>
+</g>
+<path class="ln " d="M120,64 L140,64" marker-end="url(#ah-ao-feature)"/>
+<g class="dm " data-maxw="118.8"><polygon points="230,22 320,64 230,106 140,64"/>
+<text x="230" y="59.5" class="b" text-anchor="middle">Dozens of</text>
+<text x="230" y="76.5" class="b" text-anchor="middle">sources?</text>
+</g>
+<path class="ln " d="M230,106 L230,150" marker-end="url(#ah-ao-feature)"/>
+<text x="238" y="132" class="lb " text-anchor="start">yes</text>
+<g class="bx a"><rect x="140" y="150" width="180" height="64" rx="7"/>
+<text x="230" y="171" class="b" text-anchor="middle">Research</text>
+<text x="230" y="186" class="s" text-anchor="middle">5+ tool calls, 1–3 min</text>
+<text x="230" y="201" class="s" text-anchor="middle">cited report</text>
+</g>
+<path class="ln " d="M320,64 L340,64" marker-end="url(#ah-ao-feature)"/>
+<text x="330" y="56" class="lb " text-anchor="middle">no</text>
+<g class="dm " data-maxw="118.8"><polygon points="430,22 520,64 430,106 340,64"/>
+<text x="430" y="59.5" class="b" text-anchor="middle">Same docs in</text>
+<text x="430" y="76.5" class="b" text-anchor="middle">every chat?</text>
+</g>
+<path class="ln " d="M430,106 L430,150" marker-end="url(#ah-ao-feature)"/>
+<text x="438" y="132" class="lb " text-anchor="start">yes</text>
+<g class="bx a"><rect x="340" y="150" width="180" height="64" rx="7"/>
+<text x="430" y="171" class="b" text-anchor="middle">Project</text>
+<text x="430" y="186" class="s" text-anchor="middle">knowledge + instructions</text>
+<text x="430" y="201" class="s" text-anchor="middle">Team/Ent. can share</text>
+</g>
+<path class="ln " d="M520,64 L540,64" marker-end="url(#ah-ao-feature)"/>
+<text x="530" y="56" class="lb " text-anchor="middle">no</text>
+<g class="dm " data-maxw="118.8"><polygon points="630,22 720,64 630,106 540,64"/>
+<text x="630" y="59.5" class="b" text-anchor="middle">Editable</text>
+<text x="630" y="76.5" class="b" text-anchor="middle">deliverable?</text>
+</g>
+<path class="ln " d="M630,106 L630,150" marker-end="url(#ah-ao-feature)"/>
+<text x="638" y="132" class="lb " text-anchor="start">yes</text>
+<g class="bx a"><rect x="540" y="150" width="180" height="64" rx="7"/>
+<text x="630" y="171" class="b" text-anchor="middle">Artifact</text>
+<text x="630" y="186" class="s" text-anchor="middle">side panel</text>
+<text x="630" y="201" class="s" text-anchor="middle">version history</text>
+</g>
+<path class="ln " d="M720,64 L750,64" marker-end="url(#ah-ao-feature)"/>
+<text x="735" y="56" class="lb " text-anchor="middle">no</text>
+<g class="bx "><rect x="750" y="40" width="110" height="48" rx="7"/>
+<text x="805" y="60.5" class="b" text-anchor="middle">Stay in chat</text>
+<text x="805" y="75.5" class="s" text-anchor="middle">+ web search</text>
+</g>
+</svg>
+</div>
+<figcaption>Start in chat and move only when you can name the gap: breadth across many sources → Research, the same context every time → Project, a deliverable you will keep editing → Artifact.</figcaption>
+</figure>
+<!-- /dg:ao-feature -->
           <p><b>Start every task in a plain chat.</b> Move to another feature only when you can name the gap chat leaves.</p>
           <div class="table-wrap"><table class="compare">
             <thead><tr><th>Feature</th><th>Use it when…</th><th>Facts to know</th></tr></thead>
@@ -264,6 +586,52 @@
           <div class="callout trap"><div><strong class="label">Exam trap</strong>The difference between Research and web search is <b>breadth, not freshness</b>. Both reach current information. Research doesn't store documents for future chats; that's a Project's job. Chats in a Project share its knowledge and instructions, but <b>not each other's conversations</b>.</div></div>
 
           <h3 class="sub"><span>3.2</span> Haiku, Sonnet and Opus</h3>
+<!-- dg:ao-tiers -->
+<figure class="dg" id="fig-ao-tiers">
+<div class="dg-scroll">
+<svg viewBox="0 0 760 300" role="img" aria-label="Haiku, Sonnet and Opus on one trade-off line with output prices to scale" style="min-width:608px;max-width:874px;margin:0 auto" xmlns="http://www.w3.org/2000/svg">
+<defs><marker id="ah-ao-tiers" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="ah"/></marker><marker id="ah-ao-tiers-a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="ah a"/></marker><marker id="ah-ao-tiers-x" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="ah bad"/></marker><marker id="ah-ao-tiers-o" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="ah ok"/></marker></defs>
+<rect class="seg-a" x="128" y="107" width="44" height="3"/>
+<text x="150" y="99" class="lb " text-anchor="middle">from $0.10 / $0.50 per MTok</text>
+<g class="bx a" data-maxw="57.8"><circle cx="150" cy="160" r="34"/>
+<text x="150" y="164" class="b" text-anchor="middle">Haiku</text>
+</g>
+<g class="tx ">
+<text x="150" y="220" class="b" text-anchor="middle">Fastest</text>
+</g>
+<g class="tx ">
+<text x="150" y="243" class="s" text-anchor="middle">classify · route · extract</text>
+</g>
+<rect class="seg-a" x="358" y="70" width="44" height="40"/>
+<text x="380" y="62" class="lb " text-anchor="middle">$2 / $10 per MTok</text>
+<g class="bx a" data-maxw="57.8"><circle cx="380" cy="160" r="34"/>
+<text x="380" y="164" class="b" text-anchor="middle">Sonnet</text>
+</g>
+<g class="tx ">
+<text x="380" y="220" class="b" text-anchor="middle">Fast</text>
+</g>
+<g class="tx ">
+<text x="380" y="243" class="s" text-anchor="middle">everyday workhorse</text>
+</g>
+<rect class="seg-a" x="588" y="30" width="44" height="80"/>
+<text x="610" y="22" class="lb " text-anchor="middle">$4 / $20 per MTok</text>
+<g class="bx a" data-maxw="57.8"><circle cx="610" cy="160" r="34"/>
+<text x="610" y="164" class="b" text-anchor="middle">Opus</text>
+</g>
+<g class="tx ">
+<text x="610" y="220" class="b" text-anchor="middle">Moderate (slowest)</text>
+</g>
+<g class="tx ">
+<text x="610" y="243" class="s" text-anchor="middle">long agentic work</text>
+</g>
+<path class="ln " d="M40,272 L720,272" marker-end="url(#ah-ao-tiers)" marker-start="url(#ah-ao-tiers)"/>
+<text x="40" y="292" class="lb " text-anchor="start">faster · cheaper</text>
+<text x="720" y="292" class="lb " text-anchor="end">more reasoning depth</text>
+</svg>
+</div>
+<figcaption>One family, one trade-off: moving right buys reasoning depth with latency and price (bars show output price to scale). Choose by how hard the task is, not by subject. Fable 5.1 sits above Opus as the frontier model.</figcaption>
+</figure>
+<!-- /dg:ao-tiers -->
           <div class="table-wrap"><table class="compare">
             <thead><tr><th>Tier</th><th>Built for</th><th>Latency</th><th>Price per MTok (in / out)</th><th>Default effort</th></tr></thead>
             <tbody>
@@ -288,6 +656,72 @@
           </div>
 
           <h3 class="sub"><span>3.4</span> Context limits: restart, summarise or persist</h3>
+<!-- dg:ao-limits -->
+<figure class="dg" id="fig-ao-limits">
+<div class="dg-scroll">
+<svg viewBox="0 0 760 330" role="img" aria-label="Context window per chat compared with the usage allowance across chats" style="min-width:608px;max-width:874px;margin:0 auto" xmlns="http://www.w3.org/2000/svg">
+<defs><marker id="ah-ao-limits" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="ah"/></marker><marker id="ah-ao-limits-a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="ah a"/></marker><marker id="ah-ao-limits-x" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="ah bad"/></marker><marker id="ah-ao-limits-o" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="ah ok"/></marker></defs>
+<g class="tx ">
+<text x="40" y="24" class="b" text-anchor="start">Length limit: one chat</text>
+</g>
+<g class="bx frame"><rect x="60" y="36" width="200" height="244" rx="7"/>
+</g>
+<g class="tx ">
+<text x="160" y="67" class="s" text-anchor="middle">room left</text>
+</g>
+<g class="bx "><rect x="64" y="90" width="192" height="34" rx="7"/>
+<text x="160" y="111" class="b" text-anchor="middle">Claude&#x27;s reply</text>
+</g>
+<g class="bx "><rect x="64" y="124" width="192" height="64" rx="7"/>
+<text x="160" y="152.5" class="b" text-anchor="middle">Conversation</text>
+<text x="160" y="167.5" class="s" text-anchor="middle">so far</text>
+</g>
+<g class="bx "><rect x="64" y="188" width="192" height="46" rx="7"/>
+<text x="160" y="215" class="b" text-anchor="middle">Attached files</text>
+</g>
+<g class="bx "><rect x="64" y="234" width="192" height="42" rx="7"/>
+<text x="160" y="259" class="b" text-anchor="middle">Instructions</text>
+</g>
+<path class="ln bad" d="M284,272 L284,46" marker-end="url(#ah-ao-limits-x)"/>
+<g class="tx ">
+<text x="296" y="156.5" class="b" text-anchor="start">Recall drops</text>
+<text x="296" y="171.5" class="s" text-anchor="start">as it fills</text>
+</g>
+<g class="tx ">
+<text x="160" y="308" class="r" text-anchor="middle">Full → new chat, or a Project</text>
+</g>
+<g class="tx ">
+<text x="420" y="24" class="b" text-anchor="start">Usage limit: across chats</text>
+</g>
+<g class="bx "><rect x="420" y="46" width="130" height="36" rx="7"/>
+<text x="485" y="68" class="b" text-anchor="middle">Chat A</text>
+</g>
+<path class="ln " d="M550,64 L600,100" marker-end="url(#ah-ao-limits)"/>
+<g class="bx "><rect x="420" y="94" width="130" height="36" rx="7"/>
+<text x="485" y="116" class="b" text-anchor="middle">Chat B</text>
+</g>
+<path class="ln " d="M550,112 L600,112" marker-end="url(#ah-ao-limits)"/>
+<g class="bx "><rect x="420" y="142" width="130" height="36" rx="7"/>
+<text x="485" y="164" class="b" text-anchor="middle">Claude Code</text>
+</g>
+<path class="ln " d="M550,160 L600,124" marker-end="url(#ah-ao-limits)"/>
+<g class="bx a"><rect x="600" y="70" width="150" height="84" rx="7"/>
+<text x="675" y="101" class="b" text-anchor="middle">Usage allowance</text>
+<text x="675" y="116" class="s" text-anchor="middle">5-hour session</text>
+<text x="675" y="131" class="s" text-anchor="middle">+ weekly limits</text>
+</g>
+<g class="tx ">
+<text x="675" y="187.5" class="r" text-anchor="middle">Hit it: wait, upgrade,</text>
+<text x="675" y="204.5" class="r" text-anchor="middle">or use usage credits</text>
+</g>
+<g class="bx bad"><rect x="600" y="226" width="150" height="36" rx="7"/>
+<text x="675" y="248" class="b" text-anchor="middle">New chat: no help</text>
+</g>
+</svg>
+</div>
+<figcaption>Two separate budgets. The context window caps one conversation and cannot be enlarged; the usage allowance caps total use over time, is shared by claude.ai, Claude Code and Desktop, and resets.</figcaption>
+</figure>
+<!-- /dg:ao-limits -->
           <p>The <b>context window is Claude's working memory</b>: the conversation, attached files, instructions and the reply itself. Accuracy and recall <b>drop as the token count grows</b>, so more material isn't always better.</p>
           <div class="table-wrap"><table class="compare">
             <thead><tr><th></th><th>Usage limit</th><th>Length limit</th></tr></thead>
@@ -408,17 +842,116 @@
           </div>
 
           <h3 class="sub"><span>5.1</span> Claude Projects</h3>
-          <div class="stack">
-            <div class="layer" style="--i:0">Project instructions <small>how Claude behaves in every chat</small></div>
-            <div class="layer" style="--i:1">Project knowledge <small>files every chat can draw on</small></div>
-            <div class="layer" style="--i:2">Each chat <small>starts with only the two layers above</small></div>
-          </div>
+<!-- dg:ao-project -->
+<figure class="dg" id="fig-ao-project">
+<div class="dg-scroll">
+<svg viewBox="0 0 760 300" role="img" aria-label="A Project gives every chat the same instructions and knowledge; chats do not share conversations" style="min-width:608px;max-width:874px;margin:0 auto" xmlns="http://www.w3.org/2000/svg">
+<defs><marker id="ah-ao-project" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="ah"/></marker><marker id="ah-ao-project-a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="ah a"/></marker><marker id="ah-ao-project-x" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="ah bad"/></marker><marker id="ah-ao-project-o" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="ah ok"/></marker></defs>
+<g class="bx frame"><rect x="20" y="14" width="570" height="272" rx="7"/>
+</g>
+<g class="tx ">
+<text x="36" y="38" class="b" text-anchor="start">Project</text>
+</g>
+<g class="bx a"><rect x="60" y="48" width="220" height="50" rx="7"/>
+<text x="170" y="69.5" class="b" text-anchor="middle">Instructions</text>
+<text x="170" y="84.5" class="s" text-anchor="middle">how to behave</text>
+</g>
+<g class="bx a"><rect x="330" y="48" width="220" height="50" rx="7"/>
+<text x="440" y="69.5" class="b" text-anchor="middle">Knowledge</text>
+<text x="440" y="84.5" class="s" text-anchor="middle">files · RAG when large</text>
+</g>
+<path class="ln a" d="M170,98 L170,144"/>
+<path class="ln a" d="M440,98 L440,144"/>
+<path class="ln a" d="M115,144 L495,144"/>
+<path class="ln a" d="M115,144 L115,190" marker-end="url(#ah-ao-project-a)"/>
+<g class="bx "><rect x="50" y="190" width="130" height="48" rx="7"/>
+<text x="115" y="218" class="b" text-anchor="middle">Chat A</text>
+</g>
+<path class="ln a" d="M305,144 L305,190" marker-end="url(#ah-ao-project-a)"/>
+<g class="bx "><rect x="240" y="190" width="130" height="48" rx="7"/>
+<text x="305" y="218" class="b" text-anchor="middle">Chat B</text>
+</g>
+<path class="ln a" d="M495,144 L495,190" marker-end="url(#ah-ao-project-a)"/>
+<g class="bx "><rect x="430" y="190" width="130" height="48" rx="7"/>
+<text x="495" y="218" class="b" text-anchor="middle">Chat C</text>
+</g>
+<text x="305" y="136" class="lb " text-anchor="middle">every chat starts with both</text>
+<path class="ln d bad" d="M180,214 L240,214"/>
+<text x="210" y="208" class="xm" text-anchor="middle">✗</text>
+<path class="ln d bad" d="M370,214 L430,214"/>
+<text x="400" y="208" class="xm" text-anchor="middle">✗</text>
+<text x="305" y="266" class="lb " text-anchor="middle">chats don&#x27;t see each other&#x27;s conversations</text>
+<g class="bx dash"><rect x="615" y="48" width="135" height="50" rx="7"/>
+<text x="682.5" y="69.5" class="b" text-anchor="middle">Name and</text>
+<text x="682.5" y="84.5" class="s" text-anchor="middle">description</text>
+</g>
+<g class="tx ">
+<text x="682" y="124" class="b x" text-anchor="middle">Claude can&#x27;t see</text>
+</g>
+<g class="bx "><rect x="615" y="190" width="135" height="48" rx="7"/>
+<text x="682.5" y="210.5" class="b" text-anchor="middle">Sharing</text>
+<text x="682.5" y="225.5" class="s" text-anchor="middle">Team &amp; Enterprise</text>
+</g>
+</svg>
+</div>
+<figcaption>Every chat in a Project starts with the same instructions and knowledge, and nothing from sibling chats. Anything that must carry over belongs in knowledge or instructions.</figcaption>
+</figure>
+<!-- /dg:ao-project -->
           <div class="grid cols-2">
             <div class="card accent"><h4>Key facts</h4><ul><li>Claude <b>can't see the project name or description</b>. Put guidance in the instructions.</li><li>A new chat <b>doesn't remember</b> other chats. Add anything that should carry over to the knowledge.</li><li><b>RAG mode</b> turns on <b>automatically</b> when knowledge nears the context limit, on <b>paid plans only</b> (Pro, Max, Team, Enterprise). It allows up to <b>10×</b> more knowledge. There's no setting to switch.</li></ul></div>
             <div class="card accent"><h4>Sharing</h4><ul><li>Only <b>Team and Enterprise</b>, and only with members of the same organisation. Pro can't share.</li><li><b>Can view</b>: see the contents and chat in the project</li><li><b>Can edit</b>: change instructions, knowledge and member settings</li><li>Give most people <b>Can view</b>.</li></ul></div>
           </div>
 
           <h3 class="sub"><span>5.2</span> Uploaded knowledge and connectors</h3>
+<!-- dg:ao-connector -->
+<figure class="dg" id="fig-ao-connector">
+<div class="dg-scroll">
+<svg viewBox="0 0 760 250" role="img" aria-label="An upload is a fixed copy; a connector is live access narrowed by your account and your organisation" style="min-width:608px;max-width:874px;margin:0 auto" xmlns="http://www.w3.org/2000/svg">
+<defs><marker id="ah-ao-connector" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="ah"/></marker><marker id="ah-ao-connector-a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="ah a"/></marker><marker id="ah-ao-connector-x" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="ah bad"/></marker><marker id="ah-ao-connector-o" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="ah ok"/></marker></defs>
+<g class="tx ">
+<text x="20" y="26" class="b" text-anchor="start">Upload</text>
+</g>
+<g class="bx "><rect x="20" y="40" width="140" height="48" rx="7"/>
+<text x="90" y="68" class="b" text-anchor="middle">Your file</text>
+</g>
+<path class="ln " d="M160,64 L240,64" marker-end="url(#ah-ao-connector)"/>
+<text x="200" y="58" class="lb " text-anchor="middle">copied once</text>
+<g class="bx "><rect x="240" y="40" width="200" height="48" rx="7"/>
+<text x="340" y="60.5" class="b" text-anchor="middle">Fixed copy</text>
+<text x="340" y="75.5" class="s" text-anchor="middle">in the chat or project</text>
+</g>
+<g class="tx ">
+<text x="460" y="67" class="s" text-anchor="start">doesn&#x27;t follow later edits</text>
+</g>
+<g class="tx ">
+<text x="20" y="126" class="b" text-anchor="start">Connector</text>
+</g>
+<g class="bx "><rect x="20" y="140" width="140" height="48" rx="7"/>
+<text x="90" y="168" class="b" text-anchor="middle">Drive or Gmail</text>
+</g>
+<path class="ln " d="M160,164 L210,164" marker-end="url(#ah-ao-connector)"/>
+<text x="185" y="158" class="lb " text-anchor="middle">live</text>
+<g class="bx dash"><rect x="210" y="140" width="150" height="48" rx="7"/>
+<text x="285" y="160.5" class="b" text-anchor="middle">Your account&#x27;s</text>
+<text x="285" y="175.5" class="s" text-anchor="middle">own access</text>
+</g>
+<path class="ln " d="M360,164 L400,164" marker-end="url(#ah-ao-connector)"/>
+<g class="bx dash"><rect x="400" y="140" width="150" height="48" rx="7"/>
+<text x="475" y="160.5" class="b" text-anchor="middle">Org allows</text>
+<text x="475" y="175.5" class="s" text-anchor="middle">admin + restrictions</text>
+</g>
+<path class="ln " d="M550,164 L600,164" marker-end="url(#ah-ao-connector)"/>
+<g class="bx a"><rect x="600" y="140" width="140" height="48" rx="7"/>
+<text x="670" y="168" class="b" text-anchor="middle">Claude</text>
+</g>
+<g class="bx warn"><rect x="210" y="206" width="340" height="36" rx="7"/>
+<text x="380" y="228" class="r" text-anchor="middle">Gmail: body + metadata, never attachments</text>
+</g>
+</svg>
+</div>
+<figcaption>An upload is a frozen copy. A connector is live access, narrowed first by what your own account can reach and then by what your organisation allows.</figcaption>
+</figure>
+<!-- /dg:ao-connector -->
           <div class="table-wrap"><table class="compare">
             <thead><tr><th></th><th>Upload</th><th>Connector</th></tr></thead>
             <tbody>
@@ -467,6 +1000,44 @@
           </div>
 
           <h3 class="sub"><span>6.1</span> Appropriate and inappropriate use cases</h3>
+<!-- dg:ao-autonomy -->
+<figure class="dg" id="fig-ao-autonomy">
+<div class="dg-scroll">
+<svg viewBox="0 0 760 240" role="img" aria-label="Decision: is the use case recoverable, and how much autonomy fits" style="min-width:608px;max-width:874px;margin:0 auto" xmlns="http://www.w3.org/2000/svg">
+<defs><marker id="ah-ao-autonomy" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="ah"/></marker><marker id="ah-ao-autonomy-a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="ah a"/></marker><marker id="ah-ao-autonomy-x" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="ah bad"/></marker><marker id="ah-ao-autonomy-o" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="ah ok"/></marker></defs>
+<g class="dm " data-maxw="138.6"><polygon points="120,42 225,90 120,138 15,90"/>
+<text x="120" y="85.5" class="b" text-anchor="middle">Errors caught</text>
+<text x="120" y="102.5" class="b" text-anchor="middle">before harm?</text>
+</g>
+<path class="ln " d="M120,138 L120,178" marker-end="url(#ah-ao-autonomy)"/>
+<text x="128" y="162" class="lb " text-anchor="start">no</text>
+<g class="bx bad"><rect x="20" y="178" width="200" height="48" rx="7"/>
+<text x="120" y="198.5" class="b" text-anchor="middle">Wrong use case</text>
+<text x="120" y="213.5" class="s" text-anchor="middle">however good the prompt</text>
+</g>
+<path class="ln " d="M225,90 L290,90" marker-end="url(#ah-ao-autonomy)"/>
+<text x="257.5" y="84" class="lb " text-anchor="middle">yes</text>
+<g class="dm " data-maxw="138.6"><polygon points="395,42 500,90 395,138 290,90"/>
+<text x="395" y="85.5" class="b" text-anchor="middle">Mistake cheap</text>
+<text x="395" y="102.5" class="b" text-anchor="middle">to undo?</text>
+</g>
+<path class="ln " d="M500,90 L530,90 L530,46 L560,46" marker-end="url(#ah-ao-autonomy)"/>
+<path class="ln " d="M530,90 L530,154 L560,154" marker-end="url(#ah-ao-autonomy)"/>
+<text x="536" y="64" class="lb " text-anchor="start">yes</text>
+<text x="536" y="130" class="lb " text-anchor="start">no</text>
+<g class="bx ok"><rect x="560" y="22" width="190" height="48" rx="7"/>
+<text x="655" y="42.5" class="b" text-anchor="middle">Grant autonomy</text>
+<text x="655" y="57.5" class="s" text-anchor="middle">research · forms · tests</text>
+</g>
+<g class="bx warn"><rect x="560" y="130" width="190" height="48" rx="7"/>
+<text x="655" y="150.5" class="b" text-anchor="middle">Require approval</text>
+<text x="655" y="165.5" class="s" text-anchor="middle">send · buy · edit records</text>
+</g>
+</svg>
+</div>
+<figcaption>The recoverable-work test decides whether Claude fits at all; how easily a mistake can be undone then decides how much autonomy an agent gets.</figcaption>
+</figure>
+<!-- /dg:ao-autonomy -->
           <div class="callout key"><div><strong class="label">The recoverable, reviewable work test</strong>A use case fits Claude when its mistakes can be <b>noticed and fixed before they reach anyone who'd be harmed</b>. If an error would land before anyone could catch it, the use case is wrong, however good the prompt.</div></div>
           <div class="grid">
             <div class="card accent"><h4>🚫 Prohibited, whatever the safeguards</h4><ul><li>Biological, chemical, radiological or nuclear <b>weapons</b>, even for an accredited lab or a "red team"</li><li><b>Sexual content involving minors</b>, including fiction or role-play, and even with parental consent</li><li><b>Exploits or malware</b> for unauthorised offensive use</li></ul><p class="muted">Affiliation, stated intent, consent and fictional framing never lift these.</p></div>
@@ -495,7 +1066,51 @@
               <tr><th>Flagged chat: safety classification scores</th><td>Up to <b>7 years</b> (longer than the chat itself)</td></tr>
             </tbody>
           </table></div>
-          <div class="grid cols-2">
+          <!-- dg:ao-retention -->
+<figure class="dg" id="fig-ao-retention">
+<div class="dg-scroll">
+<svg viewBox="0 0 790 230" role="img" aria-label="Consumer retention timeline: immediately, 30 days, 2 years, 5 years, 7 years" style="min-width:632px;max-width:908px;margin:0 auto" xmlns="http://www.w3.org/2000/svg">
+<defs><marker id="ah-ao-retention" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="ah"/></marker><marker id="ah-ao-retention-a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="ah a"/></marker><marker id="ah-ao-retention-x" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="ah bad"/></marker><marker id="ah-ao-retention-o" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="ah ok"/></marker></defs>
+<path class="ln " d="M40,115 L775,115" marker-end="url(#ah-ao-retention)"/>
+<circle class="dot a" cx="90" cy="115" r="6"/>
+<path class="ln " d="M90,103 L90,92"/>
+<g class="tx ">
+<text x="90" y="64.5" class="b" text-anchor="middle">Delete a chat</text>
+<text x="90" y="79.5" class="s" text-anchor="middle">gone from history now</text>
+</g>
+<circle class="dot a" cx="230" cy="115" r="6"/>
+<path class="ln " d="M230,127 L230,138"/>
+<g class="tx ">
+<text x="230" y="158.5" class="b" text-anchor="middle">Within 30 days</text>
+<text x="230" y="173.5" class="s" text-anchor="middle">purged from back end</text>
+</g>
+<circle class="dot a" cx="390" cy="115" r="6"/>
+<path class="ln " d="M390,103 L390,92"/>
+<g class="tx ">
+<text x="390" y="64.5" class="b" text-anchor="middle">Up to 2 years</text>
+<text x="390" y="79.5" class="s" text-anchor="middle">flagged chat content</text>
+</g>
+<circle class="dot a" cx="550" cy="115" r="6"/>
+<path class="ln " d="M550,127 L550,138"/>
+<g class="tx ">
+<text x="550" y="158.5" class="b" text-anchor="middle">Up to 5 years</text>
+<text x="550" y="173.5" class="s" text-anchor="middle">opt-in training · feedback</text>
+</g>
+<circle class="dot a" cx="700" cy="115" r="6"/>
+<path class="ln " d="M700,103 L700,92"/>
+<g class="tx ">
+<text x="700" y="64.5" class="b" text-anchor="middle">Up to 7 years</text>
+<text x="700" y="79.5" class="s" text-anchor="middle">flagged: safety scores</text>
+</g>
+<g class="tx ">
+<text x="20" y="217" class="s" text-anchor="start">Consumer plans (Free, Pro, Max). Not to scale.</text>
+</g>
+</svg>
+</div>
+<figcaption>Consumer-plan retention: each number belongs to one trigger. A flagged chat's safety scores are kept longer than the chat itself.</figcaption>
+</figure>
+<!-- /dg:ao-retention -->
+<div class="grid cols-2">
             <div class="card accent"><h4>🏥 Health information (PHI)</h4><p>Needs a signed <b>BAA</b> and <b>HIPAA readiness</b> enabled on the organisation. Consumer plans aren't covered, whatever their settings. <b>Enabling HIPAA readiness is permanent</b> and can't be reversed.</p></div>
             <div class="card accent"><h4>🇪🇺 EU personal data</h4><p>The <b>DPA</b>, including Standard Contractual Clauses, is built into the Commercial Terms. On Team and Enterprise, the <b>customer is the controller</b> and Anthropic is the processor.</p></div>
           </div>
@@ -556,6 +1171,38 @@
           </div>
 
           <h3 class="sub"><span>7.1</span> Diagnosing poor output: five causes</h3>
+<!-- dg:ao-ladder -->
+<figure class="dg" id="fig-ao-ladder">
+<div class="dg-scroll">
+<svg viewBox="0 0 760 250" role="img" aria-label="Five causes of poor output, checked in order from prompt to model tier" style="min-width:608px;max-width:874px;margin:0 auto" xmlns="http://www.w3.org/2000/svg">
+<defs><marker id="ah-ao-ladder" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="ah"/></marker><marker id="ah-ao-ladder-a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="ah a"/></marker><marker id="ah-ao-ladder-x" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="ah bad"/></marker><marker id="ah-ao-ladder-o" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="ah ok"/></marker></defs>
+<g class="bx ok"><rect x="20" y="150" width="140" height="56" rx="7"/>
+<text x="90" y="174.5" class="b" text-anchor="middle">1 · Prompt</text>
+<text x="90" y="189.5" class="s" text-anchor="middle">generic or thin?</text>
+</g>
+<g class="bx "><rect x="166" y="120" width="140" height="56" rx="7"/>
+<text x="236" y="144.5" class="b" text-anchor="middle">2 · Knowledge</text>
+<text x="236" y="159.5" class="s" text-anchor="middle">confident, wrong?</text>
+</g>
+<g class="bx "><rect x="312" y="90" width="140" height="56" rx="7"/>
+<text x="382" y="114.5" class="b" text-anchor="middle">3 · Conversation</text>
+<text x="382" y="129.5" class="s" text-anchor="middle">long, mixed chat?</text>
+</g>
+<g class="bx "><rect x="458" y="60" width="140" height="56" rx="7"/>
+<text x="528" y="84.5" class="b" text-anchor="middle">4 · Effort</text>
+<text x="528" y="99.5" class="s" text-anchor="middle">skipped steps?</text>
+</g>
+<g class="bx warn"><rect x="604" y="30" width="140" height="56" rx="7"/>
+<text x="674" y="54.5" class="b" text-anchor="middle">5 · Model tier</text>
+<text x="674" y="69.5" class="s" text-anchor="middle">still fails?</text>
+</g>
+<path class="ln " d="M20,236 L744,236" marker-end="url(#ah-ao-ladder)"/>
+<text x="382" y="228" class="lb " text-anchor="middle">check in this order: most common and cheapest to change first</text>
+</svg>
+</div>
+<figcaption>Five causes look alike from outside. Check them in order: the prompt is the most common cause and the cheapest to change; move up a model tier only after ruling out the rest.</figcaption>
+</figure>
+<!-- /dg:ao-ladder -->
           <div class="table-wrap"><table class="compare">
             <thead><tr><th>Cause</th><th>Symptom</th><th>Fix</th></tr></thead>
             <tbody>
