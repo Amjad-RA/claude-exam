@@ -30,6 +30,7 @@ import argparse
 import base64
 import hashlib
 import html
+import io
 import json
 import os
 import pathlib
@@ -39,14 +40,15 @@ import sys
 import time
 import urllib.error
 import urllib.request
+import wave
 
 from bs4 import BeautifulSoup
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 CACHE = ROOT / ".audio-cache"
 API = "https://generativelanguage.googleapis.com/v1beta"
-TEXT_MODEL = os.environ.get("GEMINI_TEXT_MODEL", "gemini-2.5-pro")
-TTS_MODEL = os.environ.get("GEMINI_TTS_MODEL", "gemini-2.5-pro-preview-tts")
+TEXT_MODEL = os.environ.get("GEMINI_TEXT_MODEL", "gemini-3.8-flash")
+TTS_MODEL = os.environ.get("GEMINI_TTS_MODEL", "gemini-3.8-flash-tts")
 VOICE = os.environ.get("GEMINI_VOICE", "Sulafat")   # described by Google as "warm"
 STYLE = ("Read this aloud in Malayalam like a warm, friendly teacher talking to one student: "
          "natural, calm, clear and unhurried.")
@@ -76,6 +78,9 @@ def call(model, body, timeout=600):
                 m = re.search(r'"retryDelay":\s*"(\d+)', detail)
                 if m:
                     wait = int(m.group(1)) + 2
+                if e.code == 429 and "limit: 0" in detail:
+                    raise SystemExit(f"{model} isn't available on this key's plan (its free-tier limit is 0). "
+                                     "Pick another model with GEMINI_TEXT_MODEL or GEMINI_TTS_MODEL.")
                 if e.code == 429 and "PerDay" in detail:
                     raise SystemExit(f"Daily quota used up for {model}. Run again tomorrow; finished parts are cached.\n{detail[:600]}")
                 print(f"    {e.code}, waiting {wait}s and retrying", flush=True)
@@ -217,7 +222,7 @@ def write(page, sec_id):
     src = path.read_text()
     info = domain_facts(src, sec_id)
     prompt = LESSON_PROMPT.format(
-        **info, weight_part=f" ({info['weight']} of the exam)" if info["weight"] else "",
+        **{k: v for k, v in info.items() if k != "topics"}, weight_part=f" ({info['weight']} of the exam)" if info["weight"] else "",
         topics="\n".join("- " + t for t in info["topics"]))
     print(f"Asking {TEXT_MODEL} to write the lesson…", flush=True)
     res = call(TEXT_MODEL, {
@@ -257,8 +262,14 @@ def tts(text):
     })
     parts = res["candidates"][0]["content"]["parts"]
     data = next(p["inlineData"] for p in parts if "inlineData" in p)
-    rate = int(re.search(r"rate=(\d+)", data["mimeType"]).group(1))
-    pcm = base64.b64decode(data["data"])
+    raw = base64.b64decode(data["data"])
+    if raw[:4] == b"RIFF":   # newer models send a WAV file
+        with wave.open(io.BytesIO(raw)) as w:
+            if w.getnchannels() != 1 or w.getsampwidth() != 2:
+                raise SystemExit(f"Unexpected audio format from {TTS_MODEL}: {w.getparams()}")
+            rate, pcm = w.getframerate(), w.readframes(w.getnframes())
+    else:                    # older ones send raw 16-bit PCM: audio/L16;codec=pcm;rate=24000
+        rate, pcm = int(re.search(r"rate=(\d+)", data["mimeType"]).group(1)), raw
     f.write_bytes(f"{rate}\n".encode() + pcm)
     return pcm, rate
 
