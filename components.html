@@ -1,0 +1,280 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Note Components</title>
+  <meta name="description" content="Reusable visual note components with copy-paste HTML.">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>✳️</text></svg>">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="inner">
+      <a class="brand" href="index.html"><span class="logo">✳</span> Claude Exam Notes</a>
+      <nav class="nav">
+        <a href="index.html">Home</a>
+        <a href="exams/ccao-f.html">CCAO-F</a>
+        <a href="exams/ccar-f.html">CCAR-F</a>
+        <a href="exams/ccar-p.html">CCAR-P</a>
+        <a href="components.html" aria-current="page">Components</a>
+      </nav>
+      <button class="icon-btn" data-theme-toggle type="button"></button>
+    </div>
+  </header>
+
+  <main class="container">
+    <div class="hero">
+      <h1>Note components</h1>
+      <p class="lead">Every building block available for the notes. Open "Show HTML" under a component to copy its code into an exam page.</p>
+    </div>
+    <div class="with-toc">
+      <aside class="toc"><div class="toc-title">Components</div><nav data-toc></nav></aside>
+      <div>
+        <input class="search" type="search" placeholder="Filter components…" data-search aria-label="Filter components">
+
+        <section class="domain" id="cards">
+          <div class="domain-head"><h2>Concept cards</h2></div>
+          <p class="muted">A grid of short concept summaries. Add <code>accent</code> for a coloured top border; use <code>grid cols-2</code> for wider cards.</p>
+          <div class="grid">
+            <div class="card accent">
+              <h3><span class="ico">🧠</span> Concept name</h3>
+              <p>One-sentence definition.</p>
+              <ul><li>Key point</li><li>Key point</li></ul>
+            </div>
+            <div class="card accent">
+              <h3><span class="ico">⚙️</span> Another concept</h3>
+              <p>One-sentence definition.</p>
+            </div>
+            <div class="card accent">
+              <h3><span class="ico">📏</span> Third concept</h3>
+              <p>One-sentence definition.</p>
+            </div>
+          </div>
+          <details class="qa code-toggle"><summary>Show HTML</summary><div class="a"><pre><code>&lt;div class=&quot;grid&quot;&gt;
+  &lt;div class=&quot;card accent&quot;&gt;
+    &lt;h3&gt;&lt;span class=&quot;ico&quot;&gt;🧠&lt;/span&gt; Concept name&lt;/h3&gt;
+    &lt;p&gt;One-sentence definition.&lt;/p&gt;
+    &lt;ul&gt;&lt;li&gt;Key point&lt;/li&gt;&lt;li&gt;Key point&lt;/li&gt;&lt;/ul&gt;
+  &lt;/div&gt;
+  &lt;div class=&quot;card accent&quot;&gt;
+    &lt;h3&gt;&lt;span class=&quot;ico&quot;&gt;⚙️&lt;/span&gt; Another concept&lt;/h3&gt;
+    &lt;p&gt;One-sentence definition.&lt;/p&gt;
+  &lt;/div&gt;
+  &lt;div class=&quot;card accent&quot;&gt;
+    &lt;h3&gt;&lt;span class=&quot;ico&quot;&gt;📏&lt;/span&gt; Third concept&lt;/h3&gt;
+    &lt;p&gt;One-sentence definition.&lt;/p&gt;
+  &lt;/div&gt;
+&lt;/div&gt;</code></pre></div></details>
+        </section>
+
+        <section class="domain" id="callouts">
+          <div class="domain-head"><h2>Callouts</h2></div>
+          <p class="muted">Four types: <code>key</code>, <code>trap</code>, <code>tip</code>, <code>info</code>.</p>
+          <div class="callout key"><div><strong class="label">Key</strong>A fact you must remember.</div></div>
+          <div class="callout trap"><div><strong class="label">Exam trap</strong>An answer that looks right but is wrong, and why.</div></div>
+          <div class="callout tip"><div><strong class="label">Tip</strong>A rule of thumb for choosing the right answer.</div></div>
+          <div class="callout info"><div><strong class="label">Note</strong>Background context.</div></div>
+          <details class="qa code-toggle"><summary>Show HTML</summary><div class="a"><pre><code>&lt;div class=&quot;callout key&quot;&gt;&lt;div&gt;&lt;strong class=&quot;label&quot;&gt;Key&lt;/strong&gt;A fact you must remember.&lt;/div&gt;&lt;/div&gt;
+&lt;div class=&quot;callout trap&quot;&gt;&lt;div&gt;&lt;strong class=&quot;label&quot;&gt;Exam trap&lt;/strong&gt;An answer that looks right but is wrong, and why.&lt;/div&gt;&lt;/div&gt;
+&lt;div class=&quot;callout tip&quot;&gt;&lt;div&gt;&lt;strong class=&quot;label&quot;&gt;Tip&lt;/strong&gt;A rule of thumb for choosing the right answer.&lt;/div&gt;&lt;/div&gt;
+&lt;div class=&quot;callout info&quot;&gt;&lt;div&gt;&lt;strong class=&quot;label&quot;&gt;Note&lt;/strong&gt;Background context.&lt;/div&gt;&lt;/div&gt;</code></pre></div></details>
+        </section>
+
+        <section class="domain" id="flow">
+          <div class="domain-head"><h2>Flow / process diagram</h2></div>
+          <p class="muted">Numbered steps with arrows. They wrap on small screens. Add <code>loop</code> for a cycle.</p>
+          <div class="flow">
+            <div class="step"><b>Step one</b><span>What happens</span></div>
+            <div class="step"><b>Step two</b><span>What happens</span></div>
+            <div class="step"><b>Step three</b><span>What happens</span></div>
+            <div class="step"><b>Step four</b><span>What happens</span></div>
+          </div>
+          <details class="qa code-toggle"><summary>Show HTML</summary><div class="a"><pre><code>&lt;div class=&quot;flow&quot;&gt;
+  &lt;div class=&quot;step&quot;&gt;&lt;b&gt;Step one&lt;/b&gt;&lt;span&gt;What happens&lt;/span&gt;&lt;/div&gt;
+  &lt;div class=&quot;step&quot;&gt;&lt;b&gt;Step two&lt;/b&gt;&lt;span&gt;What happens&lt;/span&gt;&lt;/div&gt;
+  &lt;div class=&quot;step&quot;&gt;&lt;b&gt;Step three&lt;/b&gt;&lt;span&gt;What happens&lt;/span&gt;&lt;/div&gt;
+  &lt;div class=&quot;step&quot;&gt;&lt;b&gt;Step four&lt;/b&gt;&lt;span&gt;What happens&lt;/span&gt;&lt;/div&gt;
+&lt;/div&gt;</code></pre></div></details>
+        </section>
+
+        <section class="domain" id="compare">
+          <div class="domain-head"><h2>Comparison table</h2></div>
+          <p class="muted">Compare options side by side. Use <code>.yes</code> / <code>.no</code> for ✓ / ✗.</p>
+          <div class="table-wrap">
+            <table class="compare">
+              <thead><tr><th></th><th>Option A</th><th>Option B</th><th>Option C</th></tr></thead>
+              <tbody>
+                <tr><th>Best for</th><td>…</td><td>…</td><td>…</td></tr>
+                <tr><th>Supports X</th><td class="yes">✓</td><td class="no">✗</td><td class="yes">✓</td></tr>
+                <tr><th>Trade-off</th><td>…</td><td>…</td><td>…</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <details class="qa code-toggle"><summary>Show HTML</summary><div class="a"><pre><code>&lt;div class=&quot;table-wrap&quot;&gt;
+  &lt;table class=&quot;compare&quot;&gt;
+    &lt;thead&gt;&lt;tr&gt;&lt;th&gt;&lt;/th&gt;&lt;th&gt;Option A&lt;/th&gt;&lt;th&gt;Option B&lt;/th&gt;&lt;th&gt;Option C&lt;/th&gt;&lt;/tr&gt;&lt;/thead&gt;
+    &lt;tbody&gt;
+      &lt;tr&gt;&lt;th&gt;Best for&lt;/th&gt;&lt;td&gt;…&lt;/td&gt;&lt;td&gt;…&lt;/td&gt;&lt;td&gt;…&lt;/td&gt;&lt;/tr&gt;
+      &lt;tr&gt;&lt;th&gt;Supports X&lt;/th&gt;&lt;td class=&quot;yes&quot;&gt;✓&lt;/td&gt;&lt;td class=&quot;no&quot;&gt;✗&lt;/td&gt;&lt;td class=&quot;yes&quot;&gt;✓&lt;/td&gt;&lt;/tr&gt;
+      &lt;tr&gt;&lt;th&gt;Trade-off&lt;/th&gt;&lt;td&gt;…&lt;/td&gt;&lt;td&gt;…&lt;/td&gt;&lt;td&gt;…&lt;/td&gt;&lt;/tr&gt;
+    &lt;/tbody&gt;
+  &lt;/table&gt;
+&lt;/div&gt;</code></pre></div></details>
+        </section>
+
+        <section class="domain" id="dodont">
+          <div class="domain-head"><h2>Do vs Don't</h2></div>
+          <p class="muted">Two columns for best practices against anti-patterns.</p>
+          <div class="dodont">
+            <div class="do"><h4>✓ Do</h4><ul><li>Good practice</li><li>Good practice</li></ul></div>
+            <div class="dont"><h4>✗ Don't</h4><ul><li>Anti-pattern</li><li>Anti-pattern</li></ul></div>
+          </div>
+          <details class="qa code-toggle"><summary>Show HTML</summary><div class="a"><pre><code>&lt;div class=&quot;dodont&quot;&gt;
+  &lt;div class=&quot;do&quot;&gt;&lt;h4&gt;✓ Do&lt;/h4&gt;&lt;ul&gt;&lt;li&gt;Good practice&lt;/li&gt;&lt;li&gt;Good practice&lt;/li&gt;&lt;/ul&gt;&lt;/div&gt;
+  &lt;div class=&quot;dont&quot;&gt;&lt;h4&gt;✗ Don&#x27;t&lt;/h4&gt;&lt;ul&gt;&lt;li&gt;Anti-pattern&lt;/li&gt;&lt;li&gt;Anti-pattern&lt;/li&gt;&lt;/ul&gt;&lt;/div&gt;
+&lt;/div&gt;</code></pre></div></details>
+        </section>
+
+        <section class="domain" id="stack">
+          <div class="domain-head"><h2>Layer / stack diagram</h2></div>
+          <p class="muted">Shows architecture layers, top to bottom. Set <code>--i</code> to shade each layer.</p>
+          <div class="stack">
+            <div class="layer" style="--i:0">Top layer <small>role</small></div>
+            <div class="layer" style="--i:1">Middle layer <small>role</small></div>
+            <div class="layer" style="--i:2">Lower layer <small>role</small></div>
+            <div class="layer" style="--i:3">Foundation <small>role</small></div>
+          </div>
+          <details class="qa code-toggle"><summary>Show HTML</summary><div class="a"><pre><code>&lt;div class=&quot;stack&quot;&gt;
+  &lt;div class=&quot;layer&quot; style=&quot;--i:0&quot;&gt;Top layer &lt;small&gt;role&lt;/small&gt;&lt;/div&gt;
+  &lt;div class=&quot;layer&quot; style=&quot;--i:1&quot;&gt;Middle layer &lt;small&gt;role&lt;/small&gt;&lt;/div&gt;
+  &lt;div class=&quot;layer&quot; style=&quot;--i:2&quot;&gt;Lower layer &lt;small&gt;role&lt;/small&gt;&lt;/div&gt;
+  &lt;div class=&quot;layer&quot; style=&quot;--i:3&quot;&gt;Foundation &lt;small&gt;role&lt;/small&gt;&lt;/div&gt;
+&lt;/div&gt;</code></pre></div></details>
+        </section>
+
+        <section class="domain" id="mnemonic">
+          <div class="domain-head"><h2>Mnemonic</h2></div>
+          <p class="muted">A memory aid made from first letters.</p>
+          <div class="mnemonic">
+            <div class="word">ABCD</div>
+            <ul>
+              <li><b>A</b> – first item</li>
+              <li><b>B</b> – second item</li>
+              <li><b>C</b> – third item</li>
+              <li><b>D</b> – fourth item</li>
+            </ul>
+          </div>
+          <details class="qa code-toggle"><summary>Show HTML</summary><div class="a"><pre><code>&lt;div class=&quot;mnemonic&quot;&gt;
+  &lt;div class=&quot;word&quot;&gt;ABCD&lt;/div&gt;
+  &lt;ul&gt;
+    &lt;li&gt;&lt;b&gt;A&lt;/b&gt; – first item&lt;/li&gt;
+    &lt;li&gt;&lt;b&gt;B&lt;/b&gt; – second item&lt;/li&gt;
+    &lt;li&gt;&lt;b&gt;C&lt;/b&gt; – third item&lt;/li&gt;
+    &lt;li&gt;&lt;b&gt;D&lt;/b&gt; – fourth item&lt;/li&gt;
+  &lt;/ul&gt;
+&lt;/div&gt;</code></pre></div></details>
+        </section>
+
+        <section class="domain" id="glossary">
+          <div class="domain-head"><h2>Glossary</h2></div>
+          <p class="muted">Term and definition pairs.</p>
+          <dl class="glossary">
+            <dt>Term</dt><dd>Short definition.</dd>
+            <dt>Another term</dt><dd>Short definition.</dd>
+          </dl>
+          <details class="qa code-toggle"><summary>Show HTML</summary><div class="a"><pre><code>&lt;dl class=&quot;glossary&quot;&gt;
+  &lt;dt&gt;Term&lt;/dt&gt;&lt;dd&gt;Short definition.&lt;/dd&gt;
+  &lt;dt&gt;Another term&lt;/dt&gt;&lt;dd&gt;Short definition.&lt;/dd&gt;
+&lt;/dl&gt;</code></pre></div></details>
+        </section>
+
+        <section class="domain" id="chips">
+          <div class="domain-head"><h2>Keyword chips</h2></div>
+          <p class="muted">Tags for keywords. Add <code>hot</code> to highlight one.</p>
+          <div class="chips">
+            <span class="chip hot">high-yield</span>
+            <span class="chip">keyword</span>
+            <span class="chip">keyword</span>
+          </div>
+          <details class="qa code-toggle"><summary>Show HTML</summary><div class="a"><pre><code>&lt;div class=&quot;chips&quot;&gt;
+  &lt;span class=&quot;chip hot&quot;&gt;high-yield&lt;/span&gt;
+  &lt;span class=&quot;chip&quot;&gt;keyword&lt;/span&gt;
+  &lt;span class=&quot;chip&quot;&gt;keyword&lt;/span&gt;
+&lt;/div&gt;</code></pre></div></details>
+        </section>
+
+        <section class="domain" id="flashcards">
+          <div class="domain-head"><h2>Flashcards</h2></div>
+          <p class="muted">Click a card to reveal the answer. Works without JavaScript.</p>
+          <div class="flashcards">
+            <details class="qa"><summary>Question?</summary><div class="a"><p>Answer.</p></div></details>
+            <details class="qa"><summary>Question?</summary><div class="a"><p>Answer.</p></div></details>
+          </div>
+          <details class="qa code-toggle"><summary>Show HTML</summary><div class="a"><pre><code>&lt;div class=&quot;flashcards&quot;&gt;
+  &lt;details class=&quot;qa&quot;&gt;&lt;summary&gt;Question?&lt;/summary&gt;&lt;div class=&quot;a&quot;&gt;&lt;p&gt;Answer.&lt;/p&gt;&lt;/div&gt;&lt;/details&gt;
+  &lt;details class=&quot;qa&quot;&gt;&lt;summary&gt;Question?&lt;/summary&gt;&lt;div class=&quot;a&quot;&gt;&lt;p&gt;Answer.&lt;/p&gt;&lt;/div&gt;&lt;/details&gt;
+&lt;/div&gt;</code></pre></div></details>
+        </section>
+
+        <section class="domain" id="quiz">
+          <div class="domain-head"><h2>Practice question</h2></div>
+          <p class="muted">Multiple choice. Set <code>data-answer</code> to the correct letter. Clicking an option shows the result and explanation.</p>
+          <div class="quiz" data-answer="B">
+            <div class="q">Scenario-style question text?</div>
+            <ol>
+              <li>Option A</li>
+              <li>Option B</li>
+              <li>Option C</li>
+              <li>Option D</li>
+            </ol>
+            <div class="why"><b>Answer: B.</b> Why B is right and the others are wrong.</div>
+          </div>
+          <details class="qa code-toggle"><summary>Show HTML</summary><div class="a"><pre><code>&lt;div class=&quot;quiz&quot; data-answer=&quot;B&quot;&gt;
+  &lt;div class=&quot;q&quot;&gt;Scenario-style question text?&lt;/div&gt;
+  &lt;ol&gt;
+    &lt;li&gt;Option A&lt;/li&gt;
+    &lt;li&gt;Option B&lt;/li&gt;
+    &lt;li&gt;Option C&lt;/li&gt;
+    &lt;li&gt;Option D&lt;/li&gt;
+  &lt;/ol&gt;
+  &lt;div class=&quot;why&quot;&gt;&lt;b&gt;Answer: B.&lt;/b&gt; Why B is right and the others are wrong.&lt;/div&gt;
+&lt;/div&gt;</code></pre></div></details>
+        </section>
+
+        <section class="domain" id="cheatsheet">
+          <div class="domain-head"><h2>Cheat sheet box</h2></div>
+          <p class="muted">An end-of-section summary in two columns.</p>
+          <div class="cheatsheet">
+            <h3>Summary</h3>
+            <ul>
+              <li>Point one</li><li>Point two</li><li>Point three</li><li>Point four</li>
+            </ul>
+          </div>
+          <details class="qa code-toggle"><summary>Show HTML</summary><div class="a"><pre><code>&lt;div class=&quot;cheatsheet&quot;&gt;
+  &lt;h3&gt;Summary&lt;/h3&gt;
+  &lt;ul&gt;
+    &lt;li&gt;Point one&lt;/li&gt;&lt;li&gt;Point two&lt;/li&gt;&lt;li&gt;Point three&lt;/li&gt;&lt;li&gt;Point four&lt;/li&gt;
+  &lt;/ul&gt;
+&lt;/div&gt;</code></pre></div></details>
+        </section>
+
+        <section class="domain" id="code">
+          <div class="domain-head"><h2>Code snippet</h2></div>
+          <p class="muted">For API calls, config or prompts.</p>
+          <pre><code>{
+            "example": "paste code here"
+          }</code></pre>
+          <details class="qa code-toggle"><summary>Show HTML</summary><div class="a"><pre><code>&lt;pre&gt;&lt;code&gt;{
+  &quot;example&quot;: &quot;paste code here&quot;
+}&lt;/code&gt;&lt;/pre&gt;</code></pre></div></details>
+        </section>
+
+      </div>
+    </div>
+  </main>
+
+  <footer class="site-footer">Personal study notes. Not affiliated with or endorsed by Anthropic.</footer>
+  <script src="assets/js/app.js"></script>
+</body>
+</html>
