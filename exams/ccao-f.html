@@ -27,14 +27,18 @@
     <div class="hero">
       <span class="exam-code">CCAO-F</span>
       <h1>Claude Certified Associate – Foundations</h1>
-      <p class="lead">[One-line summary of what this exam tests and who it is for.]</p>
+      <p class="lead">For professionals who use Claude as a productivity tool, in roles such as operations, marketing, project management, education and communications. It tests prompting, judging outputs, choosing features and models, configuring Projects, and using Claude responsibly.</p>
       <div class="meta-row">
-        <span class="meta">Level: <b>Associate · Foundations</b></span>
-        <span class="meta">Questions: <b>[n]</b></span>
-        <span class="meta">Time: <b>[n] min</b></span>
-        <span class="meta">Passing: <b>[n]%</b></span>
-        <span class="meta">Format: <b>[MCQ / scenario]</b></span>
+        <span class="meta">Questions: <b>60</b></span>
+        <span class="meta">Time: <b>120 min</b></span>
+        <span class="meta">Passing: <b>720 / 1000</b></span>
+        <span class="meta">Format: <b>Multiple choice and multiple response</b></span>
+        <span class="meta">Fee: <b>$99</b></span>
+        <span class="meta">Delivery: <b>Online proctored or test center</b></span>
+        <span class="meta">Valid: <b>12 months</b></span>
+        <span class="meta">Prerequisites: <b>None</b></span>
       </div>
+      <p class="source-note">Built from the CertSafari CCAO-F lessons (30 lessons, cited to Anthropic's documentation as of Oct 2026), read on 20 Nov 2026. Product details change, so check the official docs before your exam.</p>
     </div>
 
     <div class="with-toc">
@@ -46,50 +50,547 @@
       </aside>
 
       <div>
-        <input class="search" type="search" placeholder="Filter sections…" data-search aria-label="Filter sections">
+        <input class="search" type="search" placeholder="Filter sections, e.g. RAG, Haiku, retention…" data-search aria-label="Filter sections">
+
+        <!-- ============ EXAM MAP ============ -->
+        <section class="domain" id="map">
+          <div class="domain-head">
+            <span class="domain-num">★</span>
+            <h2>Exam map: 7 domains</h2>
+          </div>
+          <div class="table-wrap">
+            <table class="compare">
+              <thead><tr><th>Domain</th><th>Weight</th><th>Lessons</th><th>Core idea</th></tr></thead>
+              <tbody>
+                <tr><th>D1 Prompting and Task Execution</th><td>14%</td><td>4</td><td>Write it down: brief, reason, source, example</td></tr>
+                <tr><th>D2 Output Evaluation and Validation</th><td><b>21%</b></td><td>6</td><td>Fluent is not the same as true. Check against the source.</td></tr>
+                <tr><th>D3 Product and Model Selection</th><td>12%</td><td>4</td><td>Use the cheapest option that still does the job well</td></tr>
+                <tr><th>D4 Workflow Integration and Solution Design</th><td>16%</td><td>5</td><td>Delegate step by step; people keep the judgment calls</td></tr>
+                <tr><th>D5 Configuration and Knowledge Management</th><td>12%</td><td>4</td><td>Projects keep knowledge and instructions, never other chats</td></tr>
+                <tr><th>D6 Governance, Risk and Responsible Use</th><td>15%</td><td>4</td><td>You own the outcome. Some uses are banned outright.</td></tr>
+                <tr><th>D7 Troubleshooting and Optimization</th><td>10%</td><td>3</td><td>Diagnose before you fix</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="callout key"><div><strong class="label">Pattern behind most questions</strong>"What should they do <b>first</b>?" The answer is almost always to <b>diagnose or define</b> before acting: read the outputs, agree on what "good" looks like, then change one thing. Answers like "use a bigger model", "repeat the instruction more firmly" or "trust the confident answer" are usually the distractors.</div></div>
+        </section>
 
         <!-- ============ DOMAIN 1 ============ -->
         <section class="domain" id="d1">
           <div class="domain-head">
             <span class="domain-num">D1</span>
-            <h2>Domain 1: [Domain title]</h2>
-            <span class="weight">[xx]% <span class="bar"><i style="width:0%"></i></span></span>
+            <h2>Prompting and Task Execution</h2>
+            <span class="weight">14% <span class="bar"><i style="width:56%"></i></span></span>
           </div>
 
-          <div class="placeholder">Notes for Domain 1 go here. Copy components from <a href="../components.html">Components</a>.</div>
+          <h3 class="sub"><span>1.1</span> Effective prompts: brief, reason, source, example</h3>
+          <p>Treat Claude like a <b>newly hired contractor</b>. It knows nothing about you, your organisation or why the task exists. A good test: if a colleague who doesn't know the task would be confused by the prompt, Claude will be too.</p>
+          <div class="flow">
+            <div class="step"><b>Task</b><span>A direct verb: Write, Analyze, Create</span></div>
+            <div class="step"><b>Audience and goal</b><span>Who reads it, and what it is for</span></div>
+            <div class="step"><b>Format</b><span>Table, list, prose, fixed columns</span></div>
+            <div class="step"><b>Constraints</b><span>Word count, page limit, what must not appear</span></div>
+            <div class="step"><b>Depth</b><span>The most often skipped. Ask for comprehensive if you want it.</span></div>
+          </div>
+          <div class="grid cols-2">
+            <div class="card accent"><h3><span class="ico">💬</span> Give the reason</h3><p>Attach the "why" to an instruction, for example "no ellipses, because a text-to-speech engine will read this". Claude can then <b>generalise</b> the rule to cases it doesn't name.</p></div>
+            <div class="card accent"><h3><span class="ico">📄</span> Ground it in a source</h3><ul><li>Wrap each kind of content in its own tag: <code>&lt;instructions&gt;</code>, <code>&lt;context&gt;</code>, <code>&lt;input&gt;</code></li><li>Put <b>long documents at the top</b>, above the question</li><li>For noisy documents, have Claude <b>quote the relevant passages first</b></li><li>Say what to do if the answer isn't there: "say so" or "use null"</li></ul></div>
+            <div class="card accent"><h3><span class="ico">🧪</span> Show one example</h3><p>Start <b>one-shot</b> and add more examples only if the output still misses. Claude copies the details of examples closely. Wrap them in <code>&lt;example&gt;</code> tags.</p></div>
+            <div class="card accent"><h3><span class="ico">🪞</span> Format: say it positively, and match it</h3><p>Write "use flowing prose paragraphs", not "don't use markdown". Claude <b>mirrors the prompt's own style</b>, so a prompt full of markdown pulls the answer towards markdown.</p></div>
+          </div>
+          <div class="callout trap"><div><strong class="label">Exam trap</strong>Answers like "put 'NO MARKDOWN' in bold or capitals", "add more examples" or "put the question first with long documents" are wrong. Use a positive instruction, a prompt written in the style you want, one example, and the document above the question.</div></div>
+
+          <h3 class="sub"><span>1.2</span> Task decomposition</h3>
+          <dl class="glossary">
+            <dt>Prompt chaining</dt><dd>A fixed sequence of smaller prompts. Each does one job and works on the <b>checked</b> output of the step before.</dd>
+            <dt>Trade-off</dt><dd>It's <b>slower</b>, because there are more calls. You get accuracy and reliability, and every intermediate result can be inspected.</dd>
+          </dl>
+          <div class="dodont">
+            <div class="do"><h4>✓ Do</h4><ul><li>Give each part a definition of "done" you can test</li><li>Run independent parts in parallel; chain the parts that depend on each other</li><li>Check intermediate steps before later stages build on them</li><li>Pass <b>extracted quotes and clauses</b> forward</li><li>Examples: cluster tickets, write an FAQ per cluster, then merge. Extract key clauses, then compare them point by point.</li></ul></div>
+            <div class="dont"><h4>✗ Don't</h4><ul><li>Split when one better prompt would do. Every extra stage adds coordination cost and another way to fail.</li><li>Review only the final output. An early error is inherited by every later stage.</li><li>Pass only summaries forward. They drop detail later stages need.</li></ul></div>
+          </div>
+
+          <h3 class="sub"><span>1.3</span> Iterating prompts</h3>
+          <div class="flow loop">
+            <div class="step"><b>Diagnose</b><span>What exactly is wrong?</span></div>
+            <div class="step"><b>Change one thing</b><span>The part of the prompt that causes it</span></div>
+            <div class="step"><b>Test</b><span>Against criteria you set beforehand</span></div>
+          </div>
+          <div class="table-wrap"><table class="compare">
+            <thead><tr><th>Diagnosis</th><th>Fix</th></tr></thead>
+            <tbody>
+              <tr><th>Vague request</th><td>Add specifics</td></tr>
+              <tr><th>Missing material</th><td>Supply the material</td></tr>
+              <tr><th>Task too complex</th><td>Split it into steps</td></tr>
+              <tr><th>Formatting rule ignored</th><td>Explain the reason, and rewrite the prompt in the target style. Shouting in capitals doesn't help.</td></tr>
+              <tr><th>Uncaught slips, e.g. arithmetic</th><td>Add a step: "verify your answer against the constraints before finalising"</td></tr>
+            </tbody>
+          </table></div>
+          <div class="callout trap"><div><strong class="label">Exam trap</strong>A reworded retry or a much longer prompt gives you a <i>different</i> output, not a better one. Changing several things at once means you can't tell which change helped. A prompt tuned on one input may be <b>overfitted</b> to it, so test on varied inputs and edge cases before making it the team standard.</div></div>
+
+          <h3 class="sub"><span>1.4</span> Prompting by task type</h3>
+          <div class="table-wrap"><table class="compare">
+            <thead><tr><th>Task</th><th>Typical failure</th><th>What the prompt must include</th></tr></thead>
+            <tbody>
+              <tr><th>Analysis</th><td>Invented conclusions</td><td>The evidence, the focus, and <b>permission to say "not enough data"</b></td></tr>
+              <tr><th>Research</th><td>Unfocused searching, or only confirming one theory</td><td>Scope; <b>competing hypotheses</b> with confidence tracked; cross-check sources; self-critique</td></tr>
+              <tr><th>Drafting</th><td>Generic prose</td><td><b>Voice samples</b> from past work plus real facts; a draft, review, refine <b>chain</b></td></tr>
+              <tr><th>Brainstorming</th><td>A narrow set of ideas</td><td>Ask for range and breadth, then <b>evaluate in a separate step</b></td></tr>
+            </tbody>
+          </table></div>
+          <p class="muted">If one request mixes several task types, split it so each part gets its own prompt.</p>
+
+          <div class="flashcards">
+            <details class="qa"><summary>Claude keeps returning markdown even though you asked for plain text. The prompt itself is full of bullets and bold. What's the fix?</summary><div class="a"><p>Rewrite the prompt itself without markdown. Claude's output style mirrors the prompt's style.</p></div></details>
+            <details class="qa"><summary>Does prompt chaining make a task faster?</summary><div class="a"><p>No. It adds calls, so latency goes up. The gain is accuracy and outputs you can inspect.</p></div></details>
+            <details class="qa"><summary>How many examples should you start with?</summary><div class="a"><p>One (one-shot). Add more only if the output still misses.</p></div></details>
+            <details class="qa"><summary>Describing your tone as "warm but professional" isn't giving you on-brand drafts. What's missing?</summary><div class="a"><p>Voice samples from past successful work, plus the facts only you know. Voice is easier to show than to describe.</p></div></details>
+          </div>
+          <div class="quiz" data-answer="C">
+            <div class="q">A clinic assistant's summaries keep citing irrelevant details buried in long patient records. Which change best reduces this noise?</div>
+            <ol>
+              <li>Move the question above the records so Claude knows what to look for</li>
+              <li>Add five more example summaries</li>
+              <li>Ask Claude to quote the relevant passages in a tag first, then summarise from those quotes</li>
+              <li>Tell it in bold to ignore irrelevant information</li>
+            </ol>
+            <div class="why"><b>C.</b> Quoting first grounds the answer in the relevant parts. Long documents belong <i>above</i> the question. More examples and bold negative instructions don't target the cause.</div>
+          </div>
         </section>
 
         <!-- ============ DOMAIN 2 ============ -->
         <section class="domain" id="d2">
           <div class="domain-head">
             <span class="domain-num">D2</span>
-            <h2>Domain 2: [Domain title]</h2>
-            <span class="weight">[xx]% <span class="bar"><i style="width:0%"></i></span></span>
+            <h2>Output Evaluation and Validation</h2>
+            <span class="weight">21% <span class="bar"><i style="width:84%"></i></span></span>
+          </div>
+          <div class="callout key"><div><strong class="label">Highest-weighted domain</strong>One rule runs through all six lessons: <b>a confident, fluent or cited answer is not a verified answer.</b> How sure Claude sounds is only loosely tied to how reliable it is.</div></div>
+
+          <h3 class="sub"><span>2.1</span> Accuracy and completeness</h3>
+          <div class="grid">
+            <div class="card accent"><h3><span class="ico">🔎</span> Discernment</h3><p>Judging what Claude returns before you act on it: are the claims true, and is <b>everything that was asked</b> delivered? Measure it against standards you wrote down in advance.</p></div>
+            <div class="card accent"><h3><span class="ico">🎯</span> Triage</h3><p>Check first the <b>precise, niche or recent</b> claims the decision rests on. That's where errors cluster and cost the most. Reading for things that "seem odd" doesn't work, because invented details look authoritative.</p></div>
+            <div class="card accent"><h3><span class="ico">✅</span> Completeness</h3><p>Turn the request into a checklist. "Six questions asked" means checking six answers are present. An accurate answer that skips a question still fails.</p></div>
+            <div class="card accent"><h3><span class="ico">📊</span> Several dimensions</h3><p>Score on correctness <b>and</b> relevance, tone and consistency. Well-defined criteria applied consistently keep the score reliable.</p></div>
+          </div>
+          <div class="callout info"><div><strong class="label">Description–Discernment loop</strong>What an evaluation finds feeds a sharper description in the next prompt. Evaluation isn't the last step.</div></div>
+
+          <h3 class="sub"><span>2.2</span> Hallucination, inconsistency or bias?</h3>
+          <div class="table-wrap"><table class="compare">
+            <thead><tr><th>Kind</th><th>What it looks like</th><th>Example</th></tr></thead>
+            <tbody>
+              <tr><th>Hallucination</th><td>Invented, with no basis in any source</td><td>A citation to a journal article that doesn't exist; "I've sent the email" with no email tool connected</td></tr>
+              <tr><th>Inconsistency</th><td>Contradicts itself, its source or another run</td><td>"Ships in 3 days", later "7 days", with no new information in between</td></tr>
+              <tr><th>Bias</th><td>Leans one way</td><td>Skewed defaults, missing perspectives, uneven framing</td></tr>
+              <tr><th>Miscalibration</th><td>Confidence the evidence doesn't support</td><td>Agreeing with whatever the user says, or hedging that adds no information</td></tr>
+            </tbody>
+          </table></div>
+          <div class="chips"><span class="chip hot">Hallucinations cluster in:</span><span class="chip">precise specifics</span><span class="chip">niche topics</span><span class="chip">events after the training cutoff</span><span class="chip">claims about its own actions</span></div>
+          <div class="callout trap"><div><strong class="label">Exam trap</strong>Classify what you can <i>observe</i>. Two conflicting values in one chat is an <b>inconsistency</b>. Calling it a hallucination would need evidence about which one was invented. If two chats give different answers and no document grounds them, trust <b>neither</b>, because both were generated rather than recalled.</div></div>
+
+          <h3 class="sub"><span>2.3</span> Fact-checking and validation</h3>
+          <div class="flow">
+            <div class="step"><b>Prompt so it can be checked</b><span>Allow "I don't know"; ask for quotes and references</span></div>
+            <div class="step"><b>Decision-critical claims first</b><span>Triage by consequence</span></div>
+            <div class="step"><b>Open the original source</b><span>The citation only tells you where to look</span></div>
+            <div class="step"><b>Retract</b><span>Remove the claims that fail</span></div>
+            <div class="step"><b>Cross-check</b><span>Re-runs, the reasoning, follow-up questions</span></div>
+          </div>
+          <div class="callout trap"><div><strong class="label">Exam trap</strong>"Ask Claude which of its claims are likely wrong" means the source being tested grades itself. "Tell it to answer more authoritatively" only changes how a guess is presented. To reduce fabrication, <b>explicitly allow Claude to say it can't verify something.</b> With no tools, a specific stock price from yesterday is almost certainly invented.</div></div>
+
+          <h3 class="sub"><span>2.4</span> When human review is required</h3>
+          <p>Every output gets <i>some</i> review. The <b>stakes, audience and content type</b> decide who reviews it and how deeply. For high-stakes work, the reviewer must be <b>qualified in the field and accountable</b>, and must review <b>before</b> the output reaches anyone it could harm.</p>
+          <div class="table-wrap"><table class="compare">
+            <thead><tr><th>Use case</th><th>Required reviewer</th></tr></thead>
+            <tbody>
+              <tr><th>Next-step suggestions for patients</th><td>A licensed clinician approves each one</td></tr>
+              <tr><th>Contract risk summaries before signing</th><td>A licensed attorney reviews the clauses and the full contract</td></tr>
+              <tr><th>Investment recommendations for clients</th><td>A licensed financial advisor checks suitability and compliance</td></tr>
+            </tbody>
+          </table></div>
+          <div class="callout trap"><div><strong class="label">Not substitutes for qualified review</strong>A second Claude instance or a self-check (that's still Claude checking Claude); a citation on every claim; a polished, confident tone; an "AI-generated" label; a quick read for tone by someone who isn't an expert.</div></div>
+
+          <h3 class="sub"><span>2.5</span> Refining for the audience</h3>
+          <div class="dodont">
+            <div class="do"><h4>✓ Specific revision requests</h4><ul><li>Name the change: "add the cost figures", "cut steps 3 and 4"</li><li>State the <b>goal next to the instruction</b>, so Claude follows the intent and not just the wording</li><li>Use a role, context and examples to set register and depth</li><li>Different audiences get <b>separate versions</b></li></ul></div>
+            <div class="dont"><h4>✗ Vague revision requests</h4><ul><li>"Make it better", "more compelling"</li><li>Repeating a tone or length instruction more firmly when the draft misses the point</li></ul></div>
           </div>
 
-          <div class="placeholder">Notes for Domain 2 go here. Copy components from <a href="../components.html">Components</a>.</div>
+          <h3 class="sub"><span>2.6</span> Choosing the output format</h3>
+          <p><b>The format follows the destination.</b> A quick answer goes inline. A standalone piece someone will reuse goes in an artifact. Output a program will parse needs a schema-enforced structure.</p>
+          <div class="grid cols-2">
+            <div class="card accent"><h4>Artifact: the four criteria</h4><ol><li>Significant and self-contained, typically <b>over 15 lines</b></li><li>Likely to be edited, iterated on or reused outside the chat</li><li>Stands on its own without the conversation</li><li>You'll refer back to it later</li></ol><p class="muted">SVG logos, Mermaid flowcharts and React components are all artifact types.</p></div>
+            <div class="card accent"><h4>Structured data</h4><ul><li>Use JSON with a schema when a <b>program</b> will parse the output</li><li>Passing the schema guarantees types and fields, <b>not correct values</b>. Even enum casing can drift without an error.</li><li>For people, choose between prose and lists or tables; don't send them JSON.</li><li>Inline custom visuals are <b>not kept</b> by default. Save one as an artifact to keep it.</li></ul></div>
+          </div>
+
+          <div class="flashcards">
+            <details class="qa"><summary>An answer has no false statements. Is it complete?</summary><div class="a"><p>Not necessarily. Completeness is measured against the request. An accurate answer that skips a question still fails.</p></div></details>
+            <details class="qa"><summary>Claude says "I've emailed the client." Did it?</summary><div class="a"><p>Only if an email tool is actually connected. Otherwise it's a hallucinated claim about its own capabilities.</p></div></details>
+            <details class="qa"><summary>Someone asks "What does ACID stand for?" Inline or artifact?</summary><div class="a"><p>Inline. It's short, depends on the conversation, and nobody will edit or reuse it.</p></div></details>
+            <details class="qa"><summary>You have 1 hour and 20 claims to check. Where do you start?</summary><div class="a"><p>With the few claims the decision actually rests on. Triage by consequence, not by order of appearance.</p></div></details>
+          </div>
+          <div class="quiz" data-answer="B">
+            <div class="q">A team wants Claude-drafted credit explanations sent to applicants. They plan for a second Claude instance to review each one. Is that enough?</div>
+            <ol>
+              <li>Yes, a second instance with a different prompt catches the errors</li>
+              <li>No. A qualified loan officer must review each one before it's sent, and AI involvement must be disclosed.</li>
+              <li>Yes, if every claim includes a citation</li>
+              <li>No. They should spot-check 10% of explanations afterwards.</li>
+            </ol>
+            <div class="why"><b>B.</b> Financial decisions are high-risk. A second instance is still Claude checking Claude, citations only point to sources, and sampling afterwards lets Claude effectively make the decision.</div>
+          </div>
         </section>
 
         <!-- ============ DOMAIN 3 ============ -->
         <section class="domain" id="d3">
           <div class="domain-head">
             <span class="domain-num">D3</span>
-            <h2>Domain 3: [Domain title]</h2>
-            <span class="weight">[xx]% <span class="bar"><i style="width:0%"></i></span></span>
+            <h2>Product and Model Selection</h2>
+            <span class="weight">12% <span class="bar"><i style="width:48%"></i></span></span>
           </div>
 
-          <div class="placeholder">Notes for Domain 3 go here. Copy components from <a href="../components.html">Components</a>.</div>
+          <h3 class="sub"><span>3.1</span> Chat, Research, Projects or artifacts?</h3>
+          <p><b>Start every task in a plain chat.</b> Move to another feature only when you can name the gap chat leaves.</p>
+          <div class="table-wrap"><table class="compare">
+            <thead><tr><th>Feature</th><th>Use it when…</th><th>Facts to know</th></tr></thead>
+            <tbody>
+              <tr><th>Chat (+ web search)</th><td>One or two lookups answer it</td><td>Web search brings in current information, with citations</td></tr>
+              <tr><th>Research</th><td>You'd otherwise run a dozen searches and stitch the results together</td><td>Agentic: <b>5+ tool calls over 1–3 minutes</b>, ends in a cited report. Searches the web <b>and connected tools</b> (Gmail, Calendar, Docs). Runs on <b>Opus 5.5</b> (falling back to Opus 4.8) <b>whatever model you selected</b>, so it uses up limits fast.</td></tr>
+              <tr><th>Project</th><td>The work recurs and needs the same documents and instructions every time</td><td>Free accounts get up to <b>5</b> Projects. Paid plans add RAG. Team and Enterprise can <b>share</b> them.</td></tr>
+              <tr><th>Artifact</th><td>A deliverable you'll edit, return to and share</td><td>Opens in a side panel with <b>version history</b></td></tr>
+            </tbody>
+          </table></div>
+          <div class="callout trap"><div><strong class="label">Exam trap</strong>The difference between Research and web search is <b>breadth, not freshness</b>. Both reach current information. Research doesn't store documents for future chats; that's a Project's job. Chats in a Project share its knowledge and instructions, but <b>not each other's conversations</b>.</div></div>
+
+          <h3 class="sub"><span>3.2</span> Haiku, Sonnet and Opus</h3>
+          <div class="table-wrap"><table class="compare">
+            <thead><tr><th>Tier</th><th>Built for</th><th>Latency</th><th>Price per MTok (in / out)</th><th>Default effort</th></tr></thead>
+            <tbody>
+              <tr><th>Haiku 5.5</th><td>High-volume, latency-sensitive work: classification, extraction, routing, subagents</td><td class="yes">Fastest</td><td>From $0.10 / $0.50</td><td>medium</td></tr>
+              <tr><th>Sonnet 5.5</th><td>The best mix of speed and intelligence; the everyday workhorse</td><td>Fast</td><td>$2 / $10</td><td>high</td></tr>
+              <tr><th>Opus 5.5</th><td>Long-running agentic coding and knowledge work; the largest, most complex generation</td><td class="no">Moderate (slowest)</td><td>$4 / $20</td><td>medium</td></tr>
+            </tbody>
+          </table></div>
+          <p class="muted">The current lineup also has a frontier model, Claude Fable 5.1, above Opus. All three tiers share a 1M-token context window and a 128K-token output limit, but the same limits don't mean the same ability.</p>
+          <div class="callout trap"><div><strong class="label">Exam traps</strong>Latency runs in the <b>opposite</b> order to capability; Opus is <i>not</i> the quickest. No tier specialises in a subject: the gap between tiers shows on <b>hard reasoning</b>, not on topic. Sonnet isn't always the right first choice. Use <b>Haiku-first</b> for cost-sensitive prototyping and upgrade when you find a gap; use <b>capability-first</b> (Opus) when capability is critical.</div></div>
+
+          <h3 class="sub"><span>3.3</span> Matching the tier to cost, speed and quality</h3>
+          <div class="flow">
+            <div class="step"><b>What is the output for?</b><span>And what does an error cost?</span></div>
+            <div class="step"><b>Set the quality bar</b><span>Based on that consequence</span></div>
+            <div class="step"><b>Choose the cheapest and fastest option</b><span>That still clears the bar</span></div>
+            <div class="step"><b>Test on your own work</b><span>Compare tiers side by side</span></div>
+          </div>
+          <div class="grid cols-2">
+            <div class="card accent"><h4>Effort levels</h4><ul><li><b>low</b>: most efficient, some capability lost (subagents, simple tasks)</li><li><b>medium</b>: balanced; the default on Opus 5.5 and Haiku 5.5</li><li><b>high</b>: spends as many tokens as the task needs; the default on Sonnet 5.5</li></ul><p>If effort was lowered, <b>restore it before moving up a tier</b>.</p></div>
+            <div class="card accent"><h4>Rules of thumb</h4><ul><li>Compare the <b>cost per completed task</b>, not the price per token. A stronger model may finish in fewer turns.</li><li>For high-volume or simple work, the strongest tier costs more, runs slower and adds nothing.</li><li>For a batch, separate the few items that need judgment; send the routine bulk to a cheap tier.</li><li><b>Fast mode</b> is the same model, faster, at a higher price. It doesn't make the model smarter.</li><li>To decide on a downgrade, <b>measure</b> it on your work. Don't ask Claude to predict it.</li></ul></div>
+          </div>
+
+          <h3 class="sub"><span>3.4</span> Context limits: restart, summarise or persist</h3>
+          <p>The <b>context window is Claude's working memory</b>: the conversation, attached files, instructions and the reply itself. Accuracy and recall <b>drop as the token count grows</b>, so more material isn't always better.</p>
+          <div class="table-wrap"><table class="compare">
+            <thead><tr><th></th><th>Usage limit</th><th>Length limit</th></tr></thead>
+            <tbody>
+              <tr><th>Caps</th><td>Total use over time, across every chat</td><td>How long one conversation can grow</td></tr>
+              <tr><th>Resets</th><td>A <b>5-hour session</b> limit plus <b>weekly</b> limits. Shared by claude.ai, Claude Code and Desktop.</td><td>Never. The window size is fixed per model and can't be raised.</td></tr>
+              <tr><th>Fix</th><td>Wait for the reset, upgrade, or turn on usage credits (pay as you go)</td><td>Start a new chat, or use a Project (which loads only the relevant knowledge)</td></tr>
+            </tbody>
+          </table></div>
+          <div class="grid">
+            <div class="card"><h4>Let it auto-summarise</h4><p>One continuous thread where you're still building on recent turns. The full history is <b>kept</b>, but the working summary can drop detail.</p></div>
+            <div class="card"><h4>Start fresh</h4><p>When you switch to unrelated work, or a long chat is draining your allowance.</p></div>
+            <div class="card"><h4>Persist</h4><p>Decisions, guidelines and reference documents go into a Project or memory. <b>A restart is only cheap if you persisted first.</b></p></div>
+          </div>
+
+          <div class="flashcards">
+            <details class="qa"><summary>Which model does Research use?</summary><div class="a"><p>Opus 5.5 (falling back to Opus 4.8), whatever model is selected in the chat.</p></div></details>
+            <details class="qa"><summary>Which tier fits a voice assistant that must reply instantly?</summary><div class="a"><p>Haiku, the fastest tier.</p></div></details>
+            <details class="qa"><summary>A paid user is told to wait until a set time to continue. Will a new chat help?</summary><div class="a"><p>No. That's a usage limit, which applies across all chats. Wait for the reset, upgrade, or use usage credits.</p></div></details>
+            <details class="qa"><summary>A 3-week chat now contradicts constraints agreed in week 1. What do you do first?</summary><div class="a"><p>Identify the decisions and constraints that must survive, and save them as lasting reference material (for example in a Project). Then restart.</p></div></details>
+          </div>
         </section>
 
         <!-- ============ DOMAIN 4 ============ -->
         <section class="domain" id="d4">
           <div class="domain-head">
             <span class="domain-num">D4</span>
-            <h2>Domain 4: [Domain title]</h2>
-            <span class="weight">[xx]% <span class="bar"><i style="width:0%"></i></span></span>
+            <h2>Workflow Integration and Solution Design</h2>
+            <span class="weight">16% <span class="bar"><i style="width:64%"></i></span></span>
           </div>
 
-          <div class="placeholder">Notes for Domain 4 go here. Copy components from <a href="../components.html">Components</a>.</div>
+          <h3 class="sub"><span>4.1</span> Requirements and use cases</h3>
+          <div class="flow">
+            <div class="step"><b>Business problem</b><span>Start from the problem, not the tool</span></div>
+            <div class="step"><b>Map today's work</b><span>How people actually do it, including the exceptions</span></div>
+            <div class="step"><b>Split into tasks</b><span>Decide for each one: Claude or a person</span></div>
+            <div class="step"><b>Checkable success criteria</b><span>Before anything is delegated</span></div>
+            <div class="step"><b>Test on real samples</b><span>The real mix, including edge cases</span></div>
+          </div>
+          <div class="grid cols-2">
+            <div class="card accent"><h4>Claude is good at</h4><ul><li><b>Finding ambiguity</b>, for example by acting as a developer reviewing the requirements and asking clarifying questions</li><li>Classifying requirements as functional, non-functional or constraint, with explanations</li><li>Ranking against <b>criteria you state</b>, such as business value, feasibility and strategic fit (useful for scoping an MVP)</li></ul></div>
+            <div class="card accent"><h4>A person keeps</h4><ul><li><b>Resolving</b> ambiguity with stakeholders. That's a judgment call.</li><li>Final decisions</li><li>Delegating implementation is safe; delegating judgment is not.</li></ul></div>
+          </div>
+          <div class="callout trap"><div><strong class="label">Exam trap</strong>"Easy to use" isn't a success criterion, even if everyone agrees with it. Someone outside the team must be able to tell pass from fail.</div></div>
+
+          <h3 class="sub"><span>4.2</span> Research, planning and process optimisation</h3>
+          <div class="table-wrap"><table class="compare">
+            <thead><tr><th>Mode</th><th>Who does what</th><th>Fits a step that is…</th></tr></thead>
+            <tbody>
+              <tr><th>Automation</th><td>Claude does it, you check the result</td><td>Mechanical and checkable, e.g. pulling every deadline out of 20 grant notices</td></tr>
+              <tr><th>Augmentation</th><td>You and Claude work on it together</td><td>Judgment-heavy, e.g. a plan where you push back on each phase</td></tr>
+              <tr><th>Agency</th><td>Claude acts with latitude inside limits you set</td><td>Open-ended, e.g. a multi-source investigation where Claude chooses which leads to follow</td></tr>
+            </tbody>
+          </table></div>
+          <ul>
+            <li><b>Set criteria first.</b> "Rank by urgency" makes Claude invent a standard you can't inspect. Supply a rubric (impact, effort, customer segment).</li>
+            <li>Information from this week needs <b>web search</b>. Caching or memory can't add anything after the training cutoff.</li>
+            <li>Check vendor claims against <b>independent</b> sources. Sound reasoning can't fix one-sided inputs.</li>
+            <li>Turning a transcript into an SOP in stages: extract the steps, then add safety notes, tools and quality checks, then format to the company standard.</li>
+            <li><b>Claude's plans are inputs, not decisions.</b> The person who owns the outcome makes the call.</li>
+          </ul>
+
+          <h3 class="sub"><span>4.3</span> Solution design, development and iteration</h3>
+          <div class="stack">
+            <div class="layer" style="--i:0">User voice <small>a messy human need</small></div>
+            <div class="layer" style="--i:1">Requirement <small>what must be true</small></div>
+            <div class="layer" style="--i:2">Technical spec <small>with a definition of done</small></div>
+            <div class="layer" style="--i:3">Prompt <small>what Claude acts on</small></div>
+          </div>
+          <p class="muted">This is the <b>Description Chain</b>. If the result works but fails the user, a link earlier in the chain broke.</p>
+          <div class="dodont">
+            <div class="do"><h4>✓ Plan, verify, judge, refine</h4><ul><li>Have Claude <b>plan before changing anything</b> (plan mode)</li><li>Give it a <b>check it can run</b> itself</li><li>Use a <b>separate verifier</b> that tries to disprove the result</li><li>Build in small, verified increments</li><li>Good feedback names the symptom, where it happens, and what "fixed" looks like</li><li>Judge fit for the <b>real user</b></li></ul></div>
+            <div class="dont"><h4>✗ Traps</h4><ul><li>Letting the producer grade its own work</li><li>Feedback like "not quite right"; ask the testers for concrete examples instead</li><li>Assuming "all tests pass" means done. Tests only confirm what you described.</li><li>Tuning to one editor's taste without asking the actual readers</li></ul></div>
+          </div>
+
+          <h3 class="sub"><span>4.4</span> Delegation: which steps go to Claude</h3>
+          <div class="grid cols-2">
+            <div class="card accent"><h4>Decide step by step, not for the whole process</h4><p>Break the process into steps and decide each one. Most workflows end up with some steps delegated and some kept.</p><p><b>Augment</b> means adding Claude to steps that already exist. <b>Redesign</b> means replacing the structure, e.g. five teams passing claims by email become one Claude agent that triages, requests documents and routes each claim.</p></div>
+            <div class="card accent"><h4>Diligence: ownership stays with you</h4><p>You own the final result fully, whatever Claude contributed. Sign-off and vouching steps stay human. Write a <b>pass/fail definition of done</b> before you delegate.</p></div>
+          </div>
+
+          <h3 class="sub"><span>4.5</span> Explaining value and limits to stakeholders</h3>
+          <div class="mnemonic">
+            <div class="word">N K W S</div>
+            <ul>
+              <li><b>N</b>ext-token prediction: where answers come from; "sophisticated autocomplete"</li>
+              <li><b>K</b>nowledge: fixed at the training cutoff; internal facts must be supplied</li>
+              <li><b>W</b>orking memory: the context window, a fixed size; chunk, summarise or retrieve</li>
+              <li><b>S</b>teerability: how closely it follows instructions</li>
+            </ul>
+            <p class="muted" style="margin:8px 0 0">Each property runs from a zone where Claude is reliably strong to a zone where it slips. Explain a bad output by naming the property and where the task landed.</p>
+          </div>
+          <ul>
+            <li>Different answers on different runs are <b>expected</b>, not a malfunction. Facts that differ between runs are the ones to verify.</li>
+            <li>Pitch it as <b>a person working with Claude</b>, not a replacement. "No more legal review" is wrong.</li>
+            <li>Justify a <b>smaller model</b> for simple, high-volume work (e.g. classifying invoices) on cost and speed.</li>
+            <li><b>Promise safeguards, not perfection.</b> Report pilot results as they were, including where people still check the output.</li>
+          </ul>
+
+          <div class="quiz" data-answer="A">
+            <div class="q">Three of eight pilot testers say the output is "not quite right" and nothing more. What should the pilot owner do first?</div>
+            <ol>
+              <li>Ask those testers for specific examples of what the output said and what it should have said</li>
+              <li>Switch to a more capable model</li>
+              <li>Rewrite the instructions based on a best guess</li>
+              <li>Ignore it, since most testers are happy</li>
+            </ol>
+            <div class="why"><b>A.</b> Vague feedback can't be acted on. Concrete pairs of "what it said" and "what it should have said" turn it into a specific gap you can fix.</div>
+          </div>
+        </section>
+
+        <!-- ============ DOMAIN 5 ============ -->
+        <section class="domain" id="d5">
+          <div class="domain-head">
+            <span class="domain-num">D5</span>
+            <h2>Configuration and Knowledge Management</h2>
+            <span class="weight">12% <span class="bar"><i style="width:48%"></i></span></span>
+          </div>
+
+          <h3 class="sub"><span>5.1</span> Claude Projects</h3>
+          <div class="stack">
+            <div class="layer" style="--i:0">Project instructions <small>how Claude behaves in every chat</small></div>
+            <div class="layer" style="--i:1">Project knowledge <small>files every chat can draw on</small></div>
+            <div class="layer" style="--i:2">Each chat <small>starts with only the two layers above</small></div>
+          </div>
+          <div class="grid cols-2">
+            <div class="card accent"><h4>Key facts</h4><ul><li>Claude <b>can't see the project name or description</b>. Put guidance in the instructions.</li><li>A new chat <b>doesn't remember</b> other chats. Add anything that should carry over to the knowledge.</li><li><b>RAG mode</b> turns on <b>automatically</b> when knowledge nears the context limit, on <b>paid plans only</b> (Pro, Max, Team, Enterprise). It allows up to <b>10×</b> more knowledge. There's no setting to switch.</li></ul></div>
+            <div class="card accent"><h4>Sharing</h4><ul><li>Only <b>Team and Enterprise</b>, and only with members of the same organisation. Pro can't share.</li><li><b>Can view</b>: see the contents and chat in the project</li><li><b>Can edit</b>: change instructions, knowledge and member settings</li><li>Give most people <b>Can view</b>.</li></ul></div>
+          </div>
+
+          <h3 class="sub"><span>5.2</span> Uploaded knowledge and connectors</h3>
+          <div class="table-wrap"><table class="compare">
+            <thead><tr><th></th><th>Upload</th><th>Connector</th></tr></thead>
+            <tbody>
+              <tr><th>Gives Claude</th><td>A <b>fixed copy</b> of what you chose to share</td><td><b>Live access</b> on your behalf</td></tr>
+              <tr><th>Limited by</th><td>What you uploaded</td><td>What <b>your own account</b> can reach, plus what the organisation allows</td></tr>
+              <tr><th>Choose it when</th><td>Chat attachment for one-off use; project knowledge when it's reused</td><td>The knowledge changes and has to stay current (Drive)</td></tr>
+            </tbody>
+          </table></div>
+          <div class="callout key"><div><strong class="label">Must remember</strong><b>Gmail</b>: Claude reads the metadata and body but <b>never the content of attachments</b>, whatever their size. Download and upload a file to have it analysed. <b>Drive files in a project</b> work only in <b>private</b> projects, not shared ones. With the Drive connector on, a pasted Doc URL is fetched when you send the message.</div></div>
+          <div class="flow">
+            <div class="step"><b>Owner or Primary Owner enables it</b><span>Organisation-wide (Team and Enterprise)</span></div>
+            <div class="step"><b>Each member signs in</b><span>With their own account (except Enterprise-managed auth)</span></div>
+            <div class="step"><b>Turn it on per chat</b><span>Use "+" or type "/" to toggle connectors</span></div>
+          </div>
+          <p class="muted">Action restrictions only <b>narrow</b> access. "Always allow" can't grant edit rights the user doesn't already have in the source system.</p>
+
+          <h3 class="sub"><span>5.3</span> Writing project instructions</h3>
+          <ul>
+            <li>Write down the team's unwritten standards (house voice, audience) <b>first</b>, then put them in the instructions.</li>
+            <li>A <b>one-off</b> variation, like a one-page version this week, goes in that chat's prompt. Instructions describe the normal case.</li>
+            <li>Set a <b>role or perspective</b> to shape expertise, tone and priorities.</li>
+            <li><b>Layering:</b> organisation, personal, project. If a personal instruction contradicts an organisation one, <b>the organisation wins</b>. Personal instructions only fill the gaps.</li>
+            <li><b>Conflicting rules</b> ("plain language" vs "full technical terms") leave Claude no reliable way to choose, so output varies. Fix the conflict and <b>test before rollout</b>.</li>
+          </ul>
+
+          <h3 class="sub"><span>5.4</span> Maintaining configurations</h3>
+          <div class="dodont">
+            <div class="do"><h4>✓ Do</h4><ul><li>Trace a wrong answer back to the file or instruction behind it</li><li><b>Remove</b> superseded files</li><li>Move a correction you keep repeating into the <b>project instructions</b></li><li>Archive a finished project. That keeps its members, permissions and knowledge, and unarchiving restores everything.</li></ul></div>
+            <div class="dont"><h4>✗ Myths</h4><ul><li>"A new chat fixes outdated answers." It loads the same stale knowledge.</li><li>"Claude prefers the newer file." Nothing marks the old one as superseded.</li><li>"A correction in chat carries over." Chats don't share context.</li><li>"Archiving removes access." Remove the member in the sharing settings instead.</li></ul></div>
+          </div>
+
+          <div class="flashcards">
+            <details class="qa"><summary>Where does "always answer formally, as a senior support engineer" belong?</summary><div class="a"><p>In the project instructions. They apply to every chat in the project.</p></div></details>
+            <details class="qa"><summary>Can a Pro user invite two collaborators into a project?</summary><div class="a"><p>No. Sharing is only on Team and Enterprise, and only within the organisation.</p></div></details>
+            <details class="qa"><summary>Claude keeps quoting last year's deductible. What do you check first?</summary><div class="a"><p>Whether the old handbook is still in the project knowledge. Rephrasing the question can't fix a stale source.</p></div></details>
+            <details class="qa"><summary>An Enterprise employee can't connect Drive and nobody has enabled connectors. What has to happen?</summary><div class="a"><p>An Owner or Primary Owner enables the connector organisation-wide, then the employee signs in with their own account.</p></div></details>
+          </div>
+        </section>
+
+        <!-- ============ DOMAIN 6 ============ -->
+        <section class="domain" id="d6">
+          <div class="domain-head">
+            <span class="domain-num">D6</span>
+            <h2>Governance, Risk and Responsible Use</h2>
+            <span class="weight">15% <span class="bar"><i style="width:60%"></i></span></span>
+          </div>
+
+          <h3 class="sub"><span>6.1</span> Appropriate and inappropriate use cases</h3>
+          <div class="callout key"><div><strong class="label">The recoverable, reviewable work test</strong>A use case fits Claude when its mistakes can be <b>noticed and fixed before they reach anyone who'd be harmed</b>. If an error would land before anyone could catch it, the use case is wrong, however good the prompt.</div></div>
+          <div class="grid">
+            <div class="card accent"><h4>🚫 Prohibited, whatever the safeguards</h4><ul><li>Biological, chemical, radiological or nuclear <b>weapons</b>, even for an accredited lab or a "red team"</li><li><b>Sexual content involving minors</b>, including fiction or role-play, and even with parental consent</li><li><b>Exploits or malware</b> for unauthorised offensive use</li></ul><p class="muted">Affiliation, stated intent, consent and fictional framing never lift these.</p></div>
+            <div class="card accent"><h4>⚖️ Dual-use work</h4><p>Context decides: <b>authorisation, consent and disclosure</b>. Professional verification only adjusts dual-use blocks. Prohibited uses stay blocked.</p></div>
+            <div class="card accent"><h4>🤖 Agent autonomy</h4><p>Grant autonomy where mistakes are <b>cheap to undo</b>, and require approval where they aren't (a sent message, a purchase, a changed record). Start computer use on background research or testing, and Claude in Chrome on research or form-filling.</p></div>
+          </div>
+          <p><b>High-risk domains:</b> Claude informs and a qualified person decides, reviewing <b>each</b> output before it reaches the person affected. Spot-checking a sample afterwards isn't enough.</p>
+
+          <h3 class="sub"><span>6.2</span> Data sensitivity, privacy and regulated data</h3>
+          <div class="chips"><span class="chip hot">Judge before you paste:</span><span class="chip">financial (SSNs, card and bank numbers)</span><span class="chip">health records</span><span class="chip">passwords and credentials</span><span class="chip">confidential documents</span></div>
+          <div class="table-wrap"><table class="compare">
+            <thead><tr><th></th><th>Consumer: Free, Pro, Max</th><th>Commercial: Team, Enterprise, API</th></tr></thead>
+            <tbody>
+              <tr><th>Used for training?</th><td>The <b>user chooses</b>: Settings → Privacy → Help Improve our AI models</td><td><b>Off by default</b>; the organisation controls the data</td></tr>
+              <tr><th>Exceptions</th><td><b>Incognito chats are never used</b>, even with the setting on. Flagged chats may still improve internal trust and safety models.</td><td>Feedback and bug reports that users submit <b>may be used</b></td></tr>
+              <tr><th>Turning it off</th><td>Stops <b>future</b> use only; models already trained keep the data</td><td>n/a</td></tr>
+            </tbody>
+          </table></div>
+          <div class="table-wrap"><table class="compare">
+            <thead><tr><th>Retention situation (consumer)</th><th>How long</th></tr></thead>
+            <tbody>
+              <tr><th>You delete a chat</th><td>Gone from your history immediately; deleted from the back end <b>within 30 days</b> (API inputs and outputs: also 30 days)</td></tr>
+              <tr><th>Model improvement on (de-identified)</th><td>Up to <b>5 years</b>, for new or resumed chats only</td></tr>
+              <tr><th>Thumbs up/down feedback or a bug report</th><td><b>5 years</b></td></tr>
+              <tr><th>Flagged chat: inputs and outputs</th><td>Up to <b>2 years</b></td></tr>
+              <tr><th>Flagged chat: safety classification scores</th><td>Up to <b>7 years</b> (longer than the chat itself)</td></tr>
+            </tbody>
+          </table></div>
+          <div class="grid cols-2">
+            <div class="card accent"><h4>🏥 Health information (PHI)</h4><p>Needs a signed <b>BAA</b> and <b>HIPAA readiness</b> enabled on the organisation. Consumer plans aren't covered, whatever their settings. <b>Enabling HIPAA readiness is permanent</b> and can't be reversed.</p></div>
+            <div class="card accent"><h4>🇪🇺 EU personal data</h4><p>The <b>DPA</b>, including Standard Contractual Clauses, is built into the Commercial Terms. On Team and Enterprise, the <b>customer is the controller</b> and Anthropic is the processor.</p></div>
+          </div>
+
+          <h3 class="sub"><span>6.3</span> Organisational AI policy</h3>
+          <p><b>A policy is only enforced once it's configuration:</b> each rule becomes an admin setting users can't override, plus a record showing it was followed.</p>
+          <div class="table-wrap"><table class="compare">
+            <thead><tr><th>Tool</th><th>Returns</th><th>Serves</th><th>Limits</th></tr></thead>
+            <tbody>
+              <tr><th>Audit log export</th><td>A CSV of organisation events</td><td>Occasional reviews by owners</td><td>Limited lookback; <b>no chat or file content</b></td></tr>
+              <tr><th>Compliance API</th><td>An activity feed plus chats, files, projects and transcripts, with <b>deletion</b></td><td>Security, legal and compliance teams</td><td>Enterprise and Console. Keeps <b>6 years, counted from when it's enabled</b>.</td></tr>
+              <tr><th>Analytics API</th><td>Aggregated usage and cost</td><td>IT and FinOps</td><td>No per-event records</td></tr>
+            </tbody>
+          </table></div>
+          <ul>
+            <li>No admin restriction ≠ allowed. It may be a gap in the policy, so <b>ask governance</b> first.</li>
+            <li>Anthropic's terms sit underneath every organisation's policy. You may <b>not use outputs to train a competing model</b>, even though you own the outputs.</li>
+            <li>A data-deletion request means <b>deleting and confirming</b> it. Anonymising or archiving isn't enough.</li>
+            <li>Journalism is high-risk: it needs human editorial review and disclosure.</li>
+          </ul>
+
+          <h3 class="sub"><span>6.4</span> Ethical AI use</h3>
+          <div class="grid">
+            <div class="card accent"><h4>Diligence</h4><p>Whoever acts on, sends or ships the output <b>owns it fully</b>. No responsibility moves to the tool or the vendor.</p></div>
+            <div class="card accent"><h4>Disclosure</h4><p>A customer chatbot shows a <b>clear notice at the start of the session</b>. A buried clause in the terms isn't enough, and the bot must never pose as a human.</p></div>
+            <div class="card accent"><h4>Decisions about people</h4><p>Credit and <b>employment are high-risk</b>, even after a human made the decision. A rejection email still needs review and disclosure.</p></div>
+            <div class="card accent"><h4>Over-reliance</h4><p>Skimming a draft isn't judgment. Evaluate before acting, and keep the final high-stakes calls yourself.</p></div>
+          </div>
+
+          <div class="quiz" data-answer="D">
+            <div class="q">An Enterprise organisation enables the Compliance API today to investigate an incident from last month. What will it show for last month?</div>
+            <ol>
+              <li>Everything, because six years are retained</li>
+              <li>Only admin events</li>
+              <li>Only chats that weren't deleted</li>
+              <li>Nothing, because recording starts when the API is enabled</li>
+            </ol>
+            <div class="why"><b>D.</b> The 6-year retention runs <i>forward</i> from enablement. Earlier activity was never recorded.</div>
+          </div>
+          <div class="quiz" data-answer="B">
+            <div class="q">A Pro user deletes a chat. When is it removed from Anthropic's back-end storage?</div>
+            <ol>
+              <li>Immediately</li>
+              <li>Within 30 days</li>
+              <li>After 2 years</li>
+              <li>After 5 years</li>
+            </ol>
+            <div class="why"><b>B.</b> It leaves your history immediately and is purged from the back end within 30 days. 2 years applies to flagged content; 5 years to model improvement and feedback.</div>
+          </div>
+        </section>
+
+        <!-- ============ DOMAIN 7 ============ -->
+        <section class="domain" id="d7">
+          <div class="domain-head">
+            <span class="domain-num">D7</span>
+            <h2>Troubleshooting and Optimization</h2>
+            <span class="weight">10% <span class="bar"><i style="width:40%"></i></span></span>
+          </div>
+
+          <h3 class="sub"><span>7.1</span> Diagnosing poor output: five causes</h3>
+          <div class="table-wrap"><table class="compare">
+            <thead><tr><th>Cause</th><th>Symptom</th><th>Fix</th></tr></thead>
+            <tbody>
+              <tr><th>1. Prompt <span class="chip hot">check first</span></th><td>Generic, thin or inconsistent output</td><td>Add context, criteria, format and the depth you want. For edge cases, add <b>3–5 diverse examples</b> in <code>&lt;example&gt;</code> tags.</td></tr>
+              <tr><th>2. Knowledge</th><td>Confidently wrong</td><td><b>Missing</b> knowledge: supply the document. <b>Stale</b> knowledge (after the cutoff): supply a current source and allow "I don't know".</td></tr>
+              <tr><th>3. Conversation</th><td>Degrades over a long, mixed chat</td><td>Restart, carrying forward only what matters</td></tr>
+              <tr><th>4. Model tier</th><td>Fails even with full context</td><td>Move up a tier, but only after ruling out causes 1–3</td></tr>
+              <tr><th>5. Reasoning depth</th><td>Skips steps</td><td>Restore or raise the effort level</td></tr>
+            </tbody>
+          </table></div>
+          <div class="callout trap"><div><strong class="label">Exam trap</strong>For generic output, the fix is a better prompt, not a bigger model. For ambiguous categories, use examples that include the edge cases, not tie-break rules or more categories. For "Categorize this ticket" giving inconsistent results, list the exact categories, the format and the criteria for choosing.</div></div>
+
+          <h3 class="sub"><span>7.2</span> Adjusting based on feedback</h3>
+          <div class="flow">
+            <div class="step"><b>Read the outputs</b><span>Next to their inputs, to find the real problem</span></div>
+            <div class="step"><b>Agree on "working"</b><span>A shared standard for sorting mixed feedback</span></div>
+            <div class="step"><b>Pick the lever</b><span>Prompt, instructions, knowledge, model or workflow</span></div>
+            <div class="step"><b>Confirm across runs</b><span>Before making it permanent</span></div>
+          </div>
+          <ul>
+            <li><b>Feedback is a signal, not a specification.</b> "It misses the decisions" could be several different faults.</li>
+            <li>Quality dropped after someone edited the instructions? <b>Restore the old wording and rerun</b> the same task. Don't stack more instructions on top.</li>
+            <li>One good answer doesn't prove the new wording works, because outputs vary. Compare across several tasks.</li>
+          </ul>
+
+          <h3 class="sub"><span>7.3</span> Optimising workflows</h3>
+          <div class="grid cols-2">
+            <div class="card accent"><h4>Save usage</h4><ul><li>Send <b>one complete, well-structured message</b>, not fragments</li><li>Upload once to a <b>Project</b>; reused content benefits from <b>caching</b>, but caches <b>expire after inactivity</b></li><li>Start fresh when a long chat costs more than it returns</li><li>Switch off <b>tools and servers</b> the task doesn't need</li><li>Usage depends on context, model, effort and features. <b>Find out where it goes</b> before changing habits.</li></ul></div>
+            <div class="card accent"><h4>Make fixes stick</h4><ul><li>Lines you repeat every time belong in the <b>project instructions</b></li><li>Before sharing a personal workflow with colleagues, <b>write the steps down and re-test them on real cases</b></li><li>Maintain instructions, and revisit them after model releases, because old workarounds become overhead</li></ul></div>
+          </div>
+
+          <div class="flashcards">
+            <details class="qa"><summary>A team hits its weekly limit every Thursday. What's the first step?</summary><div class="a"><p>Find out which tasks are actually using up the allowance, before changing plans or habits.</p></div></details>
+            <details class="qa"><summary>Half the team loves a pilot and half hates it. What's the first step?</summary><div class="a"><p>Agree what an acceptable draft looks like, then collect specific examples from both groups.</p></div></details>
+          </div>
         </section>
 
         <!-- ============ FINAL CHEAT SHEET ============ -->
@@ -99,12 +600,36 @@
             <h2>Last-minute cheat sheet</h2>
           </div>
           <div class="cheatsheet">
-            <h3>Must remember</h3>
+            <h3>Numbers</h3>
             <ul>
-              <li>[Fact 1]</li>
-              <li>[Fact 2]</li>
-              <li>[Fact 3]</li>
-              <li>[Fact 4]</li>
+              <li>Exam: 60 questions · 120 min · pass at 720/1000</li>
+              <li>Largest domain: D2 at 21%; smallest: D7 at 10%</li>
+              <li>Artifacts: usually over 15 lines</li>
+              <li>Research: 5+ tool calls over 1–3 min, on Opus 5.5</li>
+              <li>Free plan: up to 5 Projects; RAG gives up to 10× knowledge (paid plans)</li>
+              <li>Usage: 5-hour session limit plus weekly limits</li>
+              <li>Deleted chat: back end within 30 days</li>
+              <li>Feedback or model improvement: 5 years</li>
+              <li>Flagged chat: 2 years; safety scores: 7 years</li>
+              <li>Compliance API: 6 years, from when it's enabled</li>
+              <li>Edge-case examples: 3–5 diverse ones</li>
+            </ul>
+          </div>
+          <div class="cheatsheet">
+            <h3>Reflexes</h3>
+            <ul>
+              <li>Diagnose before you fix; change one thing at a time</li>
+              <li>Prompt first, model last</li>
+              <li>Confidence, polish and citations don't count as verification</li>
+              <li>High stakes: a qualified person reviews before it reaches anyone</li>
+              <li>Start in chat; move up only when you can name the gap</li>
+              <li>Haiku is fastest, Opus slowest; tiers differ on difficulty, not subject</li>
+              <li>Projects share knowledge and instructions, never other chats</li>
+              <li>Claude can't see a project's name or description</li>
+              <li>Gmail: never the attachment content</li>
+              <li>The organisation's instructions beat personal ones</li>
+              <li>Remove superseded files; a new chat doesn't help</li>
+              <li>You own the output; disclose AI at the start</li>
             </ul>
           </div>
         </section>

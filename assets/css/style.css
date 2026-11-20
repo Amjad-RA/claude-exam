@@ -299,3 +299,16 @@ details.qa.code-toggle { background: transparent; border-style: dashed; margin-b
 details.qa.code-toggle summary { font-weight: 500; font-size: 14px; color: var(--muted); padding: 8px 12px; }
 details.qa.code-toggle summary::before { content: "</>"; background: var(--surface-2); color: var(--muted); }
 details.qa.code-toggle pre { margin: 0; }
+
+/* Subdomain heading inside a domain: <h3 class="sub"><span>1.1</span> Title</h3> */
+h3.sub { display: flex; align-items: baseline; gap: 10px; margin: 28px 0 12px; font-size: 1.15rem; }
+h3.sub > span { font: 700 12px var(--mono); color: var(--exam); background: color-mix(in srgb, var(--exam) 14%, transparent);
+                padding: 2px 7px; border-radius: 5px; flex: none; }
+h3.sub:first-of-type { margin-top: 4px; }
+.card h4 { margin: 0 0 6px; font-size: 13px; text-transform: uppercase; letter-spacing: .06em; color: var(--exam); }
+.source-note { font-size: 13px; color: var(--muted); margin-top: 14px; }
+
+/* Keep wide tables inside their scroll wrapper on narrow screens */
+.with-toc > * { min-width: 0; }
+@media (max-width: 900px) { .with-toc { grid-template-columns: minmax(0, 1fr); } }
+@media (max-width: 640px) { .compare tbody th { white-space: normal; min-width: 110px; } }
