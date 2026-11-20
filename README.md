@@ -59,14 +59,6 @@ python3 tools/build_diagrams.py
 
 Each diagram sits between `<!-- dg:ID -->` and `<!-- /dg:ID -->` markers in its page, and only that block is rewritten. The site itself still needs no build step.
 
-## Malayalam audio notes
-
-A domain can start with a "മലയാളത്തിൽ കേൾക്കാം" card: a beginner-friendly Malayalam script, a read-along transcript and a player. The transcript in the page is the single source; the MP3 is generated from it, so text and audio never drift apart.
-
-- English exam terms are written in Malayalam script so the voice pronounces them; the English word shows as a small grey gloss (`<span class="en">`) and is not spoken.
-- `tools/make_audio.py` turns each transcript into `assets/audio/<id>.mp3` with Meta's MMS Malayalam voice and writes the paragraph start times back into the page, so the current paragraph highlights and tapping a paragraph jumps there. Setup and usage are at the top of the script.
-- Without an MP3, the card falls back to the browser's own Malayalam voice, which only some devices have.
-
 ## Learn with Gemini
 
 Every exam domain has a "Learn this domain in Malayalam with Gemini" button. It copies a tutor prompt built from that domain's notes (diagram captions, callouts, flashcards, practice questions) and opens Gemini: the Gemini app on Android, gemini.google.com elsewhere. Paste, send, then use Gemini Live or read-aloud to learn by voice. The prompt is also shown under "See the prompt" in case copying is blocked.

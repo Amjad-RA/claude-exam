@@ -109,128 +109,7 @@
     }
   });
 
-  /* 6. Malayalam audio notes: <div class="audio-note" data-audio="file.mp3">
-        With data-audio: a normal audio player; paragraphs with data-t="seconds"
-        highlight as it plays and can be tapped to jump there.
-        Without it: a preview read by the browser's own Malayalam voice, one
-        sentence at a time (long utterances get cut off in some browsers). */
-  document.querySelectorAll(".audio-note").forEach((note) => {
-    const btn = note.querySelector(".an-play");
-    const status = note.querySelector(".an-status");
-    const script = note.querySelector(".an-script");
-    const parts = [...note.querySelectorAll("[data-say]")];
-    const speedBtns = [...note.querySelectorAll(".an-speed button")];
-    const mark = (i) => parts.forEach((p, j) => p.classList.toggle("speaking", j === i));
-    const spoken = (el) => {
-      const c = el.cloneNode(true);
-      c.querySelectorAll(".en").forEach((e) => e.remove()); // English glosses are for reading only
-      return c.textContent.replace(/\s+/g, " ").trim();
-    };
-    let rate = 1;
-    let audio = null;
-    speedBtns.forEach((b) => b.addEventListener("click", () => {
-      rate = parseFloat(b.dataset.rate);
-      speedBtns.forEach((x) => x.setAttribute("aria-pressed", String(x === b)));
-      if (audio) audio.playbackRate = rate;
-    }));
-
-    if (note.dataset.audio) {
-      audio = document.createElement("audio");
-      audio.src = note.dataset.audio;
-      audio.preload = "none";
-      audio.controls = true;
-      note.querySelector(".an-audio").appendChild(audio);
-      btn.hidden = true;
-      status.textContent = "";
-      const times = parts.map((p) => parseFloat(p.dataset.t));
-      audio.addEventListener("timeupdate", () => {
-        let i = -1;
-        times.forEach((t, j) => { if (!isNaN(t) && t <= audio.currentTime) i = j; });
-        mark(i);
-      });
-      parts.forEach((p, j) => p.addEventListener("click", () => {
-        if (isNaN(times[j])) return;
-        const go = () => {
-          audio.currentTime = times[j];
-          audio.playbackRate = rate;
-          audio.play();
-        };
-        // With preload="none" the file isn't loaded yet, and seeking before
-        // its metadata arrives is ignored.
-        if (audio.readyState >= 1) go();
-        else {
-          audio.addEventListener("loadedmetadata", go, { once: true });
-          audio.load();
-        }
-      }));
-      return;
-    }
-
-    const synth = window.speechSynthesis;
-    if (!synth) {
-      status.textContent = "This browser can't play the preview. Read along below.";
-      return;
-    }
-    // One queue item per sentence, remembering which paragraph it belongs to.
-    const queue = [];
-    const firstOf = [];
-    parts.forEach((p, i) => {
-      firstOf[i] = queue.length;
-      spoken(p).split(/(?<=[.!?:;])\s+/).filter(Boolean).forEach((text) => queue.push({ i, text }));
-    });
-    let voice = null;
-    let playing = false;
-    let pos = 0;
-    let run = 0; // invalidates callbacks from utterances that were cancelled
-    const pick = () => {
-      voice = synth.getVoices().find((v) => /^ml([-_]|$)/i.test(v.lang)) || null;
-      btn.disabled = !voice;
-      status.textContent = voice
-        ? `Preview voice: ${voice.name}`
-        : "No Malayalam voice on this device. It is usually available in Edge on Windows and Chrome on Android. You can read along below.";
-    };
-    const stop = () => {
-      run++;
-      playing = false;
-      synth.cancel();
-      mark(-1);
-      btn.textContent = "▶ Play";
-    };
-    const speakNext = (r) => {
-      if (r !== run || !playing) return;
-      if (pos >= queue.length) return stop();
-      const item = queue[pos];
-      const u = new SpeechSynthesisUtterance(item.text);
-      u.voice = voice;
-      u.lang = voice.lang;
-      u.rate = rate;
-      u.onend = () => { if (r === run && playing) { pos++; speakNext(r); } };
-      u.onerror = (e) => { if (r === run && e.error !== "interrupted" && e.error !== "canceled") stop(); };
-      if (!parts[item.i].classList.contains("speaking")) {
-        mark(item.i);
-        parts[item.i].scrollIntoView({ block: "nearest", behavior: "smooth" });
-      }
-      synth.speak(u);
-    };
-    const start = (i) => {
-      if (!voice) return;
-      run++;
-      synth.cancel();
-      pos = firstOf[i];
-      playing = true;
-      if (script) script.open = true;
-      btn.textContent = "■ Stop";
-      speakNext(run);
-    };
-    btn.addEventListener("click", () => (playing ? stop() : start(0)));
-    parts.forEach((p, j) => p.addEventListener("click", () => start(j)));
-    window.addEventListener("pagehide", () => synth.cancel());
-    pick();
-    if (synth.addEventListener) synth.addEventListener("voiceschanged", pick);
-    else synth.onvoiceschanged = pick;
-  });
-
-  /* 7. "Learn with Gemini": every exam domain gets a button that copies a
+  /* 6. "Learn with Gemini": every exam domain gets a button that copies a
         Malayalam tutor prompt built from that domain's own notes (diagram
         captions, callouts, flashcards, practice questions), then opens
         Gemini — the app on Android, gemini.google.com elsewhere. */
@@ -244,7 +123,7 @@
     : GEMINI_WEB;
   const clean = (el) => {
     const c = el.cloneNode(true);
-    c.querySelectorAll(".label, svg, .audio-note").forEach((e) => e.remove());
+    c.querySelectorAll(".label, svg").forEach((e) => e.remove());
     return c.textContent.replace(/\s+/g, " ").trim();
   };
   const buildPrompt = (sec) => {
@@ -322,9 +201,7 @@
           : "Couldn't copy automatically. Open \"See the prompt\", copy it, and paste it into Gemini.";
         status.classList.toggle("ok", ok);
       });
-      const slot = sec.querySelector(".audio-note .an-gemini");
-      if (slot) slot.appendChild(card);
-      else sec.querySelector(".domain-head")?.after(card);
+      sec.querySelector(".domain-head")?.after(card);
     });
   }
 
