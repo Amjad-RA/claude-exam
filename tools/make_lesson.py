@@ -47,7 +47,8 @@ from bs4 import BeautifulSoup
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 CACHE = ROOT / ".audio-cache"
 API = "https://generativelanguage.googleapis.com/v1beta"
-TEXT_MODEL = os.environ.get("GEMINI_TEXT_MODEL", "gemini-3.8-flash")
+# Tried in order; the next one is used if a model is overloaded (503) or not on the plan.
+TEXT_MODELS = os.environ.get("GEMINI_TEXT_MODEL", "gemini-3.8-flash,gemini-3-flash-preview").split(",")
 TTS_MODEL = os.environ.get("GEMINI_TTS_MODEL", "gemini-3.8-flash-tts")
 VOICE = os.environ.get("GEMINI_VOICE", "Sulafat")   # described by Google as "warm"
 STYLE = ("Read this aloud in Malayalam like a warm, friendly teacher talking to one student: "
@@ -90,6 +91,10 @@ def call(model, body, timeout=600):
     raise SystemExit("Gave up after repeated errors.")
 
 
+class Busy(Exception):
+    """The model is overloaded or not available on this plan; try another."""
+
+
 def call_stream(model, body, timeout=600):
     """Like call(), but streams the answer (server-sent events), so a long
     answer keeps the connection busy instead of idling until it's done.
@@ -116,8 +121,9 @@ def call_stream(model, body, timeout=600):
         except urllib.error.HTTPError as e:
             detail = e.read().decode(errors="replace")
             if e.code == 429 and "limit: 0" in detail:
-                raise SystemExit(f"{model} isn't available on this key's plan (its free-tier limit is 0). "
-                                 "Pick another model with GEMINI_TEXT_MODEL or GEMINI_TTS_MODEL.")
+                raise Busy(f"{model} isn't available on this key's plan (free-tier limit 0)")
+            if e.code == 503 and attempt >= 2:
+                raise Busy(f"{model} is overloaded")
             if e.code in (429, 500, 502, 503, 504) and attempt < 5:
                 print(f"    {e.code}, waiting {20 * (attempt + 1)}s and retrying", flush=True)
                 time.sleep(20 * (attempt + 1))
@@ -198,18 +204,18 @@ def notes_text(sec):
     return "\n".join(ln for ln in lines if ln.strip())
 
 
-LESSON_PROMPT = """You are a friendly teacher from Kerala. Write a spoken Malayalam lesson that teaches a complete beginner Domain {num}: {title}{weight_part} of the "{exam}" ({code}) certification exam. It will be turned into audio for a study website, with the text shown for reading along.
+LESSON_PROMPT = """You are a friendly teacher from Kerala. Write a spoken lesson in Malayalam that teaches a complete beginner Domain {num}: {title}{weight_part} of the "{exam}" ({code}) certification exam. A text-to-speech voice will read it aloud on a study website, with the text shown for reading along.
 
 How to write it:
-- Teach the whole domain from start to finish: every topic and every important point in the notes below, in order.
-- Warm, flowing, spoken Malayalam, as if you are talking to me. Simple everyday words.
-- Keep English technical terms (prompt, context window, API and so on) in English letters, and explain each one in Malayalam the first time.
-- No markdown, bullet points, emoji or symbols. Write numbers and percentages as Malayalam words.
-- Give a small everyday example for each main idea, and clearly warn me about each exam trap in the notes.
+- Write in Malayalam script (മലയാളം ലിപി), never in Manglish (Malayalam typed in English letters). Only English technical terms such as prompt, context window, API, Claude or Projects stay in English letters; explain each one in Malayalam the first time.
+- Teach the whole domain from start to finish: every topic and every important point in the notes below, in order. Be exact: never change what the notes say is right or wrong.
+- Warm, flowing, spoken Malayalam, as if you are talking to me. Simple everyday words and short sentences.
+- No markdown, bullet points, emoji or symbols. Write numbers and percentages as Malayalam words (for example പതിനാല് ശതമാനം).
+- Give a small everyday example for each main idea. Clearly warn me about each exam trap in the notes, saying which answer is wrong and which is right.
 - Do not ask me questions. Start with a short welcome that says what this domain covers. End with a three-point recap and one line encouraging me to try the practice questions on the page.
 - Sections, in order: the welcome, one section per topic below, one on the exam traps, and the recap. Give each a short Malayalam heading; a topic's heading starts with its number, like "1.1".
 - Each paragraph has two to four sentences, because the website highlights one paragraph at a time while it plays.
-- Length: about eight to ten minutes when read aloud at a calm pace.
+- Length: about 8,000 characters in total, in roughly 25 to 30 paragraphs. That is eight to nine minutes of listening.
 - Teach only from the notes below. Don't read out the practice questions; teach the ideas behind them.
 
 Topics:
@@ -217,6 +223,21 @@ Topics:
 
 Notes for this domain:
 {notes}"""
+
+REVIEW_PROMPT = """You are a careful exam tutor who is a native Malayalam speaker. Below are a domain's study notes and a Malayalam lesson written from them for beginners. Check and correct the lesson:
+
+1. Every statement must agree with the notes. Fix anything that is wrong or misleading, especially which answer an exam trap says is right and which is wrong.
+2. If the lesson leaves out an important point from the notes, add it in the right section.
+3. It must be natural, simple spoken Malayalam in Malayalam script, not Manglish. English technical terms stay in English letters. Rewrite awkward or unclear sentences.
+4. Keep the structure and style: the same sections with short Malayalam headings, paragraphs of two to four sentences, no markdown or symbols, numbers written as words, about 8,000 characters in total.
+
+Return the corrected lesson, and in "corrections" list in English each change you made.
+
+Notes:
+{notes}
+
+Lesson:
+{lesson}"""
 
 LESSON_SCHEMA = {
     "type": "OBJECT",
@@ -226,6 +247,38 @@ LESSON_SCHEMA = {
         "required": ["heading", "paragraphs"]}}},
     "required": ["sections"],
 }
+REVIEW_SCHEMA = {
+    "type": "OBJECT",
+    "properties": {**LESSON_SCHEMA["properties"], "corrections": {"type": "ARRAY", "items": {"type": "STRING"}}},
+    "required": ["sections", "corrections"],
+}
+
+
+def ask_json(prompt, schema, what):
+    """Ask the first text model that is available; returns the parsed JSON."""
+    for model in TEXT_MODELS:
+        print(f"Asking {model} to {what}…", flush=True)
+        t0 = time.time()
+        try:
+            text = call_stream(model, {
+                "contents": [{"role": "user", "parts": [{"text": prompt}]}],
+                "generationConfig": {"responseMimeType": "application/json", "responseSchema": schema},
+            })
+        except Busy as e:
+            print(f"  {e}; trying the next model", flush=True)
+            continue
+        print(f"  done in {time.time() - t0:.0f}s", flush=True)
+        return json.loads(text)
+    raise SystemExit("No text model was available. Try again later, or set GEMINI_TEXT_MODEL.")
+
+
+def stats(sections):
+    text = "".join(s["heading"] + "".join(s["paragraphs"]) for s in sections)
+    ml = len(re.findall(r"[\u0D00-\u0D7F]", text))
+    latin = len(re.findall(r"[A-Za-z]", text))
+    chars = sum(len(p) for s in sections for p in s["paragraphs"])
+    return {"paragraphs": sum(len(s["paragraphs"]) for s in sections), "chars": chars,
+            "malayalam": ml / max(1, ml + latin), "minutes": chars / 15.5 / 60}
 
 
 def block_html(nid, info, sections, sub):
@@ -260,14 +313,24 @@ def write(page, sec_id):
     prompt = LESSON_PROMPT.format(
         **{k: v for k, v in info.items() if k != "topics"}, weight_part=f" ({info['weight']} of the exam)" if info["weight"] else "",
         topics="\n".join("- " + t for t in info["topics"]))
-    print(f"Asking {TEXT_MODEL} to write the lesson…", flush=True)
-    t0 = time.time()
-    text = call_stream(TEXT_MODEL, {
-        "contents": [{"role": "user", "parts": [{"text": prompt}]}],
-        "generationConfig": {"responseMimeType": "application/json", "responseSchema": LESSON_SCHEMA},
-    })
-    print(f"  done in {time.time() - t0:.0f}s", flush=True)
-    sections = json.loads(text)["sections"]
+    for attempt in range(2):
+        sections = ask_json(prompt, LESSON_SCHEMA, "write the lesson")["sections"]
+        st = stats(sections)
+        print(f"  draft: {st['paragraphs']} paragraphs, {st['chars']} characters (~{st['minutes']:.0f} min), "
+              f"{st['malayalam']:.0%} Malayalam script", flush=True)
+        if st["malayalam"] >= 0.7:
+            break
+        print("  mostly not in Malayalam script; asking again", flush=True)
+    else:
+        raise SystemExit("The lesson came back in English letters twice; not saving it.")
+    if not os.environ.get("NO_REVIEW"):
+        res = ask_json(REVIEW_PROMPT.format(notes=info["notes"], lesson=json.dumps({"sections": sections}, ensure_ascii=False)),
+                       REVIEW_SCHEMA, "check the lesson against the notes")
+        if stats(res["sections"])["malayalam"] >= 0.7:
+            sections = res["sections"]
+            print("  corrections:", *[f"\n   - {c}" for c in res["corrections"]] or [" none"], flush=True)
+        else:
+            print("  the checked version wasn't in Malayalam script; keeping the draft", flush=True)
     nid = f"{info['code'].lower()}-{sec_id}"
     block = block_html(nid, info, sections, f"Domain {info['num']} as a beginner lesson · audio not made yet")
     m = BLOCK.search(src)
@@ -278,9 +341,9 @@ def write(page, sec_id):
         head_end = src.index("</div>\n", src.index('<div class="domain-head">', start)) + len("</div>\n")
         src = src[:head_end] + "\n" + block + src[head_end:]
     path.write_text(src)
-    n = sum(len(s["paragraphs"]) for s in sections)
-    words = sum(len(p.split()) for s in sections for p in s["paragraphs"])
-    print(f"Wrote {len(sections)} sections, {n} paragraphs, {words} words into {page} ({nid}).")
+    st = stats(sections)
+    print(f"Wrote {len(sections)} sections, {st['paragraphs']} paragraphs, {st['chars']} characters "
+          f"(~{st['minutes']:.0f} min) into {page} ({nid}).")
 
 
 # ---------------------------------------------------------------- voice
