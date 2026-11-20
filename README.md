@@ -61,7 +61,7 @@ Each diagram sits between `<!-- dg:ID -->` and `<!-- /dg:ID -->` markers in its 
 
 ## Learn with Gemini
 
-Every exam domain has a "Learn this domain in Malayalam with Gemini" button. It copies a tutor prompt built from that domain's notes (diagram captions, callouts, flashcards, practice questions) and opens Gemini: the Gemini app on Android, gemini.google.com elsewhere. Paste, send, then use Gemini Live or read-aloud to learn by voice. The prompt is also shown under "See the prompt" in case copying is blocked.
+Every exam domain has a "Learn this domain in Malayalam with Gemini" button. It copies a lesson prompt built from that domain's notes (diagram captions, callouts, flashcards, practice questions) and opens Gemini: the Gemini app on Android, gemini.google.com elsewhere. Paste and send: Gemini first teaches the whole domain as one flowing lesson, written to be listened to with its Listen (read aloud) option, and only then asks five questions, one at a time. The prompt is also shown under "See the prompt" in case copying is blocked.
 
 ## Preview locally
 
