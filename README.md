@@ -85,9 +85,9 @@ A Gemini voice reads it into `assets/audio/ccao-f-d1.mp3` and the paragraph time
 
 It needs `beautifulsoup4`, `ffmpeg` and a Gemini API key in `GEMINI_API_KEY`. The models and voice can be changed with `GEMINI_TEXT_MODEL`, `GEMINI_TTS_MODEL` and `GEMINI_VOICE`; see the top of the script.
 
-## Learn with Gemini
+## Practise with Gemini
 
-Every exam domain has a "Learn in Malayalam with Gemini" button. It copies a lesson prompt built from that domain's notes (diagram captions, callouts, flashcards, practice questions) and opens Gemini: the Gemini app on Android, gemini.google.com elsewhere. Paste and send: Gemini first teaches the whole domain as one flowing lesson, written to be listened to with its Listen (read aloud) option, and only then asks five questions, one at a time. The prompt is also shown under "See the prompt" in case copying is blocked.
+Every exam domain has a "Practise with Gemini" card with two buttons: English, and മലയാളത്തിൽ (Malayalam, with technical terms kept in English). Each copies a prompt built from that domain's notes (diagram captions, callouts, flashcards, practice questions) and opens Gemini: the Gemini app on Android, gemini.google.com elsewhere. Paste and send: Gemini first teaches the whole domain as one flowing lesson, written to be listened to with its Listen (read aloud) option, then asks six exam-style questions (scenarios with options A to D) one at a time, explains each answer, and ends with a score card of topics to revise. The prompt is also shown under "See the prompt" in case copying is blocked.
 
 ## Preview locally
 

@@ -525,6 +525,9 @@ details.qa.code-toggle pre { margin: 0; }
 .gm-btn { flex: 1 1 100%; display: inline-flex; align-items: center; justify-content: center; gap: 6px; min-height: 46px;
           font: 600 15px var(--font); color: #fff; text-align: center;
           background: linear-gradient(135deg, #4f7cf3, #9b6ef3); border-radius: 999px; padding: 8px 18px; }
+.gm-btn.alt { background: var(--surface); color: #6d5bd0; border: 1.5px solid #9b6ef3; }
+:root[data-theme="dark"] .gm-btn.alt { color: #b9a8ff; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .gm-btn.alt { color: #b9a8ff; } }
 .gm-btn:hover { text-decoration: none; filter: brightness(1.08); }
 .gm-btn:active { filter: brightness(.95); }
 .gm-status { font-size: 13px; color: var(--muted); flex: 1 1 100%; }

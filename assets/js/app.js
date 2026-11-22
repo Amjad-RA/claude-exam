@@ -2,7 +2,7 @@
    1. Theme toggle   2. Table of contents (sidebar, or a bar on phones)
    3. Section search 4. "Done" progress tracking (localStorage)
    5. Phone-friendly tables and diagrams   6. Malayalam audio lessons
-   7. Learn with Gemini   8. Practice quizzes                   */
+   7. Practise with Gemini   8. Practice quizzes                   */
 (() => {
   const store = {
     get(k, d) { try { const v = localStorage.getItem(k); return v === null ? d : JSON.parse(v); } catch { return d; } },
@@ -257,10 +257,11 @@
     }));
   });
 
-  /* 7. "Learn with Gemini": every exam domain gets a button that copies a
-        Malayalam lesson prompt built from that domain's own notes (diagram
-        captions, callouts, flashcards, practice questions), then opens
-        Gemini — the app on Android, gemini.google.com elsewhere. */
+  /* 7. "Practise with Gemini": every exam domain gets a card with two buttons, English and Malayalam
+        (technical terms stay in English). Each copies a prompt built from that domain's own notes
+        (diagram captions, callouts, flashcards, practice questions) and opens Gemini (the app on
+        Android, gemini.google.com elsewhere). Gemini teaches the whole domain first, then runs
+        exam-style practice questions one at a time and ends with a score card. */
   const examCode = document.querySelector(".hero .exam-code")?.textContent.trim();
   const examName = document.querySelector(".hero h1")?.textContent.trim();
   const isAndroid = /Android/i.test(navigator.userAgent);
@@ -270,11 +271,13 @@
       + encodeURIComponent(GEMINI_WEB) + ";end"
     : GEMINI_WEB;
   const clean = (el) => {
+    if (!el) return "";
     const c = el.cloneNode(true);
     c.querySelectorAll(".label, svg").forEach((e) => e.remove());
     return c.textContent.replace(/\s+/g, " ").trim();
   };
-  const buildPrompt = (sec) => {
+  const buildPrompt = (sec, lang) => {
+    const ml = lang === "ml";
     const num = sec.querySelector(".domain-num")?.textContent.trim().replace(/^D/, "") ?? "";
     const title = sec.querySelector(".domain-head h2")?.textContent.trim() ?? "";
     const weight = sec.querySelector(".weight")?.firstChild?.textContent.trim() ?? "";
@@ -291,22 +294,27 @@
     sec.querySelectorAll(".quiz").forEach((q) => {
       facts.push(`- Practice question: ${clean(q.querySelector(".q"))} ${clean(q.querySelector(".why"))}`);
     });
+    const language = ml ? "simple Malayalam" : "clear, simple English";
     return [
-      `You are my friendly exam tutor. I am a complete beginner preparing for the "${examName}" (${examCode}) certification exam. Teach me Domain ${num}: ${title}${weight ? ` (${weight} of the exam)` : ""}, in simple Malayalam.`,
+      `You are my friendly exam tutor. I am a beginner preparing for the "${examName}" (${examCode}) certification exam. Teach me Domain ${num}: ${title}${weight ? ` (${weight} of the exam)` : ""}, in ${language}.`,
       "",
       "Part 1: the full lesson. Do this first, and ask me no questions yet.",
       "- Teach the whole domain from start to finish: every topic and every key fact below, in order.",
-      "- Write it like a lesson a teacher reads aloud in class: warm, flowing spoken Malayalam in full paragraphs, as if you are talking to me. I will listen to it with the read-aloud (Listen) option.",
-      "- Because it will be read aloud: no tables, bullet points, headings, bold, emoji or code blocks. Write numbers and percentages in words. Move to each new topic with a spoken line, like \"ഇനി നമുക്ക് അടുത്ത കാര്യം നോക്കാം\".",
-      "- Keep English technical terms (prompt, context window, API and so on) in English, and explain each one in Malayalam the first time.",
+      `- Write it like a lesson a teacher reads aloud in class: warm, flowing spoken ${ml ? "Malayalam" : "English"} in full paragraphs, as if you are talking to me. I may listen to it with the read-aloud (Listen) option.`,
+      ml
+        ? "- Because it will be read aloud: no tables, bullet points, headings, bold, emoji or code blocks. Write numbers and percentages in words. Move to each new topic with a spoken line, like \"ഇനി നമുക്ക് അടുത്ത കാര്യം നോക്കാം\"."
+        : "- Because it may be read aloud: no tables, bullet points, headings, bold, emoji or code blocks. Write numbers and percentages in words. Move to each new topic with a spoken line, like \"Now let's look at the next idea\".",
+      ml
+        ? "- Keep English technical terms (prompt, context window, API and so on) in English, and explain each one in Malayalam the first time."
+        : "- Explain each technical term (prompt, context window, API and so on) in plain words the first time.",
       "- Give a small everyday example for each main idea, and clearly warn me about each exam trap listed below.",
       "- If the lesson is too long for one reply, stop at the end of a topic, tell me to type \"continue\", and carry on from there when I do.",
       "- Finish the lesson with a short three-point recap.",
       "",
-      "Part 2: questions, only after the full lesson is done.",
-      "- Quiz me with five questions in Malayalam, one at a time. Use the practice questions below where they fit.",
-      "- After each answer, tell me if I am right and why in one or two sentences, then ask the next question.",
-      "- At the end, give me my score and tell me which topics to revise.",
+      "Part 2: exam practice, only after the full lesson is done.",
+      `- Ask me six exam-style questions${ml ? " in Malayalam (keep the technical terms in English)" : ""}, one at a time: short real-world scenarios with four options (A to D), like the real exam. Mix easy and hard ones, and use the practice questions below where they fit.`,
+      "- Wait for my answer. Then tell me if I'm right, why the correct option is right and why the others are wrong, in two or three sentences, then ask the next question.",
+      "- At the end, give me a score card: my score out of six, which topics I'm ready on, which I should revise, and one exam tip for this domain.",
       "",
       "Teach only from the facts below. If I ask about something they don't cover, say you're not sure instead of guessing.",
       "",
@@ -316,7 +324,7 @@
       "Key facts to teach:",
       ...facts,
       "",
-      "Start now with Part 1: greet me in Malayalam, then read me the full lesson.",
+      `Start now with Part 1: greet me${ml ? " in Malayalam" : ""}, then read me the full lesson.`,
     ].join("\n");
   };
   const copyText = (text) => {
@@ -337,23 +345,29 @@
   if (examCode) {
     document.querySelectorAll('section.domain[id^="d"]').forEach((sec) => {
       if (!/^d\d+$/.test(sec.id)) return;
-      const prompt = buildPrompt(sec);
       const card = document.createElement("div");
       card.className = "gm-card";
       card.innerHTML = `
-        <a class="gm-btn" target="_blank" rel="noopener"><span aria-hidden="true">✨</span> Learn in Malayalam with Gemini</a>
-        <span class="gm-status" aria-live="polite">Copies a lesson prompt and opens Gemini: the full lesson first, then questions.</span>
+        <a class="gm-btn" data-lang="en" target="_blank" rel="noopener"><span aria-hidden="true">✨</span> Practise with Gemini</a>
+        <a class="gm-btn alt" data-lang="ml" target="_blank" rel="noopener" lang="ml">മലയാളത്തിൽ</a>
+        <span class="gm-status" aria-live="polite">Copies a prompt and opens Gemini: the full lesson first, then exam-style questions and a score card.</span>
         <details class="gm-prompt"><summary>See the prompt</summary><textarea readonly rows="9" aria-label="Gemini prompt"></textarea></details>`;
-      const link = card.querySelector(".gm-btn");
       const status = card.querySelector(".gm-status");
-      link.href = geminiHref;
-      card.querySelector("textarea").value = prompt;
-      link.addEventListener("click", () => {
-        const ok = copyText(prompt);
-        status.textContent = ok
-          ? "✓ Prompt copied. In Gemini, paste and send. To listen, choose Listen (read aloud) in the reply's ⋮ menu."
-          : "Couldn't copy automatically. Open \"See the prompt\", copy it, and paste it into Gemini.";
-        status.classList.toggle("ok", ok);
+      const ta = card.querySelector("textarea");
+      let prompts = null;   // built on first use
+      const get = (lang) => { prompts ??= { en: buildPrompt(sec, "en"), ml: buildPrompt(sec, "ml") }; return prompts[lang]; };
+      card.querySelector(".gm-prompt").addEventListener("toggle", () => { if (!ta.value) ta.value = get("en"); });
+      card.querySelectorAll(".gm-btn").forEach((link) => {
+        link.href = geminiHref;
+        link.addEventListener("click", () => {
+          const text = get(link.dataset.lang);
+          ta.value = text;
+          const ok = copyText(text);
+          status.textContent = ok
+            ? "✓ Prompt copied. In Gemini, paste and send. To listen, choose Listen (read aloud) in the reply's ⋮ menu; to answer by voice, use Gemini Live."
+            : "Couldn't copy automatically. Open \"See the prompt\", copy it, and paste it into Gemini.";
+          status.classList.toggle("ok", ok);
+        });
       });
       (sec.querySelector(":scope > .audio-note") || sec.querySelector(".domain-head"))?.after(card);
     });

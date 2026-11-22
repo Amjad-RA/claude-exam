@@ -4,7 +4,7 @@ Two steps, so the text can be read and corrected before it is voiced:
 
     python3 tools/make_lesson.py write exams/ccao-f.html d1
         Gemini writes a beginner lesson for that domain from the page's own
-        notes (the facts the "Learn in Malayalam with Gemini" button sends,
+        notes (the facts the "Practise with Gemini" buttons send,
         plus the rest of the domain's notes) and puts it in the page as
         a read-along transcript.
 
