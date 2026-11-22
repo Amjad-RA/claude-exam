@@ -8,14 +8,21 @@ Short, visual study notes for the Anthropic Claude certification exams, publishe
 | CCAR-F | Claude Certified Architect – Foundations | `exams/ccar-f.html` |
 | CCAR-P | Claude Certified Architect – Professional | `exams/ccar-p.html` |
 
+The home page also has a **Learn** section for courses outside the exams:
+
+| Code | Course | Page |
+|---|---|---|
+| FSD | Frontend System Design (12 modules) | `learn/frontend-system-design.html` |
+
 The site is plain HTML, CSS and JavaScript. There is no build step and nothing to install.
 
 ## Structure
 
 ```
-index.html            Home page with a tile and progress bar for each exam
+index.html            Home page with a tile and progress bar for each exam and course
 components.html       Every note component, shown live with copy-paste HTML
 exams/*.html          One page per exam, one <section class="domain"> per domain
+learn/*.html          One page per course, one <section class="domain"> per module
 assets/css/style.css  Design system, mobile first (light and dark themes, print styles)
 assets/js/app.js      Theme toggle, table of contents, search, progress, quizzes
 .github/workflows/    GitHub Pages deploy
@@ -27,6 +34,8 @@ assets/js/app.js      Theme toggle, table of contents, search, progress, quizzes
 2. Fill in the hero details: summary, question count, time and passing score.
 3. For each domain, edit its `<section class="domain" id="dN">`: set the title and the weight (`[xx]%` and the bar's `width:xx%`), then replace the placeholder with components copied from `components.html`.
 4. To add a domain, copy a whole `<section>` block and give it a unique `id`. The table of contents and progress tracking pick it up automatically.
+
+Course pages in `learn/` work the same way, with one `<section>` per module (`id="dN"`, numbered `MN`). Their `<body>` has `data-kind="course"`, so the Gemini prompt teaches a module and not an exam domain. A module's Gemini button appears once it has notes. A course tile on the home page gives its page in `data-progress-src`.
 
 Components: concept cards, callouts (key, trap, tip, note), flow diagrams, comparison tables, do/don't lists, layer stacks, mnemonics, glossary, keyword chips, flashcards, practice MCQs, cheat sheets and code blocks.
 
